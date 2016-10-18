@@ -9,11 +9,11 @@
 
   BEGIN(INDENT);
 
-<INDENT>[ \t] { std::cout << "<>"; }
+<INDENT>[ \t] { std::cout << "INDENT "; }
 <INDENT>.|\n { yyless(0); BEGIN(INITIAL); }
 
 \n { std::cout << std::endl; BEGIN(INDENT); }
-. { std::cout << "'" << yytext << "'"; }
+. { std::cout << "OTHER "; }
 
 %%
 
