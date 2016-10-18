@@ -1,5 +1,7 @@
 %{
   #include <iostream>
+
+  #include "parser.h"
 %}
 
 %option noyywrap
@@ -9,15 +11,10 @@
 
   BEGIN(INDENT);
 
-<INDENT>[ \t] { std::cout << "<>"; }
+<INDENT>[ \t] { return T_INDENT; }
 <INDENT>.|\n { yyless(0); BEGIN(INITIAL); }
 
-\n { std::cout << std::endl; BEGIN(INDENT); }
-. { std::cout << "'" << yytext << "'"; }
+\n { BEGIN(INDENT); return T_NEWLINE; }
+. { return T_OTHER; }
 
 %%
-
-int main(){
-  yylex();
-  return 0;
-}
