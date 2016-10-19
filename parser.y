@@ -1,6 +1,6 @@
 %{
   #include <iostream>
-  
+
   extern int yylex();
 
   void yyerror(const char *s);
@@ -8,7 +8,12 @@
 
 %define parse.error verbose
 
-%token T_INDENT T_OTHER T_NEWLINE
+%union {
+  const char *str;
+}
+
+%token T_INDENT T_NEWLINE
+%token <str> T_OTHER
 
 %%
 
@@ -16,9 +21,9 @@ program : program symbol
         | %empty
         ;
 
-symbol : T_INDENT { std::cout << "INDENT "; }
+symbol : T_OTHER { std::cout << $1; }
+       | T_INDENT { std::cout << "< >"; }
        | T_NEWLINE { std::cout << std::endl; }
-       | T_OTHER { std::cout << "OTHER "; }
        ;
 
 %%
