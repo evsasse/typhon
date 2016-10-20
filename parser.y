@@ -12,19 +12,32 @@
   const char *str;
 }
 
-%token T_INDENT T_NEWLINE
-%token <str> T_OTHER
+%token T_INDENT T_NEWLINE T_STATEMENT
 
 %%
 
-program : program symbol
-        | %empty
+program : program T_NEWLINE { std::cout << std::endl; } line
+        | line
         ;
 
-symbol : T_OTHER { std::cout << $1; }
-       | T_INDENT { std::cout << "< >"; }
-       | T_NEWLINE { std::cout << std::endl; }
+line : indent /* empty line */
+     | indent statements opt-semicolon /* could have multiple statements per line divided by semicolons */
+     ;
+
+indent : indent T_INDENT { std::cout << "< >"; }
+       | %empty
        ;
+
+statements : statements ';' { std::cout << ";"; } statement
+           | statement
+           ;
+
+statement : T_STATEMENT { std::cout << "stt"; }
+          ;
+
+opt-semicolon : ';' { std::cout << ";"; }
+              | %empty
+              ;
 
 %%
 

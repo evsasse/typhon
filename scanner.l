@@ -29,6 +29,13 @@
 \n { BEGIN(INDENT); return T_NEWLINE; }
 # { BEGIN(COMMENT); }
 ###+ { BEGIN(MLCOMMENT); }
-. { yylval.str = strdup(yytext); return T_OTHER; }
+
+[ \t] { /* ignore spaces and tabs */}
+
+[;] { return yytext[0]; }
+
+stt { return T_STATEMENT; }
+
+. { std::cerr << "err[" << yytext << "]"; }
 
 %%
