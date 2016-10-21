@@ -32,12 +32,38 @@ statements : statements ';' { std::cout << ";"; } statement
            | statement
            ;
 
-statement : T_STATEMENT { std::cout << "stt"; }
+statement : expression
           ;
 
 opt-semicolon : ';' { std::cout << ";"; }
               | %empty
               ;
+
+expression : value
+           | '(' { std::cout << "("; } expression ')' { std::cout << ")"; }
+           /* arithmetic */
+           | expression '+' { std::cout << "+"; } expression
+           | expression '-' { std::cout << "-"; } expression
+           | expression '*' { std::cout << "*"; } expression
+           | expression '/' { std::cout << "/"; }expression
+           /*
+           | expression '%' expression
+           | expression '*' '*' expression
+           | expression '/' '/' expression
+           */
+           /* comparison
+           | expression '=' '=' expression
+           | expression '!' '=' expression
+           | expression '<' '>' expression
+           | expression '>' expression
+           | expression '<' expression
+           | expression '>' '=' expression
+           | expression '<' '=' expression
+           */
+           ;
+
+value : T_STATEMENT { std::cout << "stt"; }
+      ;
 
 %%
 

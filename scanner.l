@@ -20,10 +20,10 @@
 <INDENT>[ \t] { return T_INDENT; }
 <INDENT>.|\n { yyless(0); BEGIN(INITIAL); }
 
-<COMMENT>. { }
+<COMMENT>. { /* ignores every char until a new line */ }
 <COMMENT>\n { yyless(0); BEGIN(INITIAL); }
 
-<MLCOMMENT>.|\n { }
+<MLCOMMENT>.|\n { /* ignores every char until ###+ */ }
 <MLCOMMENT>###+ { BEGIN(INITIAL); }
 
 \n { BEGIN(INDENT); return T_NEWLINE; }
@@ -32,7 +32,7 @@
 
 [ \t] { /* ignore spaces and tabs */}
 
-[;] { return yytext[0]; }
+[;\+\-\*\/] { return yytext[0]; }
 
 stt { return T_STATEMENT; }
 
