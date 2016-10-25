@@ -13,7 +13,10 @@
 %define parse.error verbose
 
 %union {
-  const char *str;
+  const char *val_str;
+  int val_int;
+  float val_float;
+  bool val_bool;
 
   Statement *stt;
   Expression *expr;
@@ -21,49 +24,58 @@
 }
 
 %left '+' '-'
-%left '*' '/'
+%left '*' '/' O_FDV
+%left O_EXP
+
+%token <int> L_INT
+%token <float> L_FLOAT
+%token <bool> L_BOOL
+%token <str> T_NAME
 
 %token T_INDENT T_NEWLINE T_STATEMENT
 
 %type <stt> statement statements
+%type <expr> expression
+%type <value> value
 
 %%
 
-program : program T_NEWLINE { std::cout << std::endl; } line
+program : program T_NEWLINE line
         | line
         ;
 
 line : indent /* empty line */
-     | indent statements opt-semicolon {  }
+     | indent statements opt-semicolon { program.push_back($2); }
      ;
 
-indent : indent T_INDENT { std::cout << "< >"; }
+indent : indent T_INDENT
        | %empty
        ;
 
-statements : statements ';' { std::cout << ";"; } statement { $$ = $1 }
+statements : statements ';' statement { $$ = $1; }
            | statement
            ;
 
-statement : expression
+statement : expression { $$ = $1; }
           ;
 
-opt-semicolon : ';' { std::cout << ";"; }
+opt-semicolon : ';'
               | %empty
               ;
 
-expression : value
-           | '(' expression ')'
-           | expression binary-op expression { $$ = new BinaryOp($1, $2, $3); }
+expression : value { $$ = $1; }
+           | '(' expression ')' { $$ = $2; }
+           | expression '+' expression { $$ = new BinaryOp(*$1, Op::ADD, *$3); }
+           | expression '-' expression { $$ = new BinaryOp(*$1, Op::SUB, *$3); }
+           | expression '*' expression { $$ = new BinaryOp(*$1, Op::MUL, *$3); }
+           | expression '/' expression { $$ = new BinaryOp(*$1, Op::DIV, *$3); }
+           | expression O_EXP expression { $$ = new BinaryOp(*$1, Op::EXP, *$3); }
+           | expression O_FDV expression { $$ = new BinaryOp(*$1, Op::FDV, *$3); }
            ;
 
-binary-op : '+' { $$ = Op::ADD; }
-          | '-' { $$ = Op::SUB; }
-          | '*' { $$ = Op::MUL; }
-          | '/' { $$ = Op::DIV; }
-          ;
-
-value : T_STATEMENT { $$ = new Value(); }
+value : L_INT { $$ = new LitInt(); }
+      | L_FLOAT { $$ = new LitFloat(); }
+      | L_BOOL { $$ = new LitBool(); }
       ;
 
 %%

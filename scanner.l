@@ -1,12 +1,18 @@
 %{
   #include <iostream>
 
+  #include "ast.h"
   #include "parser.h"
 
   static bool first_run = true;
 %}
 
 %option noyywrap
+
+integer [0-9]+
+float ([0-9]+\.[0-9]*)|([0-9]*\.[0-9]+)
+bool "True"|"False"
+name [a-zA-Z_][a-zA-Z0-9_]*
 
 %x INDENT
 %x COMMENT MLCOMMENT
@@ -32,10 +38,15 @@
 
 [ \t] { /* ignore spaces and tabs */}
 
-[;\+\-\*\/] { return yytext[0]; }
+[;\+\-\*\/\(\)] { return yytext[0]; }
+"**" { return O_EXP; }
+"//" { return O_FDV; }
 
-stt { return T_STATEMENT; }
+{integer} { yylval.val_int = std::atoi(yytext); return L_INT; }
+{float} { yylval.val_str = strdup(yytext); return L_FLOAT; }
+{bool} { yylval.val_bool = strcmp("True",yytext) == 0; return L_BOOL; }
+{name} { yylval.val_str = strdup(yytext); return T_NAME; }
 
-. { std::cerr << "err[" << yytext << "]"; }
+. { std::cerr << "lex-err['" << yytext << "']" << std::endl; }
 
 %%

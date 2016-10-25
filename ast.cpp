@@ -10,22 +10,31 @@ std::string opSymbol(Op op){
     case MOD: return "%";
     case EXP: return "**";
     case FDV: return "//";
+    default: return "?";
   }
 }
 
 void Block::print(){
   for(auto stt : *this){
-    stt.print();
+    stt->print();
     std::cout << std::endl;
   }
 }
 
 void BinaryOp::print(){
+  std::cout << "(";
   left.print();
   std::cout << opSymbol(op);
   right.print();
+  std::cout << ")";
 }
 
-void Value::print(){
-  std::cout << "value";
+void LitInt::print(){
+  std::cout << "int";
+}
+void LitFloat::print(){
+  std::cout << "float";
+}
+void LitBool::print(){
+  std::cout << "bool";
 }

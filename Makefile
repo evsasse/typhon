@@ -8,4 +8,4 @@ parser.h: parser.y
 	bison -v --defines=parser.h -o parser.cpp parser.y
 
 clean:
-	rm parser.cpp parser.h scanner.cpp typhon
+	rm parser.cpp parser.h parser.output scanner.cpp typhon
