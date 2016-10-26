@@ -34,16 +34,24 @@ class BinaryOp : public Expression {
 public:
   void print();
   BinaryOp(Expression& left, Op op, Expression& right) :
-  left(left), right(right), op(op) {};
+  left(left), op(op), right(right) {};
 private:
   Expression& left;
   Expression& right;
   Op op;
 };
 
-class Value : public Expression {
+class UnaryOp : public Expression {
 public:
-  virtual void print() = 0;
+  void print();
+  UnaryOp(Op op, Expression& right) :
+  op(op), right(right) {};
+private:
+  Expression& right;
+  Op op;
+};
+
+class Value : public Expression {
 };
 
 class LitInt: public Value {

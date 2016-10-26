@@ -29,6 +29,7 @@
 
 %left '+' '-'
 %left '*' '/' O_FDV
+%left O_UNARY
 %left O_EXP
 
 %token <val_int> L_INT
@@ -71,6 +72,8 @@ opt-semicolon : ';'
 
 expression : value { $$ = $1; }
            | '(' expression ')' { $$ = $2; }
+           | '+' expression %prec O_UNARY { $$ = new UnaryOp(Op::ADD, *$2); }
+           | '-' expression %prec O_UNARY { $$ = new UnaryOp(Op::SUB, *$2); }
            | expression '+' expression { $$ = new BinaryOp(*$1, Op::ADD, *$3); }
            | expression '-' expression { $$ = new BinaryOp(*$1, Op::SUB, *$3); }
            | expression '*' expression { $$ = new BinaryOp(*$1, Op::MUL, *$3); }

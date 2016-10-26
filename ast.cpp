@@ -41,6 +41,14 @@ void BinaryOp::print(){
   std::cout << ")";
 }
 
+void UnaryOp::print(){
+  Statement::print();
+  std::cout << "(";
+  std::cout << opSymbol(op);
+  right.print();
+  std::cout << ")";
+}
+
 void LitInt::print(){
   std::cout << "int";
 }
