@@ -11,8 +11,15 @@ enum Op { ADD, SUB, MUL, DIV,
 std::string opSymbol(Op op);
 
 class Statement {
+private:
+  int indent;
 public:
-  virtual void print() = 0;
+  virtual void print();
+  void setIndent(int i);
+  int getIndent();
+protected:
+  Statement(int indent = -1) :
+  indent(indent) {};
 };
 
 class Block : public std::list<Statement*> {
@@ -21,8 +28,6 @@ public:
 };
 
 class Expression : public Statement {
-public:
-  virtual void print() = 0;
 };
 
 class BinaryOp : public Expression {

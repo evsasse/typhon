@@ -8,6 +8,10 @@
   void yyerror(const char *s);
 
   Block program;
+  int cur_indent = 666; // Current line number of indents
+  //int exp_indent = 0; // Current block number of indents
+  //int cur_level = 0; // Current block level
+  //bool new_level = 0; // Is an increase in indentation expected
 %}
 
 %define parse.error verbose
@@ -27,16 +31,18 @@
 %left '*' '/' O_FDV
 %left O_EXP
 
-%token <int> L_INT
-%token <float> L_FLOAT
-%token <bool> L_BOOL
-%token <str> T_NAME
+%token <val_int> L_INT
+%token <val_float> L_FLOAT
+%token <val_bool> L_BOOL
+%token <val_str> T_NAME
 
 %token T_INDENT T_NEWLINE T_STATEMENT
 
-%type <stt> statement statements
+%type <val_int> indent
+%type <stt> statement
 %type <expr> expression
 %type <value> value
+
 
 %%
 
@@ -45,15 +51,15 @@ program : program T_NEWLINE line
         ;
 
 line : indent /* empty line */
-     | indent statements opt-semicolon { program.push_back($2); }
+     | indent { cur_indent = $1; } statements opt-semicolon
      ;
 
-indent : indent T_INDENT
-       | %empty
+indent : indent T_INDENT { $$ = $1 + 1; }
+       | %empty { $$ = 0; }
        ;
 
-statements : statements ';' statement { $$ = $1; }
-           | statement
+statements : statements ';' statement { program.push_back($3); $3->setIndent(cur_indent); }
+           | statement { program.push_back($1); $1->setIndent(cur_indent); }
            ;
 
 statement : expression { $$ = $1; }

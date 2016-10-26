@@ -14,6 +14,17 @@ std::string opSymbol(Op op){
   }
 }
 
+void Statement::setIndent(int i){
+  indent = i;
+}
+int Statement::getIndent(){
+  return indent;
+}
+void Statement::print(){
+  if(indent >= 0)
+    std::cout << "[" << indent << "]";
+}
+
 void Block::print(){
   for(auto stt : *this){
     stt->print();
@@ -22,6 +33,7 @@ void Block::print(){
 }
 
 void BinaryOp::print(){
+  Statement::print();
   std::cout << "(";
   left.print();
   std::cout << opSymbol(op);
