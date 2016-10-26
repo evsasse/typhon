@@ -30,6 +30,25 @@ public:
 class Expression : public Statement {
 };
 
+class Name : public Expression {
+public:
+  void print();
+  Name(std::string name) :
+  name(name) {};
+private:
+  std::string name;
+};
+
+class Assignment : public Statement {
+public:
+  void print();
+  Assignment(Name& target, Expression& right) :
+  target(target), right(right) {};
+private:
+  Name& target; //TODO: make more generic,; a = 1; a[1] = 2; (a,b) = (1,2);
+  Expression& right;
+};
+
 class BinaryOp : public Expression {
 public:
   void print();
@@ -54,17 +73,31 @@ private:
 class Value : public Expression {
 };
 
+//TODO: ? change into one number with arbitrary precision, using gmp lib
+
 class LitInt: public Value {
 public:
   void print();
+  LitInt(int value) :
+  value(value) {};
+private:
+  int value;
 };
 
 class LitFloat: public Value {
 public:
   void print();
+  LitFloat(float value) :
+  value(value) {};
+private:
+  float value;
 };
 
 class LitBool: public Value {
 public:
   void print();
+  LitBool(bool value) :
+  value(value) {};
+private:
+  bool value;
 };

@@ -32,6 +32,17 @@ void Block::print(){
   }
 }
 
+void Name::print(){
+  std::cout << name;
+}
+
+void Assignment::print(){
+  Statement::print();
+  target.print();
+  std::cout << "=";
+  right.print();
+}
+
 void BinaryOp::print(){
   Statement::print();
   std::cout << "(";
@@ -50,11 +61,14 @@ void UnaryOp::print(){
 }
 
 void LitInt::print(){
-  std::cout << "int";
+  std::cout << value;
 }
 void LitFloat::print(){
-  std::cout << "float";
+  std::cout << value;
 }
 void LitBool::print(){
-  std::cout << "bool";
+  if(value)
+    std::cout << "True";
+  else
+    std::cout << "False";
 }

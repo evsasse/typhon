@@ -24,7 +24,9 @@
 
   Statement *stt;
   Expression *expr;
+  Assignment *assign;
   Value *value;
+  Name *name;
 }
 
 %left '+' '-'
@@ -41,8 +43,10 @@
 
 %type <val_int> indent
 %type <stt> statement
-%type <expr> expression
 %type <value> value
+%type <name> name
+%type <expr> expression
+%type <assign> assignment
 
 
 %%
@@ -64,16 +68,28 @@ statements : statements ';' statement { program.push_back($3); $3->setIndent(cur
            ;
 
 statement : expression { $$ = $1; }
+          | assignment { $$ = $1; }
           ;
 
 opt-semicolon : ';'
               | %empty
               ;
 
+value : L_INT { $$ = new LitInt($1); }
+      | L_FLOAT { $$ = new LitFloat($1); }
+      | L_BOOL { $$ = new LitBool($1); }
+      ;
+
+name : T_NAME { $$ = new Name($1); }
+     ;
+
 expression : value { $$ = $1; }
+           | name { $$ = $1; }
            | '(' expression ')' { $$ = $2; }
            | '+' expression %prec O_UNARY { $$ = new UnaryOp(Op::ADD, *$2); }
            | '-' expression %prec O_UNARY { $$ = new UnaryOp(Op::SUB, *$2); }
+        /* | expression '[' expression-list ']' new subscription */
+        /* | expression '(' expression-list ')' new call */
            | expression '+' expression { $$ = new BinaryOp(*$1, Op::ADD, *$3); }
            | expression '-' expression { $$ = new BinaryOp(*$1, Op::SUB, *$3); }
            | expression '*' expression { $$ = new BinaryOp(*$1, Op::MUL, *$3); }
@@ -82,10 +98,8 @@ expression : value { $$ = $1; }
            | expression O_FDV expression { $$ = new BinaryOp(*$1, Op::FDV, *$3); }
            ;
 
-value : L_INT { $$ = new LitInt(); }
-      | L_FLOAT { $$ = new LitFloat(); }
-      | L_BOOL { $$ = new LitBool(); }
-      ;
+assignment : name '=' expression { $$ = new Assignment(*$1,*$3); }
+           ;
 
 %%
 
