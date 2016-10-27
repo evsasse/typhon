@@ -7,7 +7,7 @@
 
   void yyerror(const char *s);
 
-  Block program;
+  MainBlock program;
   int cur_indent = 666; // Current line number of indents
   //int exp_indent = 0; // Current block number of indents
   //int cur_level = 0; // Current block level
@@ -34,12 +34,14 @@
 %left O_UNARY
 %left O_EXP
 
+%token A_SUM
+
 %token <val_int> L_INT
 %token <val_float> L_FLOAT
 %token <val_bool> L_BOOL
 %token <val_str> T_NAME
 
-%token T_INDENT T_NEWLINE T_STATEMENT
+%token T_INDENT T_NEWLINE
 
 %type <val_int> indent
 %type <stt> statement
@@ -63,8 +65,8 @@ indent : indent T_INDENT { $$ = $1 + 1; }
        | %empty { $$ = 0; }
        ;
 
-statements : statements ';' statement { program.push_back($3); $3->setIndent(cur_indent); }
-           | statement { program.push_back($1); $1->setIndent(cur_indent); }
+statements : statements ';' statement { $3->setIndent(cur_indent); program.push($3); }
+           | statement { $1->setIndent(cur_indent); program.push($1); }
            ;
 
 statement : expression { $$ = $1; }
@@ -98,7 +100,8 @@ expression : value { $$ = $1; }
            | expression O_FDV expression { $$ = new BinaryOp(*$1, Op::FDV, *$3); }
            ;
 
-assignment : name '=' expression { $$ = new Assignment(*$1,*$3); }
+assignment : name '=' expression { $$ = new Assignment(*$1, *$3); }
+           | name A_SUM expression { $$ = new Assignment(*$1, *(new BinaryOp(*$1, Op::ADD, *$3))); }
            ;
 
 %%
