@@ -1,8 +1,19 @@
 #pragma once
 
 #include <string>
+#include <map>
 
-class Object {
+class Object;
+
+class Namespace {
+public:
+  void newName(std::string name, Object& obj);
+  Object& useName(std::string name);
+private:
+  std::map<std::string,Object*> space;
+};
+
+class Object : public Namespace {
 public:
   Object(std::string identifier = "anonymous") :
   identifier(identifier) {};
