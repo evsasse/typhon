@@ -24,15 +24,15 @@ std::string Class::getIdentifier(){
 
 IntObject::IntObject (int value) :
 Object("int"), value(value) {
-  newName("__add__", *(new BuiltInFunction(
-    [](const Object& right)-> Object& {
-      IntObject* int_right = dynamic_cast<IntObject*>(const_cast<Object*>(&right));
-      if(int_right){
-        return *(new IntObject(666 + int_right->value));
-      }else{
-        return *(new Object());
-      }
-    })
+  std::function<Object& (const Object& right)> __add__ = [this](const Object& right)-> Object& {
+    IntObject* int_right = dynamic_cast<IntObject*>(const_cast<Object*>(&right));
+    if(int_right){
+      return *(new IntObject(this->value + int_right->value));
+    }else{
+      return *(new Object());
+    }
+  };
+  newName("__add__", *(new BuiltInFunction(__add__)
   ));
 }
 

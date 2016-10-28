@@ -2,6 +2,7 @@
 
 #include <string>
 #include <map>
+#include <functional>
 
 class Object;
 
@@ -58,9 +59,9 @@ public:
 
 class BuiltInFunction : public Object {
 public:
-  BuiltInFunction(Object& (*function)(const Object&)) :
+  BuiltInFunction(std::function<Object& (const Object& right)> function) :
   Object("builtin function"), function(function) {};
   Object& call(const Object& obj);
 private:
-  Object& (*function)(const Object&);
+  std::function<Object& (const Object& right)> function;
 };
