@@ -18,7 +18,7 @@ Object& Name::exec(){
 Object& BinaryOp::exec(){
   Object& left = this->left.exec();
   Object& right = this->right.exec();
-  return left;
+  return left.useName("__add__").call(right);
 }
 
 Object& UnaryOp::exec(){

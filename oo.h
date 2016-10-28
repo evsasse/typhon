@@ -15,10 +15,11 @@ private:
 
 class Object : public Namespace {
 public:
+  bool builtInFunction;
   Object(std::string identifier = "anonymous") :
-  identifier(identifier) {};
+  identifier(identifier), builtInFunction(0) {};
   virtual std::string getIdentifier();
-  //virtual Object call(/* varargs? Object? */);
+  virtual Object& call(const Object& obj);
 protected:
   std::string identifier;
 };
@@ -51,6 +52,15 @@ public:
 class IntObject : public Object {
 public:
   int value;
-  IntObject(int value) :
-  Object("int"), value(value) {};
+  IntObject(int value);
+  std::string getIdentifier();
+};
+
+class BuiltInFunction : public Object {
+public:
+  BuiltInFunction(Object& (*function)(const Object&)) :
+  Object("builtin function"), function(function) {};
+  Object& call(const Object& obj);
+private:
+  Object& (*function)(const Object&);
 };
