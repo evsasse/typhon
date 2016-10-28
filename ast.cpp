@@ -27,5 +27,5 @@ void MainBlock::push(Statement *stt){
   stt->print();
   std::cout << std::endl;
   stt->interpret();
-  std::cout << std::endl;
+  std::cout << std::endl << std::endl;
 }

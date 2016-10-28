@@ -14,6 +14,7 @@ void Block::print(){
 }
 
 void Name::print(){
+  Statement::print();
   std::cout << name;
 }
 
@@ -42,14 +43,17 @@ void UnaryOp::print(){
 }
 
 void LitInt::print(){
+  Statement::print();
   std::cout << value;
 }
 
 void LitFloat::print(){
+  Statement::print();
   std::cout << value;
 }
 
 void LitBool::print(){
+  Statement::print();
   if(value)
     std::cout << "True";
   else

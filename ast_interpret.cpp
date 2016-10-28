@@ -1,42 +1,38 @@
 #include <iostream>
 #include "ast.h"
 
-void Name::interpret(){
-  std::cout << name;
+void Expression::interpret(){
+  std::cout << exec().getIdentifier();
 }
 
 void Assignment::interpret(){
-  target.interpret();
+  target.print();
   std::cout << "=";
   right.interpret();
 }
 
-void BinaryOp::interpret(){
-  std::cout << "(";
-  left.interpret();
-  std::cout << opSymbol(op);
-  right.interpret();
-  std::cout << ")";
+Object& Name::exec(){
+  return *(new Object());
 }
 
-void UnaryOp::interpret(){
-  std::cout << "(";
-  std::cout << opSymbol(op);
-  right.interpret();
-  std::cout << ")";
+Object& BinaryOp::exec(){
+  Object& left = this->left.exec();
+  Object& right = this->right.exec();
+  return left.useName("__add__").call(right);
 }
 
-void LitInt::interpret(){
-  std::cout << value;
+Object& UnaryOp::exec(){
+  return *(new Object());
 }
 
-void LitFloat::interpret(){
-  std::cout << value;
+Object& LitInt::exec(){
+  return *(new IntObject(value));
 }
 
-void LitBool::interpret(){
-  if(value)
-    std::cout << "True";
-  else
-    std::cout << "False";
+Object& LitFloat::exec(){
+  return *(new Object());
+}
+
+Object& LitBool::exec(){
+  return *(new Object());
 }

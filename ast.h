@@ -2,6 +2,7 @@
 
 #include <list>
 #include <string>
+#include "oo.h"
 
 /* Addition, Subtraction, Multiplication, Division,
    Modulus, Exponent, Floor Division */
@@ -34,12 +35,15 @@ public:
 };
 
 class Expression : public Statement {
+public:
+  void interpret();
+  virtual Object& exec() = 0;
 };
 
 class Name : public Expression {
 public:
   void print();
-  void interpret();
+  Object& exec();
   Name(std::string name) :
   name(name) {};
 private:
@@ -60,7 +64,7 @@ private:
 class BinaryOp : public Expression {
 public:
   void print();
-  void interpret();
+  Object& exec();
   BinaryOp(Expression& left, Op op, Expression& right) :
   left(left), op(op), right(right) {};
 private:
@@ -72,7 +76,7 @@ private:
 class UnaryOp : public Expression {
 public:
   void print();
-  void interpret();
+  Object& exec();
   UnaryOp(Op op, Expression& right) :
   op(op), right(right) {};
 private:
@@ -88,7 +92,7 @@ class Value : public Expression {
 class LitInt: public Value {
 public:
   void print();
-  void interpret();
+  Object& exec();
   LitInt(int value) :
   value(value) {};
 private:
@@ -98,7 +102,7 @@ private:
 class LitFloat: public Value {
 public:
   void print();
-  void interpret();
+  Object& exec();
   LitFloat(float value) :
   value(value) {};
 private:
@@ -108,7 +112,7 @@ private:
 class LitBool: public Value {
 public:
   void print();
-  void interpret();
+  Object& exec();
   LitBool(bool value) :
   value(value) {};
 private:
