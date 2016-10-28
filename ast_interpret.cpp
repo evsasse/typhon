@@ -2,33 +2,37 @@
 #include "ast.h"
 
 void Expression::interpret(){
-  std::cout << exec().identifier;
+  std::cout << exec().getIdentifier();
 }
 
 void Assignment::interpret(){
-  std::cout << "an assignment";
+  target.print();
+  std::cout << "=";
+  right.interpret();
 }
 
-Object Name::exec(){
-  return Object();
+Object& Name::exec(){
+  return *(new Object());
 }
 
-Object BinaryOp::exec(){
-  return Object();
+Object& BinaryOp::exec(){
+  Object& left = this->left.exec();
+  Object& right = this->right.exec();
+  return left;
 }
 
-Object UnaryOp::exec(){
-  return Object();
+Object& UnaryOp::exec(){
+  return *(new Object());
 }
 
-Object LitInt::exec(){
-  return Object();
+Object& LitInt::exec(){
+  return *(new IntObject(value));
 }
 
-Object LitFloat::exec(){
-  return Object();
+Object& LitFloat::exec(){
+  return *(new Object());
 }
 
-Object LitBool::exec(){
-  return Object();
+Object& LitBool::exec(){
+  return *(new Object());
 }
