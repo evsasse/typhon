@@ -7,7 +7,7 @@
 
   void yyerror(const char *s);
 
-  MainBlock program;
+  Block* cur_block = new MainBlock();
   int cur_indent = 666; // Current line number of indents
   //int exp_indent = 0; // Current block number of indents
   //int cur_level = 0; // Current block level
@@ -22,9 +22,11 @@
   float val_float;
   bool val_bool;
 
+  Block *block;
   Statement *stt;
   Expression *expr;
   Assignment *assign;
+  FunctionDef *funcd;
   Value *value;
   Name *name;
 }
@@ -41,21 +43,31 @@
 %token <val_bool> L_BOOL
 %token <val_str> T_NAME
 
-%token T_INDENT T_NEWLINE
+%token T_INDENT T_NEWLINE T_DEF
 
+%type <block> scoped-block body inline-body
 %type <val_int> indent
 %type <stt> statement
 %type <value> value
 %type <name> name
 %type <expr> expression
 %type <assign> assignment
+%type <funcd> function
 
 
 %%
 
-program : program T_NEWLINE line
-        | line
+program : block
         ;
+
+scoped-block : { cur_block = new Block(cur_block); }
+               block
+               { $$ = cur_block; cur_block = cur_block->getParent(); }
+             ;
+
+block : block T_NEWLINE line
+      | line
+      ;
 
 line : indent /* empty line */
      | indent { cur_indent = $1; } statements opt-semicolon
@@ -65,12 +77,14 @@ indent : indent T_INDENT { $$ = $1 + 1; }
        | %empty { $$ = 0; }
        ;
 
-statements : statements ';' statement { $3->setIndent(cur_indent); program.push($3); }
-           | statement { $1->setIndent(cur_indent); program.push($1); }
+statements : statements ';' statement
+             { $3->setIndent(cur_indent); cur_block->push($3); }
+           | statement { $1->setIndent(cur_indent); cur_block->push($1); }
            ;
 
 statement : expression { $$ = $1; }
           | assignment { $$ = $1; }
+          | function { $$ = $1; }
           ;
 
 opt-semicolon : ';'
@@ -100,9 +114,22 @@ expression : value { $$ = $1; }
            | expression O_FDV expression { $$ = new BinaryOp(*$1, Op::FDV, *$3); }
            ;
 
-assignment : name '=' expression { $$ = new Assignment(*$1, *$3); }
-           | name A_SUM expression { $$ = new Assignment(*$1, *(new BinaryOp(*$1, Op::ADD, *$3))); }
+assignment : name '=' expression
+             { $$ = new Assignment(*$1, *$3); }
+           | name A_SUM expression
+             { $$ = new Assignment(*$1, *(new BinaryOp(*$1, Op::ADD, *$3))); }
            ;
+
+function : T_DEF T_NAME '(' ')' ':' body { $$ = new FunctionDef($2, *$6); }
+         ;
+
+body : inline-body { $$ = $1; }
+     | T_NEWLINE scoped-block { $$ = $2; }
+
+inline-body : { cur_block = new Block(cur_block); }
+              statements opt-semicolon
+              { $$ = cur_block; cur_block = cur_block->getParent(); }
+            ;
 
 %%
 

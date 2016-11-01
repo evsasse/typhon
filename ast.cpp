@@ -22,10 +22,19 @@ int Statement::getIndent(){
   return indent;
 }
 
+Block* Block::getParent(){
+  return parent;
+}
+
+void Block::push(Statement *stt){
+  push_back(stt);
+  stt->print();
+}
+
 void MainBlock::push(Statement *stt){
   push_back(stt);
   stt->print();
   std::cout << std::endl;
-  stt->interpret();
+  //stt->interpret();
   std::cout << std::endl << std::endl;
 }

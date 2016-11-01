@@ -11,6 +11,10 @@ void Assignment::interpret(){
   right.interpret();
 }
 
+void FunctionDef::interpret(){
+  std::cout << "<function def '"+name+"'>";
+}
+
 Object& Name::exec(){
   return *(new Object());
 }

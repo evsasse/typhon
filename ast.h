@@ -26,11 +26,19 @@ protected:
 
 class Block : public std::list<Statement*> {
 public:
+  Block(Block* parent) :
+  parent(parent) {};
   void print();
+  Block* getParent();
+  virtual void push(Statement *stt);
+private:
+  Block* parent;
 };
 
 class MainBlock : public Block {
 public:
+  MainBlock() :
+  Block(nullptr) {};
   void push(Statement *stt);
 };
 
@@ -59,6 +67,17 @@ public:
 private:
   Name& target; //TODO: make more generic,; a = 1; a[1] = 2; (a,b) = (1,2);
   Expression& right;
+};
+
+class FunctionDef : public Statement {
+public:
+  void print();
+  void interpret();
+  FunctionDef(std::string name, Block& body) :
+  name(name), body(body) {};
+private:
+  std::string name;
+  Block& body;
 };
 
 class BinaryOp : public Expression {

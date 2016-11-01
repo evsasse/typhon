@@ -32,8 +32,7 @@ Object("int"), value(value) {
       return *(new Object());
     }
   };
-  newName("__add__", *(new BuiltInFunction(__add__)
-  ));
+  newName("__add__", *(new BuiltInFunction(__add__)));
 }
 
 std::string IntObject::getIdentifier(){
