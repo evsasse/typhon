@@ -7,7 +7,7 @@
 
   void yyerror(const char *s);
 
-  Block* cur_block = new MainBlock();
+  Program program;
   int cur_indent = 666; // Current line number of indents
   //int exp_indent = 0; // Current block number of indents
   //int cur_level = 0; // Current block level
@@ -45,25 +45,18 @@
 
 %token T_INDENT T_NEWLINE T_DEF
 
-%type <block> scoped-block body inline-body
 %type <val_int> indent
-%type <stt> statement
+%type <stt> statement simple-statement
 %type <value> value
 %type <name> name
 %type <expr> expression
 %type <assign> assignment
 %type <funcd> function
 
-
 %%
 
 program : block
         ;
-
-scoped-block : { cur_block = new Block(cur_block); }
-               block
-               { $$ = cur_block; cur_block = cur_block->getParent(); }
-             ;
 
 block : block T_NEWLINE line
       | line
@@ -77,15 +70,18 @@ indent : indent T_INDENT { $$ = $1 + 1; }
        | %empty { $$ = 0; }
        ;
 
-statements : statements ';' statement
-             { $3->setIndent(cur_indent); cur_block->push($3); }
-           | statement { $1->setIndent(cur_indent); cur_block->push($1); }
+statements : statement { $1->setIndent(cur_indent); program.push($1); }
+        /* | error { yyerrok; } */
            ;
 
-statement : expression { $$ = $1; }
-          | assignment { $$ = $1; }
+statement : simple-statement { $$ = $1; }
           | function { $$ = $1; }
           ;
+
+simple-statement: /* one that does not contain blocks and new lines */
+                  expression { $$ = $1; }
+                | assignment { $$ = $1; }
+                ;
 
 opt-semicolon : ';'
               | %empty
@@ -120,16 +116,8 @@ assignment : name '=' expression
              { $$ = new Assignment(*$1, *(new BinaryOp(*$1, Op::ADD, *$3))); }
            ;
 
-function : T_DEF T_NAME '(' ')' ':' body { $$ = new FunctionDef($2, *$6); }
+function : T_DEF T_NAME '(' ')' ':' { $$ = new FunctionDef($2); }
          ;
-
-body : inline-body { $$ = $1; }
-     | T_NEWLINE scoped-block { $$ = $2; }
-
-inline-body : { cur_block = new Block(cur_block); }
-              statements opt-semicolon
-              { $$ = cur_block; cur_block = cur_block->getParent(); }
-            ;
 
 %%
 

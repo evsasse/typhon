@@ -27,8 +27,7 @@ void Assignment::print(){
 
 void FunctionDef::print(){
   Statement::print();
-  std::cout << name;
-  body.print();
+  std::cout << "function " << name;
 }
 
 void BinaryOp::print(){

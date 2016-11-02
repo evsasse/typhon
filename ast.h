@@ -19,6 +19,7 @@ public:
   virtual void interpret() = 0;
   void setIndent(int i);
   int getIndent();
+  bool seeIndent();
 protected:
   Statement(int indent = -1) :
   indent(indent) {};
@@ -26,20 +27,36 @@ protected:
 
 class Block : public std::list<Statement*> {
 public:
-  Block(Block* parent) :
-  parent(parent) {};
+  Block(Block* parent, int indent = -1) :
+  parent(parent), indent(indent) {};
   void print();
   Block* getParent();
+  void setParent(Block* parent);
   virtual void push(Statement *stt);
+  virtual Block* endBlock();
+  int getIndent();
+  void setIndent(int indent);
 private:
   Block* parent;
+  int indent;
 };
 
 class MainBlock : public Block {
 public:
   MainBlock() :
-  Block(nullptr) {};
+  Block(nullptr, 0) {};
   void push(Statement *stt);
+};
+
+class Program {
+public:
+  Program() :
+  expect_indent(0), cur_block(new MainBlock()) {};
+  void push(Statement *stt);
+private:
+  bool expect_indent;
+  Block* cur_block;
+  int lastIndent();
 };
 
 class Expression : public Statement {
@@ -69,15 +86,14 @@ private:
   Expression& right;
 };
 
-class FunctionDef : public Statement {
+class FunctionDef : public Statement, public Block {
 public:
   void print();
   void interpret();
-  FunctionDef(std::string name, Block& body) :
-  name(name), body(body) {};
+  FunctionDef(std::string name) :
+  Block(nullptr), name(name) {};
 private:
   std::string name;
-  Block& body;
 };
 
 class BinaryOp : public Expression {

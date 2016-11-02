@@ -1,4 +1,5 @@
 #include <iostream>
+#include <stdexcept>
 #include "ast.h"
 
 void Expression::interpret(){
@@ -6,9 +7,7 @@ void Expression::interpret(){
 }
 
 void Assignment::interpret(){
-  target.print();
-  std::cout << "=";
-  right.interpret();
+  std::cout << "<assignment>";
 }
 
 void FunctionDef::interpret(){

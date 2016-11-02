@@ -5,6 +5,7 @@ extern int yyparse();
 
 int main(){
   std::cout << "Typhon 0.0.1" << std::endl;
+  std::cout << ">>> ";
   yyparse();
   return 0;
 }
