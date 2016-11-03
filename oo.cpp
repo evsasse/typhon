@@ -1,4 +1,5 @@
 #include "oo.h"
+#include "ast.h"
 #include <iostream>
 
 void Namespace::newName(std::string name, Object& obj){
@@ -40,6 +41,15 @@ Object("int"), value(value) {
 
 std::string IntObject::getIdentifier(){
   return "<"+std::to_string(value)+">";
+}
+
+Function::Function(Name &name, Block &body) :
+Object("function"+name.name), body(body) {
+
+};
+
+Object& Function::call(const Object& obj){
+  return *(new Object());
 }
 
 Object& BuiltInFunction::call(const Object& obj){

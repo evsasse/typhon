@@ -14,13 +14,14 @@ void Assignment::interpret(){
 }
 
 void FunctionDef::interpret(){
+  context->newName(name.name,*(new Function(name,*this)));
   std::cout << "<function def '";
   name.print();
   std::cout << "'>";
 }
 
 Object& CallOp::exec(){
-  return *(new Object());
+  return context->useName(name.name).call(*(new Object()));
 }
 
 Object& Name::exec(){
