@@ -27,7 +27,7 @@ void Assignment::print(){
 
 void FunctionDef::print(){
   Statement::print();
-  std::cout << "function ";
+  std::cout << "def ";
   name.print();
 }
 

@@ -24,6 +24,7 @@ int Statement::getIndent(){
 bool Statement::seeIndent(){
   return indent >= 0;
 }
+
 void Statement::setContext(Namespace *context){
   this->context = context;
 }
@@ -44,25 +45,28 @@ void UnaryOp::setContext(Namespace *context){
 Block* Block::getParent(){
   return parent;
 }
-
 void Block::setParent(Block* parent){
   this->parent = parent;
 }
 
+int Block::getIndent(){
+  return indent;
+}
+void Block::setIndent(int indent){
+  this->indent = indent;
+}
+
 void Block::push(Statement *stt){
-  std::cout << "dumb";
+  push_back(stt);
 }
 
 Block* Block::endBlock(){
   return parent;
 }
 
-int Block::getIndent(){
-  return indent;
-}
-
-void Block::setIndent(int indent){
-  this->indent = indent;
+Block* FunctionDef::endBlock(){
+  Block::print();
+  return Block::endBlock();
 }
 
 int Program::lastIndent(){
@@ -122,7 +126,6 @@ void Program::push(Statement *stt){
 }
 
 void MainBlock::push(Statement *stt){
-  newName("_bnn", *new IntObject(666));
   push_back(stt);
   stt->setContext(this);
   stt->print();

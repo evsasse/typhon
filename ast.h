@@ -95,6 +95,7 @@ public:
   void interpret();
   FunctionDef(Name& name) :
   Block(nullptr), name(name) {};
+  Block* endBlock();
 private:
   Name& name;
 };
