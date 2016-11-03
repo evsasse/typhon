@@ -31,6 +31,15 @@ void Assignment::setContext(Namespace *context){
   this->context = context;
   right.setContext(context);
 }
+void BinaryOp::setContext(Namespace *context){
+  //this->context = context;
+  left.setContext(context);
+  right.setContext(context);
+}
+void UnaryOp::setContext(Namespace *context){
+  //this->context = context;
+  right.setContext(context);
+}
 
 Block* Block::getParent(){
   return parent;

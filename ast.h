@@ -51,6 +51,7 @@ public:
 };
 
 class Program {
+  // TODO: could pack this back into the parser
 public:
   Program() :
   expect_indent(0), cur_block(new MainBlock()) {};
@@ -84,7 +85,7 @@ public:
   target(target), right(right) {};
   void setContext(Namespace *context);
 private:
-  Name& target; //TODO: make more generic,; a = 1; a[1] = 2; (a,b) = (1,2);
+  Name& target; //TODO: make more generic, a.b a.c a.b.d ...
   Expression& right;
 };
 
@@ -114,6 +115,7 @@ public:
   Object& exec();
   BinaryOp(Expression& left, Op op, Expression& right) :
   left(left), op(op), right(right) {};
+  void setContext(Namespace *context);
 private:
   Expression& left;
   Expression& right;
@@ -126,6 +128,7 @@ public:
   Object& exec();
   UnaryOp(Op op, Expression& right) :
   op(op), right(right) {};
+  void setContext(Namespace *context);
 private:
   Expression& right;
   Op op;
