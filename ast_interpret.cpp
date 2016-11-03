@@ -7,15 +7,24 @@ void Expression::interpret(){
 }
 
 void Assignment::interpret(){
-  std::cout << "<assignment>";
+  Object& expr = right.exec();
+  context->newName(target.name, expr);
+  std::cout << "<assignment> " << std::flush;
+  std::cout << target.name << " = " << context->useName(target.name).getIdentifier();
 }
 
 void FunctionDef::interpret(){
-  std::cout << "<function def '"+name+"'>";
+  std::cout << "<function def '";
+  name.print();
+  std::cout << "'>";
+}
+
+Object& CallOp::exec(){
+  return *(new Object());
 }
 
 Object& Name::exec(){
-  return *(new Object());
+  return context->useName(name);
 }
 
 Object& BinaryOp::exec(){

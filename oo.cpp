@@ -6,7 +6,10 @@ void Namespace::newName(std::string name, Object& obj){
 }
 
 Object& Namespace::useName(std::string name){
-  return *(space[name]);
+  if(space.find(name) != space.end())
+    return *(space[name]);
+  else
+    throw std::runtime_error("NameError: name '"+name+"' is not defined");
 }
 
 std::string Object::getIdentifier(){

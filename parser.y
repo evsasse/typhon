@@ -97,6 +97,7 @@ name : T_NAME { $$ = new Name($1); }
 
 expression : value { $$ = $1; }
            | name { $$ = $1; }
+           | name '(' ')' { $$ = new CallOp(*$1); }
            | '(' expression ')' { $$ = $2; }
            | '+' expression %prec O_UNARY { $$ = new UnaryOp(Op::ADD, *$2); }
            | '-' expression %prec O_UNARY { $$ = new UnaryOp(Op::SUB, *$2); }
@@ -116,7 +117,7 @@ assignment : name '=' expression
              { $$ = new Assignment(*$1, *(new BinaryOp(*$1, Op::ADD, *$3))); }
            ;
 
-function : T_DEF T_NAME '(' ')' ':' { $$ = new FunctionDef($2); }
+function : T_DEF name '(' ')' ':' { $$ = new FunctionDef(*$2); }
          ;
 
 %%

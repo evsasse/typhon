@@ -20,15 +20,17 @@ public:
   void setIndent(int i);
   int getIndent();
   bool seeIndent();
+  virtual void setContext(Namespace *context);
 protected:
   Statement(int indent = -1) :
-  indent(indent) {};
+  indent(indent), context(nullptr) {};
+  Namespace* context;
 };
 
-class Block : public std::list<Statement*> {
+class Block : public std::list<Statement*>, public Object {
 public:
-  Block(Block* parent, int indent = -1) :
-  parent(parent), indent(indent) {};
+  Block(Block* parent, int indent = -1, std::string name = "anonymous") :
+  Object(name), parent(parent), indent(indent) {};
   void print();
   Block* getParent();
   void setParent(Block* parent);
@@ -44,7 +46,7 @@ private:
 class MainBlock : public Block {
 public:
   MainBlock() :
-  Block(nullptr, 0) {};
+  Block(nullptr, 0, "__main__") {};
   void push(Statement *stt);
 };
 
@@ -71,7 +73,6 @@ public:
   Object& exec();
   Name(std::string name) :
   name(name) {};
-private:
   std::string name;
 };
 
@@ -81,6 +82,7 @@ public:
   void interpret();
   Assignment(Name& target, Expression& right) :
   target(target), right(right) {};
+  void setContext(Namespace *context);
 private:
   Name& target; //TODO: make more generic,; a = 1; a[1] = 2; (a,b) = (1,2);
   Expression& right;
@@ -90,10 +92,20 @@ class FunctionDef : public Statement, public Block {
 public:
   void print();
   void interpret();
-  FunctionDef(std::string name) :
+  FunctionDef(Name& name) :
   Block(nullptr), name(name) {};
 private:
-  std::string name;
+  Name& name;
+};
+
+class CallOp : public Expression {
+public:
+  void print();
+  Object& exec();
+  CallOp(Name& name) :
+  name(name) {};
+private:
+  Name& name;
 };
 
 class BinaryOp : public Expression {

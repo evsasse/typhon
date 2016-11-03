@@ -18,13 +18,18 @@ std::string opSymbol(Op op){
 void Statement::setIndent(int i){
   indent = i;
 }
-
 int Statement::getIndent(){
   return indent;
 }
-
 bool Statement::seeIndent(){
   return indent >= 0;
+}
+void Statement::setContext(Namespace *context){
+  this->context = context;
+}
+void Assignment::setContext(Namespace *context){
+  this->context = context;
+  right.setContext(context);
 }
 
 Block* Block::getParent(){
@@ -108,5 +113,10 @@ void Program::push(Statement *stt){
 }
 
 void MainBlock::push(Statement *stt){
+  newName("_bnn", *new IntObject(666));
+  push_back(stt);
+  stt->setContext(this);
   stt->print();
+  std::cout << std::endl;
+  stt->interpret();
 }
