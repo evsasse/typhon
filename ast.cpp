@@ -56,16 +56,13 @@ void Block::setIndent(int indent){
   this->indent = indent;
 }
 
-void Block::push(Statement *stt){
-  push_back(stt);
-}
-
 Block* Block::endBlock(){
   return parent;
 }
 
 Block* FunctionDef::endBlock(){
   Block::print();
+  std::cout << "endBlock " << name.name << std::endl;
   //TODO: add a return None statement at the end of the function
   return Block::endBlock();
 }
@@ -124,6 +121,11 @@ void Program::push(Statement *stt){
     std::cout << e.what();
   }
   std::cout << std::endl << ">>> ";
+}
+
+void Block::push(Statement *stt){
+  push_back(stt);
+  stt->setContext(this);
 }
 
 void MainBlock::push(Statement *stt){

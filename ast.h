@@ -36,6 +36,7 @@ public:
   void setParent(Block* parent);
   virtual void push(Statement *stt);
   virtual Block* endBlock();
+  Object& interpret();
   int getIndent();
   void setIndent(int indent);
 private:

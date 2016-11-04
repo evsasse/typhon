@@ -3,7 +3,7 @@
 #include "ast.h"
 
 void Expression::interpret(){
-  std::cout << exec().getIdentifier();
+  std::cout << exec().getIdentifier() << std::flush;
 }
 
 void Assignment::interpret(){
@@ -15,9 +15,9 @@ void Assignment::interpret(){
 
 void FunctionDef::interpret(){
   context->newName(name.name,*(new Function(name,*this)));
-  std::cout << "<function def '";
+  std::cout << "<function def '" << std::flush;
   name.print();
-  std::cout << "'>";
+  std::cout << "'>" << std::flush;
 }
 
 Object& CallOp::exec(){

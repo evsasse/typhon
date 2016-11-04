@@ -44,11 +44,12 @@ std::string IntObject::getIdentifier(){
 }
 
 Function::Function(Name &name, Block &body) :
-Object("function"+name.name), body(body) {
-
-};
+Object("function "+name.name), body(body) {};
 
 Object& Function::call(const Object& obj){
+  for(Statement *stt : body){
+    stt->interpret();
+  }
   return *(new Object());
 }
 
