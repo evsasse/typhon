@@ -101,6 +101,16 @@ private:
   Name& name;
 };
 
+class FunctionRet : public Statement {
+public:
+  void print();
+  void interpret();
+  FunctionRet(Expression& expr) :
+  expr(expr) {};
+private:
+  Expression& expr;
+};
+
 class CallOp : public Expression {
 public:
   void print();

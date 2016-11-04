@@ -20,6 +20,10 @@ void FunctionDef::interpret(){
   std::cout << "'>" << std::flush;
 }
 
+void FunctionRet::interpret(){
+  std::cout << "<should return " << expr.exec().getIdentifier() << ">";
+}
+
 Object& CallOp::exec(){
   return context->useName(name.name).call(*(new Object()));
 }

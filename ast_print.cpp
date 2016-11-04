@@ -31,6 +31,12 @@ void FunctionDef::print(){
   name.print();
 }
 
+void FunctionRet::print(){
+  Statement::print();
+  std::cout << "return ";
+  expr.print();
+}
+
 void CallOp::print(){
   Statement::print();
   std::cout << "(func ";
