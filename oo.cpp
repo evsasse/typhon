@@ -1,4 +1,5 @@
 #include "oo.h"
+#include "ast.h"
 #include <iostream>
 
 void Namespace::newName(std::string name, Object& obj){
@@ -6,7 +7,10 @@ void Namespace::newName(std::string name, Object& obj){
 }
 
 Object& Namespace::useName(std::string name){
-  return *(space[name]);
+  if(space.find(name) != space.end())
+    return *(space[name]);
+  else
+    throw std::runtime_error("NameError: name '"+name+"' is not defined");
 }
 
 std::string Object::getIdentifier(){
@@ -32,12 +36,21 @@ Object("int"), value(value) {
       return *(new Object());
     }
   };
-  newName("__add__", *(new BuiltInFunction(__add__)
-  ));
+  newName("__add__", *(new BuiltInFunction(__add__)));
 }
 
 std::string IntObject::getIdentifier(){
   return "<"+std::to_string(value)+">";
+}
+
+Function::Function(Name &name, Block &body) :
+Object("function "+name.name), body(body) {};
+
+Object& Function::call(const Object& obj){
+  for(Statement *stt : body){
+    stt->interpret();
+  }
+  return *(new Object());
 }
 
 Object& BuiltInFunction::call(const Object& obj){

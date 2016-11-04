@@ -57,6 +57,17 @@ public:
   std::string getIdentifier();
 };
 
+class Name;
+class Block;
+
+class Function : public Object {
+public:
+  Function(Name &name, Block &body);
+  Object& call(const Object& obj);
+private:
+  Block& body;
+};
+
 class BuiltInFunction : public Object {
 public:
   BuiltInFunction(std::function<Object& (const Object& right)> function) :

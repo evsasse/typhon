@@ -7,7 +7,7 @@
 
   void yyerror(const char *s);
 
-  MainBlock program;
+  Program program;
   int cur_indent = 666; // Current line number of indents
   //int exp_indent = 0; // Current block number of indents
   //int cur_level = 0; // Current block level
@@ -22,9 +22,11 @@
   float val_float;
   bool val_bool;
 
+  Block *block;
   Statement *stt;
   Expression *expr;
   Assignment *assign;
+  FunctionDef *funcd;
   Value *value;
   Name *name;
 }
@@ -41,21 +43,24 @@
 %token <val_bool> L_BOOL
 %token <val_str> T_NAME
 
-%token T_INDENT T_NEWLINE
+%token T_INDENT T_NEWLINE T_DEF
 
 %type <val_int> indent
-%type <stt> statement
+%type <stt> statement simple-statement
 %type <value> value
 %type <name> name
 %type <expr> expression
 %type <assign> assignment
-
+%type <funcd> function
 
 %%
 
-program : program T_NEWLINE line
-        | line
+program : block
         ;
+
+block : block T_NEWLINE line
+      | line
+      ;
 
 line : indent /* empty line */
      | indent { cur_indent = $1; } statements opt-semicolon
@@ -65,13 +70,18 @@ indent : indent T_INDENT { $$ = $1 + 1; }
        | %empty { $$ = 0; }
        ;
 
-statements : statements ';' statement { $3->setIndent(cur_indent); program.push($3); }
-           | statement { $1->setIndent(cur_indent); program.push($1); }
+statements : statement { $1->setIndent(cur_indent); program.push($1); }
+        /* | error { yyerrok; } */
            ;
 
-statement : expression { $$ = $1; }
-          | assignment { $$ = $1; }
+statement : simple-statement { $$ = $1; }
+          | function { $$ = $1; }
           ;
+
+simple-statement: /* one that does not contain blocks and new lines */
+                  expression { $$ = $1; }
+                | assignment { $$ = $1; }
+                ;
 
 opt-semicolon : ';'
               | %empty
@@ -87,6 +97,7 @@ name : T_NAME { $$ = new Name($1); }
 
 expression : value { $$ = $1; }
            | name { $$ = $1; }
+           | name '(' ')' { $$ = new CallOp(*$1); }
            | '(' expression ')' { $$ = $2; }
            | '+' expression %prec O_UNARY { $$ = new UnaryOp(Op::ADD, *$2); }
            | '-' expression %prec O_UNARY { $$ = new UnaryOp(Op::SUB, *$2); }
@@ -100,9 +111,14 @@ expression : value { $$ = $1; }
            | expression O_FDV expression { $$ = new BinaryOp(*$1, Op::FDV, *$3); }
            ;
 
-assignment : name '=' expression { $$ = new Assignment(*$1, *$3); }
-           | name A_SUM expression { $$ = new Assignment(*$1, *(new BinaryOp(*$1, Op::ADD, *$3))); }
+assignment : name '=' expression
+             { $$ = new Assignment(*$1, *$3); }
+           | name A_SUM expression
+             { $$ = new Assignment(*$1, *(new BinaryOp(*$1, Op::ADD, *$3))); }
            ;
+
+function : T_DEF name '(' ')' ':' { $$ = new FunctionDef(*$2); }
+         ;
 
 %%
 

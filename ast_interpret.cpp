@@ -1,18 +1,31 @@
 #include <iostream>
+#include <stdexcept>
 #include "ast.h"
 
 void Expression::interpret(){
-  std::cout << exec().getIdentifier();
+  std::cout << exec().getIdentifier() << std::flush;
 }
 
 void Assignment::interpret(){
-  target.print();
-  std::cout << "=";
-  right.interpret();
+  Object& expr = right.exec();
+  context->newName(target.name, expr);
+  std::cout << "<assignment> " << std::flush;
+  std::cout << target.name << " = " << context->useName(target.name).getIdentifier();
+}
+
+void FunctionDef::interpret(){
+  context->newName(name.name,*(new Function(name,*this)));
+  std::cout << "<function def '" << std::flush;
+  name.print();
+  std::cout << "'>" << std::flush;
+}
+
+Object& CallOp::exec(){
+  return context->useName(name.name).call(*(new Object()));
 }
 
 Object& Name::exec(){
-  return *(new Object());
+  return context->useName(name);
 }
 
 Object& BinaryOp::exec(){
