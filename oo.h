@@ -17,7 +17,7 @@ private:
 class Object : public Namespace {
 public:
   bool builtInFunction;
-  Object(std::string identifier = "anonymous") :
+  Object(std::string identifier = "None") :
   identifier(identifier), builtInFunction(0) {};
   virtual std::string getIdentifier();
   virtual Object& call(const Object& obj);

@@ -18,8 +18,7 @@ std::string Object::getIdentifier(){
 }
 
 Object& Object::call(const Object& obj){
-  std::cerr << " object is not callable";
-  return *(new Object());
+  throw std::runtime_error("TypeError: "+getIdentifier()+" object is not callable");
 }
 
 std::string Class::getIdentifier(){
@@ -40,7 +39,7 @@ Object("int"), value(value) {
 }
 
 std::string IntObject::getIdentifier(){
-  return "<"+std::to_string(value)+">";
+  return "<int "+std::to_string(value)+">";
 }
 
 Function::Function(Name &name, Block &body) :
