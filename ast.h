@@ -105,6 +105,7 @@ class FunctionRet : public Statement {
 public:
   void print();
   Object* interpret();
+  void setContext(Namespace *context);
   FunctionRet(Expression& expr) :
   expr(expr) {};
 private:

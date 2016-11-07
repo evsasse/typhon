@@ -3,78 +3,78 @@
 
 void Statement::print(){
   if(indent >= 0)
-    std::cout << "[" << indent << "]";
+    std::cout << "[" << indent << "]" << std::flush;
 }
 
 void Block::print(){
   for(auto stt : *this){
     stt->print();
-    std::cout << std::endl;
+    std::cout << std::endl << std::flush;
   }
 }
 
 void Name::print(){
   Statement::print();
-  std::cout << name;
+  std::cout << name << std::flush;
 }
 
 void Assignment::print(){
   Statement::print();
   target.print();
-  std::cout << "=";
+  std::cout << "=" << std::flush;
   right.print();
 }
 
 void FunctionDef::print(){
   Statement::print();
-  std::cout << "def ";
+  std::cout << "def " << std::flush;
   name.print();
 }
 
 void FunctionRet::print(){
   Statement::print();
-  std::cout << "return ";
+  std::cout << "return " << std::flush;
   expr.print();
 }
 
 void CallOp::print(){
   Statement::print();
-  std::cout << "(func ";
+  std::cout << "(func " << std::flush;
   name.print();
-  std::cout << ")";
+  std::cout << ")" << std::flush;
 }
 
 void BinaryOp::print(){
   Statement::print();
-  std::cout << "(";
+  std::cout << "(" << std::flush;
   left.print();
   std::cout << opSymbol(op);
   right.print();
-  std::cout << ")";
+  std::cout << ")" << std::flush;
 }
 
 void UnaryOp::print(){
   Statement::print();
-  std::cout << "(";
+  std::cout << "(" << std::flush;
   std::cout << opSymbol(op);
   right.print();
-  std::cout << ")";
+  std::cout << ")" << std::flush;
 }
 
 void LitInt::print(){
   Statement::print();
-  std::cout << value;
+  std::cout << value << std::flush;
 }
 
 void LitFloat::print(){
   Statement::print();
-  std::cout << value;
+  std::cout << value << std::flush;
 }
 
 void LitBool::print(){
   Statement::print();
   if(value)
-    std::cout << "True";
+    std::cout << "True" << std::flush;
   else
-    std::cout << "False";
+    std::cout << "False" << std::flush;
 }

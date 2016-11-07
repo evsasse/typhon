@@ -41,6 +41,9 @@ void UnaryOp::setContext(Namespace *context){
   //this->context = context;
   right.setContext(context);
 }
+void FunctionRet::setContext(Namespace *context){
+  expr.setContext(context);
+}
 
 Block* Block::getParent(){
   return parent;
@@ -62,10 +65,9 @@ Block* Block::endBlock(){
 
 Block* FunctionDef::endBlock(){
   Block::print();
-  std::cout << "endBlock " << name.name << std::endl;
+  std::cout << "endBlock " << name.name << std::endl << std::flush;
   //TODO: add a return None statement at the end of the function
-  //TODO add function to context only on endblock, not declaration
-
+  context->newName(name.name,*(new Function(name,*this)));
   return Block::endBlock();
 }
 
@@ -100,7 +102,7 @@ void Program::push(Statement *stt){
     }
     // !expect_indent && diff==0
     // continue current block
-    std::cout << "continue current block" << std::endl;
+    std::cout << "continue current block" << std::endl << std::flush;
     cur_block->push(stt);
 
     if(FunctionDef* fd = dynamic_cast<FunctionDef*>(stt)){
@@ -113,13 +115,14 @@ void Program::push(Statement *stt){
     // an error brings the interpreter back to the main context
     expect_indent = 0;
     while(cur_block->getParent())
-      cur_block = cur_block->endBlock();
+      //cur_block = cur_block->endBlock();
+      cur_block = cur_block->getParent();
     //TODO properly destroy cur_block.back()
     //TODO remove an declaration from the namespace
     //TODO remove wronged element, cur_block.pop_back();
-    std::cout << e.what();
+    std::cout << e.what() << std::flush;
   }
-  std::cout << std::endl << ">>> ";
+  std::cout << std::endl << ">>> " << std::flush;
 }
 
 void Block::push(Statement *stt){
@@ -135,6 +138,6 @@ void MainBlock::push(Statement *stt){
   push_back(stt);
   stt->setContext(this);
   stt->print();
-  std::cout << std::endl;
+  std::cout << std::endl << std::flush;
   stt->interpret();
 }
