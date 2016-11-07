@@ -16,7 +16,7 @@ private:
   int indent;
 public:
   virtual void print();
-  virtual void interpret() = 0;
+  virtual Object* interpret() = 0;
   void setIndent(int i);
   int getIndent();
   bool seeIndent();
@@ -65,7 +65,7 @@ private:
 
 class Expression : public Statement {
 public:
-  void interpret();
+  Object* interpret();
   virtual Object& exec() = 0;
 };
 
@@ -81,7 +81,7 @@ public:
 class Assignment : public Statement {
 public:
   void print();
-  void interpret();
+  Object* interpret();
   Assignment(Name& target, Expression& right) :
   target(target), right(right) {};
   void setContext(Namespace *context);
@@ -93,7 +93,7 @@ private:
 class FunctionDef : public Statement, public Block {
 public:
   void print();
-  void interpret();
+  Object* interpret();
   FunctionDef(Name& name) :
   Block(nullptr), name(name) {};
   Block* endBlock();
@@ -104,7 +104,7 @@ private:
 class FunctionRet : public Statement {
 public:
   void print();
-  void interpret();
+  Object* interpret();
   FunctionRet(Expression& expr) :
   expr(expr) {};
 private:

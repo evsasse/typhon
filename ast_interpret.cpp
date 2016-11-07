@@ -2,26 +2,31 @@
 #include <stdexcept>
 #include "ast.h"
 
-void Expression::interpret(){
+Object* Expression::interpret(){
   std::cout << exec().getIdentifier() << std::flush;
+  return nullptr;
 }
 
-void Assignment::interpret(){
+Object* Assignment::interpret(){
   Object& expr = right.exec();
   context->newName(target.name, expr);
   std::cout << "<assignment> " << std::flush;
   std::cout << target.name << " = " << context->useName(target.name).getIdentifier();
+  return nullptr;
 }
 
-void FunctionDef::interpret(){
+Object* FunctionDef::interpret(){
   context->newName(name.name,*(new Function(name,*this)));
   std::cout << "<function def '" << std::flush;
   name.print();
   std::cout << "'>" << std::flush;
+  return nullptr;
 }
 
-void FunctionRet::interpret(){
-  std::cout << "<should return " << expr.exec().getIdentifier() << ">";
+Object* FunctionRet::interpret(){
+  Object& ret = expr.exec();
+  std::cout << "<return " << ret.getIdentifier() << ">";
+  return &ret;
 }
 
 Object& CallOp::exec(){

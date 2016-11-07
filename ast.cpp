@@ -64,6 +64,8 @@ Block* FunctionDef::endBlock(){
   Block::print();
   std::cout << "endBlock " << name.name << std::endl;
   //TODO: add a return None statement at the end of the function
+  //TODO add function to context only on endblock, not declaration
+
   return Block::endBlock();
 }
 
@@ -80,14 +82,10 @@ void Program::push(Statement *stt){
     int diff = stt->getIndent() - lastIndent();
     if(expect_indent && diff>0){
       // starts a expected new block
-      std::cout << "starts a expected new block" << std::endl;
-      std::cout << "[" << stt->getIndent() << "]" << std::endl;
-      std::cout << "[" << lastIndent() << "]" << std::endl;
       expect_indent = 0;
       cur_block->setIndent(stt->getIndent());
     }else if(!expect_indent && diff<0){
       // trying to end a block
-      std::cout << "trying to end a block" << std::endl;
       while(cur_block->getIndent() > stt->getIndent())
         cur_block = cur_block->endBlock();
       if(cur_block->getIndent() != stt->getIndent()){
@@ -95,11 +93,9 @@ void Program::push(Statement *stt){
       }
     }else if(!expect_indent && diff>0){
       // more indents than expected
-      std::cout << "more indents than expected" << std::endl;
       throw std::runtime_error("IndentationError: unexpected indent");
     }else if(expect_indent && diff<=0){
       // less indents than expected
-      std::cout << "less indents than expected" << std::endl;
       throw std::runtime_error("IndentationError: expected an indented block");
     }
     // !expect_indent && diff==0
@@ -118,6 +114,9 @@ void Program::push(Statement *stt){
     expect_indent = 0;
     while(cur_block->getParent())
       cur_block = cur_block->endBlock();
+    //TODO properly destroy cur_block.back()
+    //TODO remove an declaration from the namespace
+    //TODO remove wronged element, cur_block.pop_back();
     std::cout << e.what();
   }
   std::cout << std::endl << ">>> ";
@@ -129,6 +128,10 @@ void Block::push(Statement *stt){
 }
 
 void MainBlock::push(Statement *stt){
+  if(FunctionRet* fr = dynamic_cast<FunctionRet*>(stt)){
+    throw std::runtime_error("SyntaxError: 'return' outside function");
+  }
+
   push_back(stt);
   stt->setContext(this);
   stt->print();

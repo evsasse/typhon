@@ -47,9 +47,10 @@ Object("function "+name.name), body(body) {};
 
 Object& Function::call(const Object& obj){
   for(Statement *stt : body){
-    stt->interpret();
+    Object* ret = stt->interpret();
+    if(ret) return *ret;
   }
-  return *(new Object());
+  throw std::runtime_error("ImplementationError: unexpected function ending without return");
 }
 
 Object& BuiltInFunction::call(const Object& obj){
