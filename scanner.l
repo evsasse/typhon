@@ -39,6 +39,7 @@ name [a-zA-Z_][a-zA-Z0-9_]*
 [ \t] { /* ignore spaces and tabs */}
 
 "def " { return T_DEF; }
+"return " { return T_RETURN; }
 
 [;:\+\-\*\/\(\)\=] { return yytext[0]; }
 "**" { return O_EXP; }

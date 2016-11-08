@@ -18,8 +18,7 @@ std::string Object::getIdentifier(){
 }
 
 Object& Object::call(const Object& obj){
-  std::cerr << " object is not callable";
-  return *(new Object());
+  throw std::runtime_error("TypeError: "+getIdentifier()+" object is not callable");
 }
 
 std::string Class::getIdentifier(){
@@ -40,7 +39,7 @@ Object("int"), value(value) {
 }
 
 std::string IntObject::getIdentifier(){
-  return "<"+std::to_string(value)+">";
+  return "<int "+std::to_string(value)+">";
 }
 
 Function::Function(Name &name, Block &body) :
@@ -48,9 +47,12 @@ Object("function "+name.name), body(body) {};
 
 Object& Function::call(const Object& obj){
   for(Statement *stt : body){
-    stt->interpret();
+    Object* ret = stt->interpret();
+    if(ret) return *ret;
   }
   return *(new Object());
+  // TODO add a return None statement at the end of every function
+  //throw std::runtime_error("ImplementationError: unexpected function ending without return");
 }
 
 Object& BuiltInFunction::call(const Object& obj){

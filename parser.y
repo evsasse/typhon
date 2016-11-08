@@ -9,9 +9,6 @@
 
   Program program;
   int cur_indent = 666; // Current line number of indents
-  //int exp_indent = 0; // Current block number of indents
-  //int cur_level = 0; // Current block level
-  //bool new_level = 0; // Is an increase in indentation expected
 %}
 
 %define parse.error verbose
@@ -27,6 +24,7 @@
   Expression *expr;
   Assignment *assign;
   FunctionDef *funcd;
+  FunctionRet *funcr;
   Value *value;
   Name *name;
 }
@@ -43,7 +41,7 @@
 %token <val_bool> L_BOOL
 %token <val_str> T_NAME
 
-%token T_INDENT T_NEWLINE T_DEF
+%token T_INDENT T_NEWLINE T_DEF T_RETURN
 
 %type <val_int> indent
 %type <stt> statement simple-statement
@@ -52,6 +50,7 @@
 %type <expr> expression
 %type <assign> assignment
 %type <funcd> function
+%type <funcr> return
 
 %%
 
@@ -81,6 +80,7 @@ statement : simple-statement { $$ = $1; }
 simple-statement: /* one that does not contain blocks and new lines */
                   expression { $$ = $1; }
                 | assignment { $$ = $1; }
+                | return { $$ = $1; }
                 ;
 
 opt-semicolon : ';'
@@ -119,6 +119,9 @@ assignment : name '=' expression
 
 function : T_DEF name '(' ')' ':' { $$ = new FunctionDef(*$2); }
          ;
+
+return : T_RETURN expression { $$ = new FunctionRet(*$2); }
+
 
 %%
 

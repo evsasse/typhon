@@ -2,22 +2,32 @@
 #include <stdexcept>
 #include "ast.h"
 
-void Expression::interpret(){
+Object* Expression::interpret(){
   std::cout << exec().getIdentifier() << std::flush;
+  return nullptr;
 }
 
-void Assignment::interpret(){
+Object* Assignment::interpret(){
   Object& expr = right.exec();
   context->newName(target.name, expr);
   std::cout << "<assignment> " << std::flush;
-  std::cout << target.name << " = " << context->useName(target.name).getIdentifier();
+  std::cout << target.name << " = " << context->useName(target.name).getIdentifier() << std::flush;
+  return nullptr;
 }
 
-void FunctionDef::interpret(){
-  context->newName(name.name,*(new Function(name,*this)));
+Object* FunctionDef::interpret(){
+  //context->newName(name.name,*(new Function(name,*this)));
+  // the function is now added to the namespace only at the endBlock
   std::cout << "<function def '" << std::flush;
   name.print();
   std::cout << "'>" << std::flush;
+  return nullptr;
+}
+
+Object* FunctionRet::interpret(){
+  Object& ret = expr.exec();
+  std::cout << "<return " << ret.getIdentifier() << ">" << std::flush;
+  return &ret;
 }
 
 Object& CallOp::exec(){
@@ -25,6 +35,8 @@ Object& CallOp::exec(){
 }
 
 Object& Name::exec(){
+  // segmentation faults here mean that the context is not being properly set
+  // review the setContext function of new statement types
   return context->useName(name);
 }
 

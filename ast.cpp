@@ -41,6 +41,9 @@ void UnaryOp::setContext(Namespace *context){
   //this->context = context;
   right.setContext(context);
 }
+void FunctionRet::setContext(Namespace *context){
+  expr.setContext(context);
+}
 
 Block* Block::getParent(){
   return parent;
@@ -62,8 +65,9 @@ Block* Block::endBlock(){
 
 Block* FunctionDef::endBlock(){
   Block::print();
-  std::cout << "endBlock " << name.name << std::endl;
+  std::cout << "endBlock " << name.name << std::endl << std::flush;
   //TODO: add a return None statement at the end of the function
+  context->newName(name.name,*(new Function(name,*this)));
   return Block::endBlock();
 }
 
@@ -80,14 +84,10 @@ void Program::push(Statement *stt){
     int diff = stt->getIndent() - lastIndent();
     if(expect_indent && diff>0){
       // starts a expected new block
-      std::cout << "starts a expected new block" << std::endl;
-      std::cout << "[" << stt->getIndent() << "]" << std::endl;
-      std::cout << "[" << lastIndent() << "]" << std::endl;
       expect_indent = 0;
       cur_block->setIndent(stt->getIndent());
     }else if(!expect_indent && diff<0){
       // trying to end a block
-      std::cout << "trying to end a block" << std::endl;
       while(cur_block->getIndent() > stt->getIndent())
         cur_block = cur_block->endBlock();
       if(cur_block->getIndent() != stt->getIndent()){
@@ -95,16 +95,14 @@ void Program::push(Statement *stt){
       }
     }else if(!expect_indent && diff>0){
       // more indents than expected
-      std::cout << "more indents than expected" << std::endl;
       throw std::runtime_error("IndentationError: unexpected indent");
     }else if(expect_indent && diff<=0){
       // less indents than expected
-      std::cout << "less indents than expected" << std::endl;
       throw std::runtime_error("IndentationError: expected an indented block");
     }
     // !expect_indent && diff==0
     // continue current block
-    std::cout << "continue current block" << std::endl;
+    std::cout << "continue current block" << std::endl << std::flush;
     cur_block->push(stt);
 
     if(FunctionDef* fd = dynamic_cast<FunctionDef*>(stt)){
@@ -117,10 +115,14 @@ void Program::push(Statement *stt){
     // an error brings the interpreter back to the main context
     expect_indent = 0;
     while(cur_block->getParent())
-      cur_block = cur_block->endBlock();
-    std::cout << e.what();
+      //cur_block = cur_block->endBlock();
+      cur_block = cur_block->getParent();
+    //TODO properly destroy cur_block.back()
+    //TODO remove an declaration from the namespace
+    //TODO remove wronged element, cur_block.pop_back();
+    std::cout << e.what() << std::flush;
   }
-  std::cout << std::endl << ">>> ";
+  std::cout << std::endl << ">>> " << std::flush;
 }
 
 void Block::push(Statement *stt){
@@ -129,9 +131,13 @@ void Block::push(Statement *stt){
 }
 
 void MainBlock::push(Statement *stt){
+  if(FunctionRet* fr = dynamic_cast<FunctionRet*>(stt)){
+    throw std::runtime_error("SyntaxError: 'return' outside function");
+  }
+
   push_back(stt);
   stt->setContext(this);
   stt->print();
-  std::cout << std::endl;
+  std::cout << std::endl << std::flush;
   stt->interpret();
 }
