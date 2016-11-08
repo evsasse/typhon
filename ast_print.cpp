@@ -40,7 +40,7 @@ void FunctionRet::print(){
 void CallOp::print(){
   Statement::print();
   std::cout << "(func " << std::flush;
-  name.print();
+  expr.print();
   std::cout << ")" << std::flush;
 }
 

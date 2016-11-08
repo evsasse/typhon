@@ -116,10 +116,11 @@ class CallOp : public Expression {
 public:
   void print();
   Object& exec();
-  CallOp(Name& name) :
-  name(name) {};
+  void setContext(Namespace *context);
+  CallOp(Expression& expr) :
+  expr(expr) {};
 private:
-  Name& name;
+  Expression& expr;
 };
 
 class BinaryOp : public Expression {

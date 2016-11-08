@@ -31,7 +31,9 @@ Object* FunctionRet::interpret(){
 }
 
 Object& CallOp::exec(){
-  return context->useName(name.name).call(*(new Object()));
+  //return context->useName(name.name).call(*(new Object()));
+  Object& result = expr.exec();
+  return result.call(*(new Object()));
 }
 
 Object& Name::exec(){
