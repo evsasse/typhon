@@ -100,8 +100,8 @@ name : T_NAME { $$ = new Name($1); }
 
 expression : value { $$ = $1; }
            | name { $$ = $1; }
-           | expression '(' expression-list ')' { $$ = new CallOp(*$1); }
-           | expression '(' ')' { $$ = new CallOp(*$1); }
+           | expression '(' expression-list ')' { $$ = new CallOp(*$1, *$3); }
+           | expression '(' ')' { $$ = new CallOp(*$1, *new std::list<Expression*>()); }
            | '(' expression ')' { $$ = $2; }
            | '+' expression %prec O_UNARY { $$ = new UnaryOp(Op::ADD, *$2); }
            | '-' expression %prec O_UNARY { $$ = new UnaryOp(Op::SUB, *$2); }

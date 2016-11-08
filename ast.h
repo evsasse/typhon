@@ -117,10 +117,11 @@ public:
   void print();
   Object& exec();
   void setContext(Namespace *context);
-  CallOp(Expression& expr) :
-  expr(expr) {};
+  CallOp(Expression& target, std::list<Expression*> arguments) :
+  target(target), arguments(arguments) {};
 private:
-  Expression& expr;
+  Expression& target;
+  std::list<Expression*> arguments;
 };
 
 class BinaryOp : public Expression {

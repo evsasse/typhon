@@ -45,7 +45,7 @@ void FunctionRet::setContext(Namespace *context){
   expr.setContext(context);
 }
 void CallOp::setContext(Namespace* context){
-  expr.setContext(context);
+  target.setContext(context);
 }
 
 Block* Block::getParent(){
