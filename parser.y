@@ -61,7 +61,7 @@ block : block T_NEWLINE line
       | line
       ;
 
-line : indent /* empty line */
+line : indent /* empty line */ { std::cout << ">>> "; }
      | indent { cur_indent = $1; } statements opt-semicolon
      ;
 
