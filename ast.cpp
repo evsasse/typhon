@@ -44,6 +44,9 @@ void UnaryOp::setContext(Namespace *context){
 void FunctionRet::setContext(Namespace *context){
   expr.setContext(context);
 }
+void CallOp::setContext(Namespace* context){
+  target.setContext(context);
+}
 
 Block* Block::getParent(){
   return parent;

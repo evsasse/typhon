@@ -27,11 +27,13 @@
   FunctionRet *funcr;
   Value *value;
   Name *name;
+  std::list<Expression*> *exprs;
 }
 
 %left '+' '-'
 %left '*' '/' O_FDV
 %left O_UNARY
+%left '('
 %left O_EXP
 
 %token A_SUM
@@ -48,6 +50,7 @@
 %type <value> value
 %type <name> name
 %type <expr> expression
+%type <exprs> expression-list
 %type <assign> assignment
 %type <funcd> function
 %type <funcr> return
@@ -97,7 +100,8 @@ name : T_NAME { $$ = new Name($1); }
 
 expression : value { $$ = $1; }
            | name { $$ = $1; }
-           | name '(' ')' { $$ = new CallOp(*$1); }
+           | expression '(' expression-list ')' { $$ = new CallOp(*$1, *$3); }
+           | expression '(' ')' { $$ = new CallOp(*$1, *new std::list<Expression*>()); }
            | '(' expression ')' { $$ = $2; }
            | '+' expression %prec O_UNARY { $$ = new UnaryOp(Op::ADD, *$2); }
            | '-' expression %prec O_UNARY { $$ = new UnaryOp(Op::SUB, *$2); }
@@ -110,6 +114,10 @@ expression : value { $$ = $1; }
            | expression O_EXP expression { $$ = new BinaryOp(*$1, Op::EXP, *$3); }
            | expression O_FDV expression { $$ = new BinaryOp(*$1, Op::FDV, *$3); }
            ;
+
+expression-list : expression-list ',' expression { $1->push_back($3); $$ = $1; }
+                | expression { $$ = new std::list<Expression*>(); $$->push_back($1); }
+                ;
 
 assignment : name '=' expression
              { $$ = new Assignment(*$1, *$3); }

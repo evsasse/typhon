@@ -39,9 +39,14 @@ void FunctionRet::print(){
 
 void CallOp::print(){
   Statement::print();
-  std::cout << "(func " << std::flush;
-  name.print();
-  std::cout << ")" << std::flush;
+  std::cout << "(call " << std::flush;
+  target.print();
+  std::cout << "[ ";
+  for(auto expr : arguments){
+    expr->print();
+    std::cout << " ";
+  }
+  std::cout << "])" << std::flush;
 }
 
 void BinaryOp::print(){
