@@ -50,7 +50,9 @@ Object& Function::call(const Object& obj){
     Object* ret = stt->interpret();
     if(ret) return *ret;
   }
-  throw std::runtime_error("ImplementationError: unexpected function ending without return");
+  return *(new Object());
+  // TODO add a return None statement at the end of every function
+  //throw std::runtime_error("ImplementationError: unexpected function ending without return");
 }
 
 Object& BuiltInFunction::call(const Object& obj){
