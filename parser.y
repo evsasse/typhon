@@ -27,14 +27,17 @@
   FunctionRet *funcr;
   Value *value;
   Name *name;
+  Parameter *param;
+
   std::list<Expression*> *exprs;
+  std::list<Parameter*> *params;
 }
 
 %left '+' '-'
 %left '*' '/' O_FDV
 %left O_UNARY
-%left '('
 %left O_EXP
+%left '('
 
 %token A_SUM
 
@@ -51,6 +54,8 @@
 %type <name> name
 %type <expr> expression
 %type <exprs> expression-list expression-list-opt
+%type <param> parameter
+%type <params> parameter-list parameter-list-opt
 %type <assign> assignment
 %type <funcd> function
 %type <funcr> return
@@ -128,11 +133,19 @@ assignment : name '=' expression
              { $$ = new Assignment(*$1, *(new BinaryOp(*$1, Op::ADD, *$3))); }
            ;
 
-function : T_DEF name '(' ')' ':' { $$ = new FunctionDef(*$2); }
+function : T_DEF name '(' parameter-list-opt ')' ':' { $$ = new FunctionDef(*$2); }
          ;
 
-return : T_RETURN expression { $$ = new FunctionRet(*$2); }
+parameter-list-opt : %empty { $$ = new std::list<Parameter*>(); }
+                   | parameter-list { $$ = $1; }
+                   ;
 
+parameter-list : parameter-list ',' parameter { $1->push_back($3); $$ = $1;}
+               | parameter { $$ = new std::list<Parameter*>(); $$->push_back($1); }
+
+parameter : T_NAME { $$ = new Parameter($1); }
+
+return : T_RETURN expression { $$ = new FunctionRet(*$2); }
 
 %%
 

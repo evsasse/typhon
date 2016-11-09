@@ -112,6 +112,13 @@ private:
   Expression& expr;
 };
 
+class Parameter {
+public:
+  Parameter(std::string name) :
+  name(name) {};
+  std::string name;
+};
+
 class CallOp : public Expression {
 public:
   void print();
