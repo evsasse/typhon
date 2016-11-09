@@ -123,17 +123,16 @@ void Program::push(Statement *stt){
     while(cur_block->getParent())
       //cur_block = cur_block->endBlock();
       cur_block = cur_block->getParent();
-    //TODO properly destroy cur_block.back()
-    //TODO remove an declaration from the namespace
-    //TODO remove wronged element, cur_block.pop_back();
+      //TODO properly destroy wronged statement
     std::cout << e.what() << std::flush;
   }
   std::cout << std::endl << ">>> " << std::flush;
 }
 
 void Block::push(Statement *stt){
-  push_back(stt);
   stt->setContext(this);
+
+  push_back(stt);
 }
 
 void MainBlock::push(Statement *stt){
@@ -141,9 +140,10 @@ void MainBlock::push(Statement *stt){
     throw std::runtime_error("SyntaxError: 'return' outside function");
   }
 
-  push_back(stt);
   stt->setContext(this);
   stt->print();
   std::cout << std::endl << std::flush;
   stt->interpret();
+
+  push_back(stt);
 }
