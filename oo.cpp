@@ -54,6 +54,13 @@ Object& Function::call(std::list<Object*> arguments){
     throw std::runtime_error("TypeError: "+identifier+"() takes "+std::to_string(parameters.size())+" arguments but "+std::to_string(arguments.size())+" were given");
   }
 
+  auto arg = arguments.begin();
+  auto param = parameters.begin();
+  // arguments and parameters have the same size
+  for(; arg != arguments.end(); arg++, param++){
+    body.newName((*param)->name, *(*arg));
+  }
+
   for(Statement *stt : body){
     Object* ret = stt->interpret();
     if(ret) return *ret;
