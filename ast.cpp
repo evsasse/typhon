@@ -51,6 +51,10 @@ void CallOp::setContext(Namespace* context){
   }
 }
 
+void IfStatement::setContext(Namespace *context){
+  expr.setContext(context);
+}
+
 Block* Block::getParent(){
   return parent;
 }
@@ -74,6 +78,21 @@ Block* FunctionDef::endBlock(){
   std::cout << "endBlock " << name.name << std::endl << std::flush;
   //TODO: add a return None statement at the end of the function
   context->newName(name.name,*(new Function(name,parameters,*this)));
+  return Block::endBlock();
+}
+
+Block* IfStatement::endBlock(){
+  //TODO the next statement is received by a parameter
+  Block::print();
+
+  //TODO interpret body only on right conditions
+  for(Statement *stt : *this){
+    stt->interpret();
+    //Object* ret = stt->interpret();
+    //if(ret) return *ret;
+  }
+
+  //TODO give elif/else block back, if they are the next statement
   return Block::endBlock();
 }
 
@@ -115,6 +134,11 @@ void Program::push(Statement *stt){
       fd->setParent(cur_block);
       cur_block = fd;
       expect_indent = 1;
+    } else
+    if(IfStatement *is = dynamic_cast<IfStatement*>(stt)){
+      is->setParent(cur_block);
+      cur_block = is;
+      expect_indent = 1;
     }
 
   } catch (std::runtime_error& e) {
@@ -131,6 +155,12 @@ void Program::push(Statement *stt){
 
 void Block::push(Statement *stt){
   stt->setContext(this);
+
+  push_back(stt);
+}
+
+void IfStatement::push(Statement *stt){
+  stt->setContext(getParent());
 
   push_back(stt);
 }

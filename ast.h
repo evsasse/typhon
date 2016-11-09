@@ -29,7 +29,7 @@ protected:
 
 class Block : public std::list<Statement*>, public Object {
 public:
-  Block(Block* parent, int indent = -1, std::string name = "anonymous") :
+  Block(Block* parent = nullptr, int indent = -1, std::string name = "anonymous") :
   Object(name), parent(parent), indent(indent) {};
   void print();
   Block* getParent();
@@ -99,10 +99,10 @@ public:
 
 class FunctionDef : public Statement, public Block {
 public:
-  void print();
-  Object* interpret();
   FunctionDef(Name& name, std::list<Parameter*>& parameters) :
   Block(nullptr), name(name), parameters(parameters) {};
+  void print();
+  Object* interpret();
   Block* endBlock();
   std::list<Parameter*>& parameters;
 private:
@@ -131,6 +131,29 @@ private:
   Expression& target;
   std::list<Expression*>& arguments;
 };
+
+class ElseStatement;
+
+class IfStatement : public Statement, public Block {
+public:
+  IfStatement(Expression& expr) :
+  expr(expr), elseStt(nullptr) {};
+  void print();
+  Object* interpret();
+  Block* endBlock();
+  void push(Statement *stt);
+  void setContext(Namespace *context);
+  Expression& expr;
+  ElseStatement* elseStt;
+};
+
+class ElseStatement : public Statement, public Block {
+
+};
+
+// class ElifStatement : public IfStatement, public ElseStatement {
+//
+// }
 
 class BinaryOp : public Expression {
 public:

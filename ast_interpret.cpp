@@ -30,6 +30,14 @@ Object* FunctionRet::interpret(){
   return &ret;
 }
 
+Object* IfStatement::interpret(){
+  // the body can be interpreted only on endBlock
+  Object& cond = expr.exec();
+
+  std::cout << "<if " << cond.getIdentifier() << " is truthy>";
+  return nullptr;
+}
+
 Object& CallOp::exec(){
   //return context->useName(name.name).call(*(new Object()));
   std::list<Object*> _arguments;

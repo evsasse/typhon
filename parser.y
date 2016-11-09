@@ -28,6 +28,7 @@
   Value *value;
   Name *name;
   Parameter *param;
+  IfStatement *ifstt;
 
   std::list<Expression*> *exprs;
   std::list<Parameter*> *params;
@@ -54,13 +55,14 @@
 %type <stt> statement simple-statement
 %type <value> value
 %type <name> name
-%type <expr> expression if elif else
+%type <expr> expression elif else
 %type <exprs> expression-list expression-list-opt
 %type <param> parameter
 %type <params> parameter-list parameter-list-opt
 %type <assign> assignment
 %type <funcd> function
 %type <funcr> return
+%type <ifstt> if
 
 %%
 
@@ -152,7 +154,7 @@ parameter : T_NAME { $$ = new Parameter($1); }
 
 return : T_RETURN expression { $$ = new FunctionRet(*$2); }
 
-if : T_IF expression ':' { $$ = $2; }
+if : T_IF expression ':' { $$ = new IfStatement(*$2); }
    ;
 
 elif : T_ELIF expression ':' { $$ = $2; }
