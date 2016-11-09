@@ -46,13 +46,15 @@
 %token <val_bool> L_BOOL
 %token <val_str> T_NAME
 
-%token T_INDENT T_NEWLINE T_DEF T_RETURN
+%token T_INDENT T_NEWLINE
+%token T_DEF T_RETURN
+%token T_IF T_ELIF T_ELSE
 
 %type <val_int> indent
 %type <stt> statement simple-statement
 %type <value> value
 %type <name> name
-%type <expr> expression
+%type <expr> expression if elif else
 %type <exprs> expression-list expression-list-opt
 %type <param> parameter
 %type <params> parameter-list parameter-list-opt
@@ -83,6 +85,9 @@ statements : statement { $1->setIndent(cur_indent); program.push($1); }
 
 statement : simple-statement { $$ = $1; }
           | function { $$ = $1; }
+          | if { $$ = $1; }
+          | elif { $$ = $1; }
+          | else { $$ = $1; }
           ;
 
 simple-statement: /* one that does not contain blocks and new lines */
@@ -146,6 +151,15 @@ parameter-list : parameter-list ',' parameter { $1->push_back($3); $$ = $1;}
 parameter : T_NAME { $$ = new Parameter($1); }
 
 return : T_RETURN expression { $$ = new FunctionRet(*$2); }
+
+if : T_IF expression ':' { $$ = $2; }
+   ;
+
+elif : T_ELIF expression ':' { $$ = $2; }
+     ;
+
+else : T_ELSE ':' { $$ = new Name("else"); }
+     ;
 
 %%
 
