@@ -90,13 +90,21 @@ private:
   Expression& right;
 };
 
+class Parameter {
+public:
+  Parameter(std::string name) :
+  name(name) {};
+  std::string name;
+};
+
 class FunctionDef : public Statement, public Block {
 public:
   void print();
   Object* interpret();
-  FunctionDef(Name& name) :
-  Block(nullptr), name(name) {};
+  FunctionDef(Name& name, std::list<Parameter*>& parameters) :
+  Block(nullptr), name(name), parameters(parameters) {};
   Block* endBlock();
+  std::list<Parameter*>& parameters;
 private:
   Name& name;
 };
@@ -112,23 +120,16 @@ private:
   Expression& expr;
 };
 
-class Parameter {
-public:
-  Parameter(std::string name) :
-  name(name) {};
-  std::string name;
-};
-
 class CallOp : public Expression {
 public:
   void print();
   Object& exec();
   void setContext(Namespace *context);
-  CallOp(Expression& target, std::list<Expression*> arguments) :
+  CallOp(Expression& target, std::list<Expression*>& arguments) :
   target(target), arguments(arguments) {};
 private:
   Expression& target;
-  std::list<Expression*> arguments;
+  std::list<Expression*>& arguments;
 };
 
 class BinaryOp : public Expression {

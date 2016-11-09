@@ -29,6 +29,11 @@ void FunctionDef::print(){
   Statement::print();
   std::cout << "def " << std::flush;
   name.print();
+  std::cout << "[ ";
+  for(auto param : parameters){
+    std::cout << param->name << " ";
+  }
+  std::cout << "]";
 }
 
 void FunctionRet::print(){

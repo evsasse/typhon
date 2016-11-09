@@ -133,7 +133,7 @@ assignment : name '=' expression
              { $$ = new Assignment(*$1, *(new BinaryOp(*$1, Op::ADD, *$3))); }
            ;
 
-function : T_DEF name '(' parameter-list-opt ')' ':' { $$ = new FunctionDef(*$2); }
+function : T_DEF name '(' parameter-list-opt ')' ':' { $$ = new FunctionDef(*$2,*$4); }
          ;
 
 parameter-list-opt : %empty { $$ = new std::list<Parameter*>(); }
