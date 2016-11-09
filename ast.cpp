@@ -46,6 +46,9 @@ void FunctionRet::setContext(Namespace *context){
 }
 void CallOp::setContext(Namespace* context){
   target.setContext(context);
+  for(auto arg : arguments) {
+    arg->setContext(context);
+  }
 }
 
 Block* Block::getParent(){
@@ -70,7 +73,7 @@ Block* FunctionDef::endBlock(){
   Block::print();
   std::cout << "endBlock " << name.name << std::endl << std::flush;
   //TODO: add a return None statement at the end of the function
-  context->newName(name.name,*(new Function(name,*this)));
+  context->newName(name.name,*(new Function(name,parameters,*this)));
   return Block::endBlock();
 }
 
