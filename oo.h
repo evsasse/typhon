@@ -2,6 +2,7 @@
 
 #include <string>
 #include <map>
+#include <list>
 #include <functional>
 
 class Object;
@@ -20,7 +21,7 @@ public:
   Object(std::string identifier = "None") :
   identifier(identifier), builtInFunction(0) {};
   virtual std::string getIdentifier();
-  virtual Object& call(const Object& obj);
+  virtual Object& call(std::list<Object*> arguments);
 protected:
   std::string identifier;
 };
@@ -59,20 +60,22 @@ public:
 
 class Name;
 class Block;
+class Parameter;
 
 class Function : public Object {
 public:
-  Function(Name &name, Block &body);
-  Object& call(const Object& obj);
+  Function(Name &name, std::list<Parameter*>& parameters, Block &body);
+  Object& call(std::list<Object*> arguments);
 private:
   Block& body;
+  std::list<Parameter*> parameters;
 };
 
 class BuiltInFunction : public Object {
 public:
-  BuiltInFunction(std::function<Object& (const Object& right)> function) :
+  BuiltInFunction(std::function<Object& (std::list<Object*> arguments)> function) :
   Object("builtin function"), function(function) {};
-  Object& call(const Object& obj);
+  Object& call(std::list<Object*> arguments);
 private:
-  std::function<Object& (const Object& right)> function;
+  std::function<Object& (std::list<Object*> arguments)> function;
 };

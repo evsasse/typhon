@@ -31,7 +31,12 @@ Object* FunctionRet::interpret(){
 }
 
 Object& CallOp::exec(){
-  return context->useName(name.name).call(*(new Object()));
+  //return context->useName(name.name).call(*(new Object()));
+  std::list<Object*> _arguments;
+  for(auto arg : arguments){
+    _arguments.push_back(&(arg->exec()));
+  }
+  return target.exec().call(_arguments);
 }
 
 Object& Name::exec(){
@@ -43,7 +48,8 @@ Object& Name::exec(){
 Object& BinaryOp::exec(){
   Object& left = this->left.exec();
   Object& right = this->right.exec();
-  return left.useName("__add__").call(right);
+  auto argument = std::list<Object*>(1,&right);
+  return left.useName("__add__").call(argument);
 }
 
 Object& UnaryOp::exec(){

@@ -27,12 +27,17 @@
   FunctionRet *funcr;
   Value *value;
   Name *name;
+  Parameter *param;
+
+  std::list<Expression*> *exprs;
+  std::list<Parameter*> *params;
 }
 
 %left '+' '-'
 %left '*' '/' O_FDV
 %left O_UNARY
 %left O_EXP
+%left '('
 
 %token A_SUM
 
@@ -48,6 +53,9 @@
 %type <value> value
 %type <name> name
 %type <expr> expression
+%type <exprs> expression-list expression-list-opt
+%type <param> parameter
+%type <params> parameter-list parameter-list-opt
 %type <assign> assignment
 %type <funcd> function
 %type <funcr> return
@@ -61,7 +69,7 @@ block : block T_NEWLINE line
       | line
       ;
 
-line : indent /* empty line */
+line : indent /* empty line */ { std::cout << ">>> "; }
      | indent { cur_indent = $1; } statements opt-semicolon
      ;
 
@@ -97,7 +105,7 @@ name : T_NAME { $$ = new Name($1); }
 
 expression : value { $$ = $1; }
            | name { $$ = $1; }
-           | name '(' ')' { $$ = new CallOp(*$1); }
+           | expression '(' expression-list-opt ')' { $$ = new CallOp(*$1, *$3); }
            | '(' expression ')' { $$ = $2; }
            | '+' expression %prec O_UNARY { $$ = new UnaryOp(Op::ADD, *$2); }
            | '-' expression %prec O_UNARY { $$ = new UnaryOp(Op::SUB, *$2); }
@@ -111,17 +119,33 @@ expression : value { $$ = $1; }
            | expression O_FDV expression { $$ = new BinaryOp(*$1, Op::FDV, *$3); }
            ;
 
+expression-list-opt : %empty { $$ = new std::list<Expression*>(); }
+                    | expression-list { $$ = $1; }
+                    ;
+
+expression-list : expression-list ',' expression { $1->push_back($3); $$ = $1; }
+                | expression { $$ = new std::list<Expression*>(); $$->push_back($1); }
+                ;
+
 assignment : name '=' expression
              { $$ = new Assignment(*$1, *$3); }
            | name A_SUM expression
              { $$ = new Assignment(*$1, *(new BinaryOp(*$1, Op::ADD, *$3))); }
            ;
 
-function : T_DEF name '(' ')' ':' { $$ = new FunctionDef(*$2); }
+function : T_DEF name '(' parameter-list-opt ')' ':' { $$ = new FunctionDef(*$2,*$4); }
          ;
 
-return : T_RETURN expression { $$ = new FunctionRet(*$2); }
+parameter-list-opt : %empty { $$ = new std::list<Parameter*>(); }
+                   | parameter-list { $$ = $1; }
+                   ;
 
+parameter-list : parameter-list ',' parameter { $1->push_back($3); $$ = $1;}
+               | parameter { $$ = new std::list<Parameter*>(); $$->push_back($1); }
+
+parameter : T_NAME { $$ = new Parameter($1); }
+
+return : T_RETURN expression { $$ = new FunctionRet(*$2); }
 
 %%
 

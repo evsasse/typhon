@@ -29,6 +29,11 @@ void FunctionDef::print(){
   Statement::print();
   std::cout << "def " << std::flush;
   name.print();
+  std::cout << "[ ";
+  for(auto param : parameters){
+    std::cout << param->name << " ";
+  }
+  std::cout << "]";
 }
 
 void FunctionRet::print(){
@@ -39,9 +44,14 @@ void FunctionRet::print(){
 
 void CallOp::print(){
   Statement::print();
-  std::cout << "(func " << std::flush;
-  name.print();
-  std::cout << ")" << std::flush;
+  std::cout << "(call " << std::flush;
+  target.print();
+  std::cout << "[ ";
+  for(auto expr : arguments){
+    expr->print();
+    std::cout << " ";
+  }
+  std::cout << "])" << std::flush;
 }
 
 void BinaryOp::print(){
