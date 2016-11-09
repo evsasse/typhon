@@ -86,10 +86,8 @@ Block* IfStatement::endBlock(){
   Block::print();
 
   //TODO interpret body only on right conditions
-  for(Statement *stt : *this){
-    stt->interpret();
-    //Object* ret = stt->interpret();
-    //if(ret) return *ret;
+  if(MainBlock *mb = dynamic_cast<MainBlock*>(getParent())){
+    interpret();
   }
 
   //TODO give elif/else block back, if they are the next statement
@@ -127,7 +125,6 @@ void Program::push(Statement *stt){
     }
     // !expect_indent && diff==0
     // continue current block
-    std::cout << "continue current block" << std::endl << std::flush;
     cur_block->push(stt);
 
     if(FunctionDef* fd = dynamic_cast<FunctionDef*>(stt)){
@@ -143,6 +140,8 @@ void Program::push(Statement *stt){
 
   } catch (std::runtime_error& e) {
     // an error brings the interpreter back to the main context
+    //TODO fix that an error brought by an endBlock discards the current
+    //statement that ended the block
     expect_indent = 0;
     while(cur_block->getParent())
       //cur_block = cur_block->endBlock();

@@ -31,10 +31,18 @@ Object* FunctionRet::interpret(){
 }
 
 Object* IfStatement::interpret(){
-  // the body can be interpreted only on endBlock
   Object& cond = expr.exec();
 
   std::cout << "<if " << cond.getIdentifier() << " is truthy>";
+
+  if(size() > 0){
+    // the body can be interpreted only on endBlock
+    for(Statement *stt : *this){
+      Object* ret = stt->interpret();
+      if(ret) return ret;
+    }
+  }
+
   return nullptr;
 }
 
