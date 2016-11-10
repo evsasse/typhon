@@ -1,4 +1,3 @@
-tests/
 parser.cpp
 parser.h
 parser.output

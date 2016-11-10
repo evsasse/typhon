@@ -1,0 +1,16 @@
+###
+  some
+    multiline
+comment
+###
+
+def recursive_function(recur,value): # can do inline comments
+# needs to receive recur function because reasons
+  if value:
+ # no need to respect indentation on comments
+    return recur(recur,value+1)
+
+ # nor on blank lines
+  return 12345
+
+recursive_function(recursive_function, -5)
