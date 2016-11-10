@@ -72,7 +72,8 @@ Object& BinaryOp::exec(){
 }
 
 Object& UnaryOp::exec(){
-  return *(new Object());
+  Object& right = this->right.exec();
+  return right.useName("__neg__").call();
 }
 
 Object& LitInt::exec(){

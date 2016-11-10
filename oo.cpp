@@ -44,8 +44,12 @@ Object("int"), value(value) {
       return *(new IntObject(1));
     }
   };
+  std::function<Object& (std::list<Object*> arguments)> __neg__ = [this](std::list<Object*> arguments)-> Object& {
+    return *(new IntObject(-(this->value)));
+  };
   newName("__add__", *(new BuiltInFunction(__add__)));
   newName("__bool__", *(new BuiltInFunction(__bool__)));
+  newName("__neg__", *(new BuiltInFunction(__neg__)));
 }
 
 std::string IntObject::getIdentifier(){
