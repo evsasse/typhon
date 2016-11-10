@@ -36,7 +36,16 @@ Object("int"), value(value) {
       return *(new Object());
     }
   };
+  std::function<Object& (std::list<Object*> arguments)> __bool__ = [this](std::list<Object*> arguments)-> Object& {
+    //TODO return actual BoolObject
+    if(this->value == 0){
+      return *(new IntObject(0));
+    }else{
+      return *(new IntObject(1));
+    }
+  };
   newName("__add__", *(new BuiltInFunction(__add__)));
+  newName("__bool__", *(new BuiltInFunction(__bool__)));
 }
 
 std::string IntObject::getIdentifier(){

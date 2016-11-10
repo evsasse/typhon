@@ -87,10 +87,12 @@ Block* FunctionDef::endBlock(){
 }
 
 Block* IfStatement::endBlock(){
-  //TODO the next statement is received by a parameter
+  //TODO the next statement is received by a parameter to check if it is an elif or else
+
   Block::print();
 
-  //TODO interpret body only on right conditions
+  //TODO interpret body only if there is no elif/else
+  //TODO interpret would be called by else or elif endBlock
   if(MainBlock *mb = dynamic_cast<MainBlock*>(getParent())){
     interpret();
   }
