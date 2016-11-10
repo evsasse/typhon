@@ -54,6 +54,11 @@ void CallOp::print(){
   std::cout << "])" << std::flush;
 }
 
+void IfStatement::print(){
+  std::cout << "if ";
+  expr.print();
+}
+
 void BinaryOp::print(){
   Statement::print();
   std::cout << "(" << std::flush;

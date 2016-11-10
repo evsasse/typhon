@@ -21,7 +21,7 @@ public:
   Object(std::string identifier = "None") :
   identifier(identifier), builtInFunction(0) {};
   virtual std::string getIdentifier();
-  virtual Object& call(std::list<Object*> arguments);
+  virtual Object& call(std::list<Object*> arguments = std::list<Object*>());
 protected:
   std::string identifier;
 };

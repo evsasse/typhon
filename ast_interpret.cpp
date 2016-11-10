@@ -30,6 +30,25 @@ Object* FunctionRet::interpret(){
   return &ret;
 }
 
+Object* IfStatement::interpret(){
+  Object& cond = expr.exec();
+
+  std::cout << "<if " << cond.getIdentifier() << " is truthy>";
+
+  if(size() > 0){
+    // the body is actually interpreted only on endBlock
+    //TODO check if expr is truthy
+    if(cond.useName("__bool__").call().getIdentifier() == IntObject(1).getIdentifier()){
+      for(Statement *stt : *this){
+        Object* ret = stt->interpret();
+        if(ret) return ret;
+      }
+    }
+  }
+
+  return nullptr;
+}
+
 Object& CallOp::exec(){
   //return context->useName(name.name).call(*(new Object()));
   std::list<Object*> _arguments;
@@ -53,7 +72,8 @@ Object& BinaryOp::exec(){
 }
 
 Object& UnaryOp::exec(){
-  return *(new Object());
+  Object& right = this->right.exec();
+  return right.useName("__neg__").call();
 }
 
 Object& LitInt::exec(){

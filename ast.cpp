@@ -28,6 +28,10 @@ bool Statement::seeIndent(){
 void Statement::setContext(Namespace *context){
   this->context = context;
 }
+Namespace* Statement::getContext(){
+  return context;
+}
+
 void Assignment::setContext(Namespace *context){
   this->context = context;
   right.setContext(context);
@@ -49,6 +53,11 @@ void CallOp::setContext(Namespace* context){
   for(auto arg : arguments) {
     arg->setContext(context);
   }
+}
+
+void IfStatement::setContext(Namespace *context){
+  this->context = context;
+  expr.setContext(context);
 }
 
 Block* Block::getParent(){
@@ -74,6 +83,21 @@ Block* FunctionDef::endBlock(){
   std::cout << "endBlock " << name.name << std::endl << std::flush;
   //TODO: add a return None statement at the end of the function
   context->newName(name.name,*(new Function(name,parameters,*this)));
+  return Block::endBlock();
+}
+
+Block* IfStatement::endBlock(){
+  //TODO the next statement is received by a parameter to check if it is an elif or else
+
+  Block::print();
+
+  //TODO interpret body only if there is no elif/else
+  //TODO interpret would be called by else or elif endBlock
+  if(MainBlock *mb = dynamic_cast<MainBlock*>(getParent())){
+    interpret();
+  }
+
+  //TODO give elif/else block back, if they are the next statement
   return Block::endBlock();
 }
 
@@ -108,32 +132,52 @@ void Program::push(Statement *stt){
     }
     // !expect_indent && diff==0
     // continue current block
-    std::cout << "continue current block" << std::endl << std::flush;
     cur_block->push(stt);
 
     if(FunctionDef* fd = dynamic_cast<FunctionDef*>(stt)){
       fd->setParent(cur_block);
       cur_block = fd;
       expect_indent = 1;
+    } else
+    if(IfStatement *is = dynamic_cast<IfStatement*>(stt)){
+      is->setParent(cur_block);
+      cur_block = is;
+      expect_indent = 1;
     }
 
   } catch (std::runtime_error& e) {
     // an error brings the interpreter back to the main context
+    //TODO fix that an error brought by an endBlock discards the current
+    //statement that ended the block
     expect_indent = 0;
     while(cur_block->getParent())
       //cur_block = cur_block->endBlock();
       cur_block = cur_block->getParent();
-    //TODO properly destroy cur_block.back()
-    //TODO remove an declaration from the namespace
-    //TODO remove wronged element, cur_block.pop_back();
+      //TODO properly destroy wronged statement
     std::cout << e.what() << std::flush;
   }
   std::cout << std::endl << ">>> " << std::flush;
 }
 
 void Block::push(Statement *stt){
-  push_back(stt);
   stt->setContext(this);
+
+  push_back(stt);
+}
+
+void IfStatement::push(Statement *stt){
+  // set the context to the last proper namespace
+  if(MainBlock* mb = dynamic_cast<MainBlock*>(getParent())){
+    stt->setContext(getParent());
+  }else
+  if(FunctionDef* fd = dynamic_cast<FunctionDef*>(getParent())){
+    stt->setContext(getParent());
+  }else{
+    Statement* ps = dynamic_cast<Statement*>(getParent());
+    stt->setContext(ps->getContext());
+  }
+
+  push_back(stt);
 }
 
 void MainBlock::push(Statement *stt){
@@ -141,9 +185,10 @@ void MainBlock::push(Statement *stt){
     throw std::runtime_error("SyntaxError: 'return' outside function");
   }
 
-  push_back(stt);
   stt->setContext(this);
   stt->print();
   std::cout << std::endl << std::flush;
   stt->interpret();
+
+  push_back(stt);
 }
