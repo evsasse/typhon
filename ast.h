@@ -21,6 +21,7 @@ public:
   int getIndent();
   bool seeIndent();
   virtual void setContext(Namespace *context);
+  Namespace* getContext();
 protected:
   Statement(int indent = -1) :
   indent(indent), context(nullptr) {};
