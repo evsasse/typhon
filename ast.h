@@ -133,29 +133,33 @@ private:
   std::list<Expression*>& arguments;
 };
 
+class Compound :  public Block {
+// mantains namespace of block body as the parent
+public:
+  void push(Statement *stt);
+};
+
 class ElseStatement;
 
-class IfStatement : public Statement, public Block {
+class IfStatement : public Statement, public Compound {
 public:
   IfStatement(Expression& expr) :
   expr(expr), elseStt(nullptr) {};
   void print();
   Object* interpret();
   Block* endBlock();
-  void push(Statement *stt);
   void setContext(Namespace *context);
   Expression& expr;
   ElseStatement* elseStt;
 };
 
-class ElseStatement : public Statement, public Block {
+class ElseStatement : public Statement, public Compound {
 public:
   ElseStatement() :
   ifStt(nullptr) {};
   void print();
   Object* interpret();
   Block* endBlock();
-  void push(Statement *stt);
   IfStatement* ifStt;
 };
 

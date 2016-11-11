@@ -186,22 +186,7 @@ void Block::push(Statement *stt){
   push_back(stt);
 }
 
-void IfStatement::push(Statement *stt){
-  // set the context to the last proper namespace
-  if(MainBlock* mb = dynamic_cast<MainBlock*>(getParent())){
-    stt->setContext(getParent());
-  }else
-  if(FunctionDef* fd = dynamic_cast<FunctionDef*>(getParent())){
-    stt->setContext(getParent());
-  }else{
-    Statement* ps = dynamic_cast<Statement*>(getParent());
-    stt->setContext(ps->getContext());
-  }
-
-  push_back(stt);
-}
-
-void ElseStatement::push(Statement *stt){
+void Compound::push(Statement *stt){
   // set the context to the last proper namespace
   if(MainBlock* mb = dynamic_cast<MainBlock*>(getParent())){
     stt->setContext(getParent());
