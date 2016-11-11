@@ -112,9 +112,11 @@ Block* IfStatement::endBlock(Statement* stt){
 Block* ElseStatement::endBlock(Statement* stt){
   Block::print();
 
-  if(MainBlock *mb = dynamic_cast<MainBlock*>(getParent())){
-    interpret();
-  }
+  ifStt->interpret();
+
+  // if(MainBlock *mb = dynamic_cast<MainBlock*>(getParent())){
+  //   interpret();
+  // }
 
   return Block::endBlock(stt);
 }

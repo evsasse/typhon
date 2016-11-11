@@ -43,6 +43,8 @@ Object* IfStatement::interpret(){
         Object* ret = stt->interpret();
         if(ret) return ret;
       }
+    }else if(elseStt){
+      elseStt->interpret();
     }
   }
 
