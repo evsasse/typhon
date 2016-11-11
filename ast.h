@@ -155,6 +155,7 @@ public:
   void print();
   Object* interpret();
   Block* endBlock();
+  void push(Statement *stt);
   IfStatement* ifStt;
 };
 
