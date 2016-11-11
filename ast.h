@@ -36,7 +36,7 @@ public:
   Block* getParent();
   void setParent(Block* parent);
   virtual void push(Statement *stt);
-  virtual Block* endBlock();
+  virtual Block* endBlock(Statement* stt);
   Object& interpret();
   int getIndent();
   void setIndent(int indent);
@@ -104,7 +104,7 @@ public:
   Block(nullptr), name(name), parameters(parameters) {};
   void print();
   Object* interpret();
-  Block* endBlock();
+  Block* endBlock(Statement* stt);
   std::list<Parameter*>& parameters;
 private:
   Name& name;
@@ -147,7 +147,7 @@ public:
   expr(expr), elseStt(nullptr) {};
   void print();
   Object* interpret();
-  Block* endBlock();
+  Block* endBlock(Statement* stt);
   void setContext(Namespace *context);
   Expression& expr;
   ElseStatement* elseStt;
@@ -159,7 +159,7 @@ public:
   ifStt(nullptr) {};
   void print();
   Object* interpret();
-  Block* endBlock();
+  Block* endBlock(Statement* stt);
   IfStatement* ifStt;
 };
 
