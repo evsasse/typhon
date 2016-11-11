@@ -59,6 +59,10 @@ void IfStatement::print(){
   expr.print();
 }
 
+void ElseStatement::print(){
+  std::cout << "else";
+}
+
 void BinaryOp::print(){
   Statement::print();
   std::cout << "(" << std::flush;

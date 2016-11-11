@@ -101,6 +101,16 @@ Block* IfStatement::endBlock(){
   return Block::endBlock();
 }
 
+Block* ElseStatement::endBlock(){
+  Block::print();
+
+  if(MainBlock *mb = dynamic_cast<MainBlock*>(getParent())){
+    interpret();
+  }
+
+  return Block::endBlock();
+}
+
 int Program::lastIndent(){
   Block* cur = cur_block;
   while(cur && cur->getIndent() == -1)
@@ -143,6 +153,11 @@ void Program::push(Statement *stt){
       is->setParent(cur_block);
       cur_block = is;
       expect_indent = 1;
+    } else
+    if(ElseStatement *es = dynamic_cast<ElseStatement*>(stt)){
+      es->setParent(cur_block);
+      cur_block = es;
+      expect_indent = 1;
     }
 
   } catch (std::runtime_error& e) {
@@ -156,7 +171,13 @@ void Program::push(Statement *stt){
       //TODO properly destroy wronged statement
     std::cout << e.what() << std::flush;
   }
-  std::cout << std::endl << ">>> " << std::flush;
+
+  if(expect_indent)
+    std::cout << std::endl << "..> " << std::flush;
+  else if(lastIndent() > 0)
+    std::cout << std::endl << "... " << std::flush;
+  else
+    std::cout << std::endl << ">>> " << std::flush;
 }
 
 void Block::push(Statement *stt){

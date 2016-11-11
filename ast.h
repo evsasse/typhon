@@ -149,7 +149,13 @@ public:
 };
 
 class ElseStatement : public Statement, public Block {
-
+public:
+  ElseStatement() :
+  ifStt(nullptr) {};
+  void print();
+  Object* interpret();
+  Block* endBlock();
+  IfStatement* ifStt;
 };
 
 // class ElifStatement : public IfStatement, public ElseStatement {

@@ -37,7 +37,7 @@ Object* IfStatement::interpret(){
 
   if(size() > 0){
     // the body is actually interpreted only on endBlock
-    //TODO check if expr is truthy
+    //TODO change check for a BoolObject
     if(cond.useName("__bool__").call().getIdentifier() == IntObject(1).getIdentifier()){
       for(Statement *stt : *this){
         Object* ret = stt->interpret();
@@ -47,6 +47,17 @@ Object* IfStatement::interpret(){
   }
 
   return nullptr;
+}
+
+Object* ElseStatement::interpret(){
+  std::cout << "<else>";
+
+  if(size() > 0){
+    for(Statement *stt : *this){
+      Object* ret = stt->interpret();
+      if(ret) return ret;
+    }
+  }
 }
 
 Object& CallOp::exec(){
