@@ -163,9 +163,17 @@ public:
   IfStatement* ifStt;
 };
 
-// class ElifStatement : public IfStatement, public ElseStatement {
-//
-// }
+class ElifStatement : public ElseStatement{
+public:
+  ElifStatement(Expression& expr) :
+  expr(expr) {};
+  void print();
+  Object* interpret();
+  Block* endBlock(Statement* stt);
+  void setContext(Namespace *context);
+  Expression &expr;
+  ElseStatement* elseStt;
+};
 
 class BinaryOp : public Expression {
 public:

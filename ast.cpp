@@ -60,6 +60,11 @@ void IfStatement::setContext(Namespace *context){
   expr.setContext(context);
 }
 
+void ElifStatement::setContext(Namespace *context){
+  this->context = context;
+  expr.setContext(context);
+}
+
 Block* Block::getParent(){
   return parent;
 }
@@ -91,7 +96,7 @@ Block* FunctionDef::endBlock(Statement* stt){
 }
 
 Block* IfStatement::endBlock(Statement* stt){
-  //TODO the next statement is received by a parameter to check if it is an elif or else
+  //the next statement is received by a parameter to check if it is an elif or else
 
   Block::print();
 
@@ -99,11 +104,11 @@ Block* IfStatement::endBlock(Statement* stt){
     if(ElseStatement *es = dynamic_cast<ElseStatement*>(stt)){
       // if the statement closing this block is an else on the same identation
       es->ifStt = this;
+      es->setContext(getContext());
       elseStt = es;
     }
   }
-  //TODO interpret body only if there is no elif/else. ? DONE ?
-  //TODO interpret would be called by else or elif endBlock
+
   if(!elseStt){
     if(MainBlock *mb = dynamic_cast<MainBlock*>(getParent())){
       interpret();
@@ -117,8 +122,29 @@ Block* ElseStatement::endBlock(Statement* stt){
   Block::print();
 
   if(MainBlock *mb = dynamic_cast<MainBlock*>(getParent())){
-
     ifStt->interpret();
+  }
+
+  return Block::endBlock(stt);
+}
+
+Block* ElifStatement::endBlock(Statement* stt){
+
+  Block::print();
+
+  if(Statement::getIndent() == stt->getIndent()){
+    if(ElseStatement *es = dynamic_cast<ElseStatement*>(stt)){
+      // if the statement closing this block is an else on the same identation
+      es->ifStt = ifStt; // passes the if that starts the chain
+      es->setContext(getContext());
+      elseStt = es;
+    }
+  }
+
+  if(!elseStt){ //if there is no next elif/else
+    if(MainBlock *mb = dynamic_cast<MainBlock*>(getParent())){
+      ifStt->interpret();
+    }
   }
 
   return Block::endBlock(stt);

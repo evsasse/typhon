@@ -38,7 +38,7 @@ Object* FunctionRet::interpret(){
 Object* IfStatement::interpret(){
   Object& cond = expr.exec();
 
-  std::cout << "<if " << cond.getIdentifier() << " is truthy>";
+  std::cout << "<if " << cond.getIdentifier() << ">" << std::flush;
 
   if(size() > 0){
     // the body is actually interpreted only on endBlock
@@ -65,6 +65,27 @@ Object* ElseStatement::interpret(){
       if(ret) return ret;
     }
   }
+}
+
+Object* ElifStatement::interpret(){
+  Object& cond = expr.exec();
+
+  std::cout << "<elif " << cond.getIdentifier() << ">" << std::flush;
+
+  if(size() > 0){
+    // the body is actually interpreted only on endBlock
+    //TODO change check for a BoolObject
+    if(cond.useName("__bool__").call().getIdentifier() == IntObject(1).getIdentifier()){
+      for(Statement *stt : *this){
+        Object* ret = stt->interpret();
+        if(ret) return ret;
+      }
+    }else if(elseStt){
+      elseStt->interpret();
+    }
+  }
+
+  return nullptr;
 }
 
 Object& CallOp::exec(){
