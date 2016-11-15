@@ -1,0 +1,18 @@
+if 1:
+  def a():
+    return 12
+else:
+  def b():
+    return 34
+
+if 0:
+  def c():
+    return 56
+else:
+  def d():
+    return 78
+
+a()
+d()
+b() # name b should be undefined
+c() # name c should be undefined

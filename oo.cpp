@@ -3,6 +3,7 @@
 #include <iostream>
 
 void Namespace::newName(std::string name, Object& obj){
+  //std::cout << "[" << name << " = "<< obj.getIdentifier() << "]" << std::flush;
   space[name] = &obj;
 }
 

@@ -17,10 +17,15 @@ Object* Assignment::interpret(){
 
 Object* FunctionDef::interpret(){
   //context->newName(name.name,*(new Function(name,*this)));
-  // the function is now added to the namespace only at the endBlock
   std::cout << "<function def '" << std::flush;
   name.print();
   std::cout << "'>" << std::flush;
+
+  //The function is added to the namespace when it has a body
+  // the interpret is called at endBlock, and by parent bodys
+  if(size() > 0)
+    context->newName(name.name,*(new Function(name,parameters,*this)));
+
   return nullptr;
 }
 

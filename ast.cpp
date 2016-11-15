@@ -82,7 +82,11 @@ Block* FunctionDef::endBlock(Statement* stt){
   Block::print();
   std::cout << "endBlock " << name.name << std::endl << std::flush;
   //TODO: add a return None statement at the end of the function
-  context->newName(name.name,*(new Function(name,parameters,*this)));
+
+  if(MainBlock *mb = dynamic_cast<MainBlock*>(getParent())){
+    interpret();
+  }
+
   return Block::endBlock(stt);
 }
 
