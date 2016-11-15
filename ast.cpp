@@ -4,14 +4,22 @@
 
 std::string opSymbol(Op op){
   switch(op){
-    case ADD: return "+";
-    case SUB: return "-";
-    case MUL: return "*";
-    case DIV: return "/";
-    case MOD: return "%";
-    case EXP: return "**";
-    case FDV: return "//";
-    default: return "?";
+    case ADD: return "+"; break;
+    case SUB: return "-"; break;
+    case MUL: return "*"; break;
+    case DIV: return "/"; break;
+    case MOD: return "%"; break;
+    case EXP: return "**"; break;
+    case FDV: return "//"; break;
+
+    case LT: return "<"; break;
+    case LE: return "<="; break;
+    case EQ: return "=="; break;
+    case NE: return "!="; break;
+    case GE: return ">="; break;
+    case GT: return ">"; break;
+
+    default: return "?"; break;
   }
 }
 

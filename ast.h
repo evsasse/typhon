@@ -7,7 +7,8 @@
 /* Addition, Subtraction, Multiplication, Division,
    Modulus, Exponent, Floor Division */
 enum Op { ADD, SUB, MUL, DIV,
-          MOD, EXP, FDV };
+          MOD, EXP, FDV,
+          LT, LE, EQ, NE, GE, GT };
 
 std::string opSymbol(Op op);
 

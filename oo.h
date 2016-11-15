@@ -58,6 +58,15 @@ public:
   std::string getIdentifier();
 };
 
+class BoolObject : public Object {
+public:
+  bool value;
+  BoolObject(bool value);
+  std::string getIdentifier();
+private:
+  int to_int();
+};
+
 class Name;
 class Block;
 class Parameter;

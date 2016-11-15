@@ -42,8 +42,7 @@ Object* IfStatement::interpret(){
 
   if(size() > 0){
     // the body is actually interpreted only on endBlock
-    //TODO change check for a BoolObject
-    if(cond.useName("__bool__").call().getIdentifier() == IntObject(1).getIdentifier()){
+    if(cond.useName("__bool__").call().getIdentifier() == BoolObject(1).getIdentifier()){
       for(Statement *stt : *this){
         Object* ret = stt->interpret();
         if(ret) return ret;
@@ -74,8 +73,7 @@ Object* ElifStatement::interpret(){
 
   if(size() > 0){
     // the body is actually interpreted only on endBlock
-    //TODO change check for a BoolObject
-    if(cond.useName("__bool__").call().getIdentifier() == IntObject(1).getIdentifier()){
+    if(cond.useName("__bool__").call().getIdentifier() == BoolObject(1).getIdentifier()){
       for(Statement *stt : *this){
         Object* ret = stt->interpret();
         if(ret) return ret;
@@ -96,8 +94,7 @@ Object* WhileStatement::interpret(){
 
   if(size() > 0){
     // the body is actually interpreted only on endBlock
-    //TODO change check for a BoolObject
-    while(cond.useName("__bool__").call().getIdentifier() == IntObject(1).getIdentifier()){
+    while(cond.useName("__bool__").call().getIdentifier() == BoolObject(1).getIdentifier()){
       for(Statement *stt : *this){
         //TODO break; on continue;
         //TODO break;break on break;
@@ -164,5 +161,5 @@ Object& LitFloat::exec(){
 }
 
 Object& LitBool::exec(){
-  return *(new Object());
+  return *(new BoolObject(value));
 }
