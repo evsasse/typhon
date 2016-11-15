@@ -151,9 +151,9 @@ Block* ElifStatement::endBlock(Statement* stt){
 }
 
 Block* WhileStatement::endBlock(Statement *stt){
-  // While endBlock has the same behavior as the If endBlock, except for elif
+  // While endBlock has the same behavior as the If endBlock, except for elif trying to close it
   ElifStatement *elifs = dynamic_cast<ElifStatement*>(stt);
-  if(!elifs){
+  if(Statement::getIndent() != stt->getIndent() || !elifs){
     IfStatement::endBlock(stt);
   }
 }

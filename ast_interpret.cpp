@@ -105,11 +105,12 @@ Object* WhileStatement::interpret(){
         if(ret) return ret;
       }
       cond = expr.exec();
+      std::cout << "{" << cond.getIdentifier() << "}";
     }
-    // TODO support for-else
-    // if(elseStt){
-    //   elseStt->interpret();
-    // }
+
+    if(elseStt){
+      elseStt->interpret();
+    }
   }
 
   return nullptr;
