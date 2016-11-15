@@ -38,7 +38,7 @@ Object* FunctionRet::interpret(){
 Object* IfStatement::interpret(){
   Object& cond = expr.exec();
 
-  std::cout << "<if " << cond.getIdentifier() << ">";
+  std::cout << "<if " << cond.getIdentifier() << ">" << std::flush;
 
   if(size() > 0){
     // the body is actually interpreted only on endBlock
@@ -70,7 +70,7 @@ Object* ElseStatement::interpret(){
 Object* ElifStatement::interpret(){
   Object& cond = expr.exec();
 
-  std::cout << "<elif " << cond.getIdentifier() << ">";
+  std::cout << "<elif " << cond.getIdentifier() << ">" << std::flush;
 
   if(size() > 0){
     // the body is actually interpreted only on endBlock

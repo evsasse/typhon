@@ -60,6 +60,11 @@ void IfStatement::setContext(Namespace *context){
   expr.setContext(context);
 }
 
+void ElifStatement::setContext(Namespace *context){
+  this->context = context;
+  expr.setContext(context);
+}
+
 Block* Block::getParent(){
   return parent;
 }
@@ -99,6 +104,7 @@ Block* IfStatement::endBlock(Statement* stt){
     if(ElseStatement *es = dynamic_cast<ElseStatement*>(stt)){
       // if the statement closing this block is an else on the same identation
       es->ifStt = this;
+      es->setContext(getContext());
       elseStt = es;
     }
   }
@@ -130,6 +136,7 @@ Block* ElifStatement::endBlock(Statement* stt){
     if(ElseStatement *es = dynamic_cast<ElseStatement*>(stt)){
       // if the statement closing this block is an else on the same identation
       es->ifStt = ifStt; // passes the if that starts the chain
+      es->setContext(getContext());
       elseStt = es;
     }
   }

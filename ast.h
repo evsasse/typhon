@@ -170,6 +170,7 @@ public:
   void print();
   Object* interpret();
   Block* endBlock(Statement* stt);
+  void setContext(Namespace *context);
   Expression &expr;
   ElseStatement* elseStt;
 };
