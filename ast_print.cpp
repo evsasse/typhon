@@ -63,6 +63,11 @@ void ElseStatement::print(){
   std::cout << "else";
 }
 
+void ElifStatement::print(){
+  std::cout << "elif ";
+  expr.print();
+}
+
 void BinaryOp::print(){
   Statement::print();
   std::cout << "(" << std::flush;
