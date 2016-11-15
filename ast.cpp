@@ -224,6 +224,7 @@ void Compound::push(Statement *stt){
 void MainBlock::push(Statement *stt){
   if(FunctionRet* fr = dynamic_cast<FunctionRet*>(stt)){
     throw std::runtime_error("SyntaxError: 'return' outside function");
+    //TODO check for return inside compound statements that are on main
   }
 
   stt->setContext(this);
