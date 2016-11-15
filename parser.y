@@ -38,7 +38,7 @@
 }
 
 %left '+' '-'
-%left '*' '/' O_FDV
+%left '%' '*' '/' O_FDV
 %left O_UNARY
 %left O_EXP
 %left '('
@@ -130,6 +130,7 @@ expression : value { $$ = $1; }
            | expression '-' expression { $$ = new BinaryOp(*$1, Op::SUB, *$3); }
            | expression '*' expression { $$ = new BinaryOp(*$1, Op::MUL, *$3); }
            | expression '/' expression { $$ = new BinaryOp(*$1, Op::DIV, *$3); }
+           | expression '%' expression { $$ = new BinaryOp(*$1, Op::MOD, *$3); }
            | expression O_EXP expression { $$ = new BinaryOp(*$1, Op::EXP, *$3); }
            | expression O_FDV expression { $$ = new BinaryOp(*$1, Op::FDV, *$3); }
            ;

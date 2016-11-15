@@ -53,8 +53,8 @@ public:
 
 class IntObject : public Object {
 public:
-  int value;
-  IntObject(int value);
+  long value;
+  IntObject(long value);
   std::string getIdentifier();
 };
 

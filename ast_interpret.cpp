@@ -135,12 +135,24 @@ Object& BinaryOp::exec(){
   Object& left = this->left.exec();
   Object& right = this->right.exec();
   auto argument = std::list<Object*>(1,&right);
-  return left.useName("__add__").call(argument);
+  switch(op){
+    case ADD: return left.useName("__add__").call(argument); break;
+    case SUB: return left.useName("__sub__").call(argument); break;
+    case MUL: return left.useName("__mul__").call(argument); break;
+    case DIV: return left.useName("__div__").call(argument); break;
+    case MOD: return left.useName("__mod__").call(argument); break;
+    case EXP: return left.useName("__exp__").call(argument); break;
+    case FDV: return left.useName("__fdv__").call(argument); break;
+  }
+  //return left.useName("__add__").call(argument);
 }
 
 Object& UnaryOp::exec(){
   Object& right = this->right.exec();
-  return right.useName("__neg__").call();
+  switch(op){
+    case ADD: return right.useName("__pos__").call(); break;
+    case SUB: return right.useName("__neg__").call(); break;
+  }
 }
 
 Object& LitInt::exec(){
