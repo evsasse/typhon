@@ -1,3 +1,5 @@
+# tests that functions in unexecuted blocks keep being undefined
+
 if 1:
   def a():
     return 12
