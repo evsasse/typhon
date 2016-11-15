@@ -68,6 +68,11 @@ void ElifStatement::print(){
   expr.print();
 }
 
+void WhileStatement::print(){
+  std::cout << "while ";
+  expr.print();
+}
+
 void BinaryOp::print(){
   Statement::print();
   std::cout << "(" << std::flush;

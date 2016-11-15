@@ -150,6 +150,14 @@ Block* ElifStatement::endBlock(Statement* stt){
   return Block::endBlock(stt);
 }
 
+Block* WhileStatement::endBlock(Statement *stt){
+  // While endBlock has the same behavior as the If endBlock, except for elif trying to close it
+  ElifStatement *elifs = dynamic_cast<ElifStatement*>(stt);
+  if(Statement::getIndent() != stt->getIndent() || !elifs){
+    IfStatement::endBlock(stt);
+  }
+}
+
 int Program::lastIndent(){
   Block* cur = cur_block;
   while(cur && cur->getIndent() == -1)
@@ -200,6 +208,7 @@ void Program::push(Statement *stt){
       cur_block = es;
       expect_indent = 1;
     } else
+    // while also gets this behavior
     if(IfStatement *is = dynamic_cast<IfStatement*>(stt)){
       is->setParent(cur_block);
       cur_block = is;

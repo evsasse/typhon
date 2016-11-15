@@ -1,0 +1,6 @@
+# can make a infinite loop
+
+while 1:
+  123
+#TODO add an 'pass' expression on EOF, so the last compound is interpreted
+456

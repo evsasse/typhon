@@ -1,0 +1,28 @@
+# namespaces on while
+
+a = -11
+b = 666
+while a:
+  a += 1;
+  if a:
+    a += 1;
+  else:
+    def b(x):
+      return x
+    a = b(a)+(-2)
+
+c = -5
+d = 0
+while c:
+  e = c
+  while e:
+    d += 1
+    e += 1
+# TODO check on this error
+# ?! confusing the inside if condition with the outside ??
+
+a # 0
+b # function
+c # 0
+d # 15
+e # 0

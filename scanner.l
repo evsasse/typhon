@@ -41,9 +41,10 @@ name [a-zA-Z_][a-zA-Z0-9_]*
 "def " { return T_DEF; }
 "return " { return T_RETURN; }
 
-"if " { return T_IF; }
+"if " { return T_IF; /*TODO if(), elif(), while(). without space*/ }
 "elif " { return T_ELIF; }
 "else" { return T_ELSE; }
+"while " { return T_WHILE; }
 
 [,;:\+\-\*\/\(\)\=] { return yytext[0]; }
 "**" { return O_EXP; }

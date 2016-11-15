@@ -88,6 +88,34 @@ Object* ElifStatement::interpret(){
   return nullptr;
 }
 
+Object* WhileStatement::interpret(){
+  Object& cond = expr.exec();
+  //TODO change print, as a function on the Expression
+  //may end up being called one more time than expected
+  std::cout << "<while " << cond.getIdentifier() << ">" << std::flush;
+
+  if(size() > 0){
+    // the body is actually interpreted only on endBlock
+    //TODO change check for a BoolObject
+    while(cond.useName("__bool__").call().getIdentifier() == IntObject(1).getIdentifier()){
+      for(Statement *stt : *this){
+        //TODO break; on continue;
+        //TODO break;break on break;
+        Object* ret = stt->interpret();
+        if(ret) return ret;
+      }
+      cond = expr.exec();
+      std::cout << "{" << cond.getIdentifier() << "}";
+    }
+
+    if(elseStt){
+      elseStt->interpret();
+    }
+  }
+
+  return nullptr;
+}
+
 Object& CallOp::exec(){
   //return context->useName(name.name).call(*(new Object()));
   std::list<Object*> _arguments;
