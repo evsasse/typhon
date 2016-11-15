@@ -1,0 +1,18 @@
+# tests that some blocks should not be executed
+
+def a():
+  b = 666
+
+  if 0:
+    b += 1
+  else:
+    b += 22
+
+  if 1:
+    b += 333
+  else:
+    b += 4444
+
+  return b # should return 666+22+333 = 1021
+a() # 1021
+b # b should be undefined

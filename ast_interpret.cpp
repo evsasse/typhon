@@ -17,10 +17,15 @@ Object* Assignment::interpret(){
 
 Object* FunctionDef::interpret(){
   //context->newName(name.name,*(new Function(name,*this)));
-  // the function is now added to the namespace only at the endBlock
   std::cout << "<function def '" << std::flush;
   name.print();
   std::cout << "'>" << std::flush;
+
+  //The function is added to the namespace when it has a body
+  // the interpret is called at endBlock, and by parent bodys
+  if(size() > 0)
+    context->newName(name.name,*(new Function(name,parameters,*this)));
+
   return nullptr;
 }
 
@@ -37,16 +42,29 @@ Object* IfStatement::interpret(){
 
   if(size() > 0){
     // the body is actually interpreted only on endBlock
-    //TODO check if expr is truthy
+    //TODO change check for a BoolObject
     if(cond.useName("__bool__").call().getIdentifier() == IntObject(1).getIdentifier()){
       for(Statement *stt : *this){
         Object* ret = stt->interpret();
         if(ret) return ret;
       }
+    }else if(elseStt){
+      elseStt->interpret();
     }
   }
 
   return nullptr;
+}
+
+Object* ElseStatement::interpret(){
+  std::cout << "<else>";
+
+  if(size() > 0){
+    for(Statement *stt : *this){
+      Object* ret = stt->interpret();
+      if(ret) return ret;
+    }
+  }
 }
 
 Object& CallOp::exec(){
