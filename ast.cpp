@@ -116,11 +116,10 @@ Block* IfStatement::endBlock(Statement* stt){
 Block* ElseStatement::endBlock(Statement* stt){
   Block::print();
 
-  ifStt->interpret();
+  if(MainBlock *mb = dynamic_cast<MainBlock*>(getParent())){
 
-  // if(MainBlock *mb = dynamic_cast<MainBlock*>(getParent())){
-  //   interpret();
-  // }
+    ifStt->interpret();
+  }
 
   return Block::endBlock(stt);
 }
@@ -156,7 +155,11 @@ void Program::push(Statement *stt){
     }
     // !expect_indent && diff==0
     // continue current block
-    cur_block->push(stt);
+    if(ElseStatement *es = dynamic_cast<ElseStatement*>(stt)){
+      //else statement is linked to the if statement, no need to pushed, prevents reinterpretation
+    }else{
+      cur_block->push(stt);
+    }
 
     if(FunctionDef* fd = dynamic_cast<FunctionDef*>(stt)){
       fd->setParent(cur_block);
