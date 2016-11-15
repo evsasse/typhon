@@ -52,12 +52,13 @@
 %token T_INDENT T_NEWLINE
 %token T_DEF T_RETURN
 %token T_IF T_ELIF T_ELSE
+%token T_WHILE
 
 %type <val_int> indent
 %type <stt> statement simple-statement
 %type <value> value
 %type <name> name
-%type <expr> expression
+%type <expr> expression while
 %type <exprs> expression-list expression-list-opt
 %type <param> parameter
 %type <params> parameter-list parameter-list-opt
@@ -94,6 +95,7 @@ statement : simple-statement { $$ = $1; }
           | if { $$ = $1; }
           | elif { $$ = $1; }
           | else { $$ = $1; }
+          | while { $$ = $1; }
           ;
 
 simple-statement: /* one that does not contain blocks and new lines */
@@ -166,6 +168,8 @@ elif : T_ELIF expression ':' { $$ = new ElifStatement(*$2); }
 
 else : T_ELSE ':' { $$ = new ElseStatement(); }
      ;
+
+while : T_WHILE expression ':' { $$ = $2; }
 
 %%
 
