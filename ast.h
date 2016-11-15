@@ -175,6 +175,15 @@ public:
   ElseStatement* elseStt;
 };
 
+class WhileStatement : public IfStatement{
+public:
+  WhileStatement(Expression& expr) :
+  IfStatement(expr) {};
+  void print();
+  Object* interpret();
+  Block* endBlock(Statement* stt);
+};
+
 class BinaryOp : public Expression {
 public:
   void print();

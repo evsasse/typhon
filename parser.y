@@ -31,6 +31,7 @@
   IfStatement *ifstt;
   ElseStatement *elsestt;
   ElifStatement *elifstt;
+  WhileStatement *whilestt;
 
   std::list<Expression*> *exprs;
   std::list<Parameter*> *params;
@@ -58,7 +59,7 @@
 %type <stt> statement simple-statement
 %type <value> value
 %type <name> name
-%type <expr> expression while
+%type <expr> expression
 %type <exprs> expression-list expression-list-opt
 %type <param> parameter
 %type <params> parameter-list parameter-list-opt
@@ -68,6 +69,7 @@
 %type <ifstt> if
 %type <elsestt> else
 %type <elifstt> elif
+%type <whilestt> while
 
 %%
 
@@ -169,7 +171,7 @@ elif : T_ELIF expression ':' { $$ = new ElifStatement(*$2); }
 else : T_ELSE ':' { $$ = new ElseStatement(); }
      ;
 
-while : T_WHILE expression ':' { $$ = $2; }
+while : T_WHILE expression ':' { $$ = new WhileStatement(*$2); }
 
 %%
 

@@ -1,0 +1,16 @@
+# simple while tests
+
+a = 0
+
+while 0:
+  a = 123
+
+b = -123
+c = 0
+while b:
+  c += 1
+  b += 1
+
+a # 0
+b # 0
+c # 123
