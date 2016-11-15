@@ -28,6 +28,7 @@ Object("bool"), value(value) {
   ///////////////////
   // __add__
   std::function<Object& (std::list<Object*> arguments)> __add__ = [this](std::list<Object*> arguments)-> Object& {
+    //TODO solve at least when the argument is a bool
     return IntObject(to_int()).useName("__add__").call(arguments);
   };
   // __sub__

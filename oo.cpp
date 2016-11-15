@@ -12,7 +12,7 @@ Object& Namespace::useName(std::string name){
   if(space.find(name) != space.end())
     return *(space[name]);
   else
-    throw std::runtime_error("NameError: name '"+name+"' is not defined");
+    throw NameError(name);
 }
 
 std::string Object::getIdentifier(){

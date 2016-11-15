@@ -22,12 +22,11 @@ Object("int"), value(value) {
   ///////////////////
   // __add__
   std::function<Object& (std::list<Object*> arguments)> __add__ = [this](std::list<Object*> arguments)-> Object& {
-    //IntObject* int_right = dynamic_cast<IntObject*>(const_cast<Object*>(&right));
     IntObject* int_right = dynamic_cast<IntObject*>(arguments.front());
     if(int_right){
       return *(new IntObject(this->value + int_right->value));
     }else{
-      return *(new Object());
+      return *(new NotImplemented());
     }
   };
   // __sub__
@@ -37,7 +36,7 @@ Object("int"), value(value) {
     if(int_right){
       return *(new IntObject(this->value - int_right->value));
     }else{
-      return *(new Object());
+      return *(new NotImplemented());
     }
   };
   // __mul__
@@ -47,7 +46,7 @@ Object("int"), value(value) {
     if(int_right){
       return *(new IntObject(this->value * int_right->value));
     }else{
-      return *(new Object());
+      return *(new NotImplemented());
     }
   };
   // __div__
@@ -58,7 +57,7 @@ Object("int"), value(value) {
     if(int_right){
       return *(new IntObject(this->value / int_right->value));
     }else{
-      return *(new Object());
+      return *(new NotImplemented());
     }
   };
   // __mod__
@@ -68,7 +67,7 @@ Object("int"), value(value) {
     if(int_right){
       return *(new IntObject(this->value % int_right->value));
     }else{
-      return *(new Object());
+      return *(new NotImplemented());
     }
   };
   // __exp__
@@ -78,7 +77,7 @@ Object("int"), value(value) {
     if(int_right){
       return *(new IntObject(pow(this->value, int_right->value)));
     }else{
-      return *(new Object());
+      return *(new NotImplemented());
     }
   };
   // __fdv__
@@ -89,7 +88,7 @@ Object("int"), value(value) {
     if(int_right){
       return *(new IntObject(this->value / int_right->value));
     }else{
-      return *(new Object());
+      return *(new NotImplemented());
     }
   };
 

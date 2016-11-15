@@ -131,16 +131,51 @@ Object& Name::exec(){
 Object& BinaryOp::exec(){
   Object& left = this->left.exec();
   Object& right = this->right.exec();
+  Object* ret = nullptr;
   auto argument = std::list<Object*>(1,&right);
-  switch(op){
-    case ADD: return left.useName("__add__").call(argument); break;
-    case SUB: return left.useName("__sub__").call(argument); break;
-    case MUL: return left.useName("__mul__").call(argument); break;
-    case DIV: return left.useName("__div__").call(argument); break;
-    case MOD: return left.useName("__mod__").call(argument); break;
-    case EXP: return left.useName("__exp__").call(argument); break;
-    case FDV: return left.useName("__fdv__").call(argument); break;
+  try {
+    switch(op){
+      case ADD: ret = & left.useName("__add__"); break;
+      case SUB: ret = & left.useName("__sub__"); break;
+      case MUL: ret = & left.useName("__mul__"); break;
+      case DIV: ret = & left.useName("__div__"); break;
+      case MOD: ret = & left.useName("__mod__"); break;
+      case EXP: ret = & left.useName("__exp__"); break;
+      case FDV: ret = & left.useName("__fdv__"); break;
+      default: throw std::runtime_error("OperationError: "+opSymbol(op)+" is unexpected here"); break;
+    }
+  }catch(NameError& e){
+    ret = nullptr;
   }
+  if(ret)
+    ret = & ret->call(argument);
+
+  // If theres is no usual ("__add__") function on left implemented, or if it returns NotImplemented
+  // We call the reverse version ("__radd__") on right
+  NotImplemented *ni = dynamic_cast<NotImplemented*>(ret);
+  if(!ret || ni) try {
+    switch(op){
+      case ADD: ret = & right.useName("__radd__"); break;
+      case SUB: ret = & right.useName("__rsub__"); break;
+      case MUL: ret = & right.useName("__rmul__"); break;
+      case DIV: ret = & right.useName("__rdiv__"); break;
+      case MOD: ret = & right.useName("__rmod__"); break;
+      case EXP: ret = & right.useName("__rexp__"); break;
+      case FDV: ret = & right.useName("__rfdv__"); break;
+      default: throw std::runtime_error("OperationError: "+opSymbol(op)+" is unexpected here"); break;
+    }
+  }catch(NameError& e){
+    ret = nullptr;
+  }
+
+  //If it also couldnt evaluate using the reverse function
+  //Throw a TypeError unsupported operand type
+  ni = dynamic_cast<NotImplemented*>(ret);
+  if(!ret || ni){
+    throw std::runtime_error("TypeError: unsupported operand type(s) for "+opSymbol(op)+": '"+left.getIdentifier()+"' and '"+right.getIdentifier()+"'");
+  }
+
+  return *ret;
   //return left.useName("__add__").call(argument);
 }
 

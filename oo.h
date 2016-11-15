@@ -5,6 +5,12 @@
 #include <list>
 #include <functional>
 
+class NameError : public std::runtime_error {
+public:
+  NameError(std::string name) :
+  std::runtime_error("NameError: name '"+name+"' is not defined") {};
+};
+
 class Object;
 
 class Namespace {
@@ -50,6 +56,17 @@ public:
 //   Class("int") {};
 //   Object& init(int);
 // };
+
+class NoneObject : public Object {
+public:
+  NoneObject();
+};
+
+class NotImplemented : public Object {
+public:
+  NotImplemented() :
+  Object("NotImplemented") {};
+};
 
 class IntObject : public Object {
 public:
