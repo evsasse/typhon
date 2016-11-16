@@ -153,19 +153,24 @@ Object& BinaryOp::exec(){
   // If theres is no usual ("__add__") function on left implemented, or if it returns NotImplemented
   // We call the reverse version ("__radd__") on right
   NotImplemented *ni = dynamic_cast<NotImplemented*>(ret);
-  if(!ret || ni) try {
-    switch(op){
-      case ADD: ret = & right.useName("__radd__"); break;
-      case SUB: ret = & right.useName("__rsub__"); break;
-      case MUL: ret = & right.useName("__rmul__"); break;
-      case DIV: ret = & right.useName("__rdiv__"); break;
-      case MOD: ret = & right.useName("__rmod__"); break;
-      case EXP: ret = & right.useName("__rexp__"); break;
-      case FDV: ret = & right.useName("__rfdv__"); break;
-      default: throw std::runtime_error("OperationError: "+opSymbol(op)+" is unexpected here"); break;
+  if(!ret || ni){
+    argument = std::list<Object*>(1,&left);
+    try {
+      switch(op){
+        case ADD: ret = & right.useName("__radd__"); break;
+        case SUB: ret = & right.useName("__rsub__"); break;
+        case MUL: ret = & right.useName("__rmul__"); break;
+        case DIV: ret = & right.useName("__rdiv__"); break;
+        case MOD: ret = & right.useName("__rmod__"); break;
+        case EXP: ret = & right.useName("__rexp__"); break;
+        case FDV: ret = & right.useName("__rfdv__"); break;
+        default: throw std::runtime_error("OperationError: "+opSymbol(op)+" is unexpected here"); break;
+      }
+    }catch(NameError& e){
+      ret = nullptr;
     }
-  }catch(NameError& e){
-    ret = nullptr;
+    if(ret)
+      ret = & ret->call(argument);
   }
 
   //If it also couldnt evaluate using the reverse function

@@ -22,10 +22,14 @@ Object("int"), value(value) {
   ///////////////////
   // __add__
   std::function<Object& (std::list<Object*> arguments)> __add__ = [this](std::list<Object*> arguments)-> Object& {
-    IntObject* int_right = dynamic_cast<IntObject*>(arguments.front());
-    if(int_right){
+    if(IntObject* int_right = dynamic_cast<IntObject*>(arguments.front())){
       return *(new IntObject(this->value + int_right->value));
-    }else{
+    }else
+    // if(BoolObject* int_right = dynamic_cast<IntObject*>(arguments.front())){
+    //  TODO check if this is necessary, or is implemeted on BoolObject::__radd__
+    // }
+    // else
+    {
       return *(new NotImplemented());
     }
   };
