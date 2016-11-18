@@ -80,7 +80,6 @@ public:
   bool value;
   BoolObject(bool value);
   std::string getIdentifier();
-private:
   int to_int();
 };
 

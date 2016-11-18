@@ -28,56 +28,72 @@ Object("bool"), value(value) {
   ///////////////////
   // __add__
   std::function<Object& (std::list<Object*> arguments)> __add__ = [this](std::list<Object*> arguments)-> Object& {
-    if(BoolObject* bo = dynamic_cast<BoolObject*>(arguments.front()))
+    if(BoolObject* bo = dynamic_cast<BoolObject*>(arguments.front())){
       arguments = std::list<Object*>(1, new IntObject(bo->to_int()));
-    return IntObject(to_int()).useName("__add__").call(arguments);
+      return IntObject(to_int()).useName("__add__").call(arguments);
+    }else{
+      return *(new NotImplemented());
+    }
   };
   // __sub__
   std::function<Object& (std::list<Object*> arguments)> __sub__ = [this](std::list<Object*> arguments)-> Object& {
-    if(BoolObject* bo = dynamic_cast<BoolObject*>(arguments.front()))
+    if(BoolObject* bo = dynamic_cast<BoolObject*>(arguments.front())){
       arguments = std::list<Object*>(1, new IntObject(bo->to_int()));
-    return IntObject(to_int()).useName("__sub__").call(arguments);
+      return IntObject(to_int()).useName("__sub__").call(arguments);
+    }else{
+      return *(new NotImplemented());
+    }
   };
   // __mul__
   std::function<Object& (std::list<Object*> arguments)> __mul__ = [this](std::list<Object*> arguments)-> Object& {
-    if(BoolObject* bo = dynamic_cast<BoolObject*>(arguments.front()))
+    if(BoolObject* bo = dynamic_cast<BoolObject*>(arguments.front())){
       arguments = std::list<Object*>(1, new IntObject(bo->to_int()));
-    return IntObject(to_int()).useName("__mul__").call(arguments);
+      return IntObject(to_int()).useName("__mul__").call(arguments);
+    }else{
+      return *(new NotImplemented());
+    }
   };
   // __div__
   std::function<Object& (std::list<Object*> arguments)> __div__ = [this](std::list<Object*> arguments)-> Object& {
-    if(BoolObject* bo = dynamic_cast<BoolObject*>(arguments.front()))
+    if(BoolObject* bo = dynamic_cast<BoolObject*>(arguments.front())){
       arguments = std::list<Object*>(1, new IntObject(bo->to_int()));
-    return IntObject(to_int()).useName("__div__").call(arguments);
+      return IntObject(to_int()).useName("__div__").call(arguments);
+    }else{
+      return *(new NotImplemented());
+    }
   };
   // __mod__
   std::function<Object& (std::list<Object*> arguments)> __mod__ = [this](std::list<Object*> arguments)-> Object& {
-    if(BoolObject* bo = dynamic_cast<BoolObject*>(arguments.front()))
+    if(BoolObject* bo = dynamic_cast<BoolObject*>(arguments.front())){
       arguments = std::list<Object*>(1, new IntObject(bo->to_int()));
-    return IntObject(to_int()).useName("__mod__").call(arguments);
+      return IntObject(to_int()).useName("__mod__").call(arguments);
+    }else{
+      return *(new NotImplemented());
+    }
   };
   // __exp__
   std::function<Object& (std::list<Object*> arguments)> __exp__ = [this](std::list<Object*> arguments)-> Object& {
-    if(BoolObject* bo = dynamic_cast<BoolObject*>(arguments.front()))
+    if(BoolObject* bo = dynamic_cast<BoolObject*>(arguments.front())){
       arguments = std::list<Object*>(1, new IntObject(bo->to_int()));
-    return IntObject(to_int()).useName("__exp__").call(arguments);
+      return IntObject(to_int()).useName("__exp__").call(arguments);
+    }else{
+      return *(new NotImplemented());
+    }
   };
   // __fdv__
   std::function<Object& (std::list<Object*> arguments)> __fdv__ = [this](std::list<Object*> arguments)-> Object& {
-    if(BoolObject* bo = dynamic_cast<BoolObject*>(arguments.front()))
+    if(BoolObject* bo = dynamic_cast<BoolObject*>(arguments.front())){
       arguments = std::list<Object*>(1, new IntObject(bo->to_int()));
-    return IntObject(to_int()).useName("__fdv__").call(arguments);
+      return IntObject(to_int()).useName("__fdv__").call(arguments);
+    }else{
+      return *(new NotImplemented());
+    }
   };
 
   ///////////////////
   // __bool__
   std::function<Object& (std::list<Object*> arguments)> __bool__ = [this](std::list<Object*> arguments)-> Object& {
     *(new BoolObject(this->value));
-  };
-  // __int__
-  std::function<Object& (std::list<Object*> arguments)> __int__ = [this](std::list<Object*> arguments)-> Object& {
-    if(this->value) return *(new IntObject(1));
-    else return *(new IntObject(0));
   };
 
   //Some functions use the IntObject behavior, and consider True as 1 and False as 0
@@ -92,14 +108,6 @@ Object("bool"), value(value) {
   newName("__exp__", *(new BuiltInFunction(__exp__)));
   newName("__fdv__", *(new BuiltInFunction(__fdv__)));
 
-  newName("__radd__", *(new BuiltInFunction(__add__)));
-  //newName("__rsub__", *(new BuiltInFunction(__sub__)));
-  newName("__rmul__", *(new BuiltInFunction(__mul__)));
-  //newName("__rdiv__", *(new BuiltInFunction(__div__)));
-  //newName("__rmod__", *(new BuiltInFunction(__mod__)));
-  //newName("__rexp__", *(new BuiltInFunction(__exp__)));
-  //newName("__rfdv__", *(new BuiltInFunction(__fdv__)));
-
   newName("__bool__", *(new BuiltInFunction(__bool__)));
-  newName("__int__", *(new BuiltInFunction(__int__)));
+  //newName("__int__", *(new BuiltInFunction(__int__)));
 }
