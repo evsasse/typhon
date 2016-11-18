@@ -200,7 +200,7 @@ Object& LitInt::exec(){
 }
 
 Object& LitFloat::exec(){
-  return *(new Object());
+  return *(new FloatObject(value));
 }
 
 Object& LitBool::exec(){

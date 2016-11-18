@@ -52,21 +52,23 @@ Object("int"), value(value) {
   };
   // __div__
   std::function<Object& (std::list<Object*> arguments)> __div__ = [this](std::list<Object*> arguments)-> Object& {
-    //TODO protect division by zero
     if(IntObject* int_right = dynamic_cast<IntObject*>(arguments.front())){
-      return *(new IntObject(this->value / int_right->value));
+      if(int_right->value == 0) throw std::runtime_error("ZeroDivisionError: division by zero");
+      return *(new FloatObject(static_cast<double>(this->value) / int_right->value));
     }else if(BoolObject* bool_right = dynamic_cast<BoolObject*>(arguments.front())){
-      return *(new IntObject(this->value / bool_right->to_int()));
+      if(bool_right->to_int() == 0) throw std::runtime_error("ZeroDivisionError: division by zero");
+      return *(new FloatObject(static_cast<double>(this->value) / bool_right->to_int()));
     }else{
       return *(new NotImplemented());
     }
   };
   // __mod__
   std::function<Object& (std::list<Object*> arguments)> __mod__ = [this](std::list<Object*> arguments)-> Object& {
-    //TODO protect division by zero
     if(IntObject* int_right = dynamic_cast<IntObject*>(arguments.front())){
+      if(int_right->value == 0) throw std::runtime_error("ZeroDivisionError: division by zero");
       return *(new IntObject(this->value % int_right->value));
     }else if(BoolObject* bool_right = dynamic_cast<BoolObject*>(arguments.front())){
+      if(bool_right->to_int() == 0) throw std::runtime_error("ZeroDivisionError: division by zero");
       return *(new IntObject(this->value % bool_right->to_int()));
     }else{
       return *(new NotImplemented());
@@ -84,10 +86,11 @@ Object("int"), value(value) {
   };
   // __fdv__
   std::function<Object& (std::list<Object*> arguments)> __fdv__ = [this](std::list<Object*> arguments)-> Object& {
-    //TODO protect division by zero
     if(IntObject* int_right = dynamic_cast<IntObject*>(arguments.front())){
+      if(int_right->value == 0) throw std::runtime_error("ZeroDivisionError: division by zero");
       return *(new IntObject(this->value / int_right->value));
     }else if(BoolObject* bool_right = dynamic_cast<BoolObject*>(arguments.front())){
+      if(bool_right->to_int() == 0) throw std::runtime_error("ZeroDivisionError: division by zero");
       return *(new IntObject(this->value / bool_right->to_int()));
     }else{
       return *(new NotImplemented());
@@ -109,9 +112,9 @@ Object("int"), value(value) {
   std::function<Object& (std::list<Object*> arguments)> __rdiv__ = [this](std::list<Object*> arguments)-> Object& {
     //TODO protect division by zero
     if(IntObject* int_left = dynamic_cast<IntObject*>(arguments.front())){
-      return *(new IntObject(int_left->value / this->value));
+      return *(new FloatObject(int_left->value / static_cast<double>(this->value)));
     }else if(BoolObject* bool_left = dynamic_cast<BoolObject*>(arguments.front())){
-      return *(new IntObject(bool_left->to_int() / this->value));
+      return *(new FloatObject(bool_left->to_int() / static_cast<double>(this->value)));
     }else{
       return *(new NotImplemented());
     }

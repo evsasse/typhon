@@ -68,6 +68,13 @@ public:
   Object("NotImplemented") {};
 };
 
+class FloatObject : public Object {
+public:
+  double value;
+  FloatObject(double value);
+  std::string getIdentifier();
+};
+
 class IntObject : public Object {
 public:
   long value;
