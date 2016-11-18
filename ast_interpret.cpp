@@ -88,8 +88,7 @@ Object* ElifStatement::interpret(){
 
 Object* WhileStatement::interpret(){
   Object& cond = expr.exec();
-  //TODO change print, as a function on the Expression
-  //may end up being called one more time than expected
+  //TODO be sure expr.exec is not being called more than expected
   std::cout << "<while " << cond.getIdentifier() << ">" << std::flush;
 
   if(size() > 0){
@@ -102,7 +101,11 @@ Object* WhileStatement::interpret(){
         if(ret) return ret;
       }
       cond = expr.exec();
-      std::cout << "{" << cond.getIdentifier() << "}";
+      // if(IntObject* io = dynamic_cast<IntObject*>(&cond)){
+      //   std::cout << "{" << io->value << "}";
+      //   std::cout << "{" << io->getIdentifier() << "}";
+      // }
+      // std::cout << "{" << cond.getIdentifier() << " "<< cond.useName("__bool__").call().getIdentifier() << "}";
     }
 
     if(elseStt){
