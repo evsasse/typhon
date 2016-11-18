@@ -58,12 +58,14 @@ Object("float"), value(value) {
   };
   // __div__
   std::function<Object& (std::list<Object*> arguments)> __div__ = [this](std::list<Object*> arguments)-> Object& {
-    //TODO protect division by zero
     if(FloatObject* float_right = dynamic_cast<FloatObject*>(arguments.front())){
+      if(float_right->value == 0) throw std::runtime_error("ZeroDivisionError: division by zero");
       return *(new FloatObject(this->value / float_right->value));
     }else if(IntObject* int_right = dynamic_cast<IntObject*>(arguments.front())){
+      if(int_right->value == 0) throw std::runtime_error("ZeroDivisionError: division by zero");
       return *(new FloatObject(this->value / int_right->value));
     }else if(BoolObject* bool_right = dynamic_cast<BoolObject*>(arguments.front())){
+      if(bool_right->to_int() == 0) throw std::runtime_error("ZeroDivisionError: division by zero");
       return *(new FloatObject(this->value / bool_right->to_int()));
     }else{
       return *(new NotImplemented());
@@ -94,12 +96,14 @@ Object("float"), value(value) {
   };
   // __fdv__
   std::function<Object& (std::list<Object*> arguments)> __fdv__ = [this](std::list<Object*> arguments)-> Object& {
-    //TODO protect division by zero
     if(FloatObject* float_right = dynamic_cast<FloatObject*>(arguments.front())){
+      if(float_right->value == 0) throw std::runtime_error("ZeroDivisionError: division by zero");
       return *(new FloatObject(static_cast<long>(this->value / float_right->value)));
     }else if(IntObject* int_right = dynamic_cast<IntObject*>(arguments.front())){
+      if(int_right->value == 0) throw std::runtime_error("ZeroDivisionError: division by zero");
       return *(new FloatObject(static_cast<long>(this->value / int_right->value)));
     }else if(BoolObject* bool_right = dynamic_cast<BoolObject*>(arguments.front())){
+      if(bool_right->to_int() == 0) throw std::runtime_error("ZeroDivisionError: division by zero");
       return *(new FloatObject(static_cast<long>(this->value / bool_right->to_int())));
     }else{
       return *(new NotImplemented());
@@ -121,12 +125,14 @@ Object("float"), value(value) {
   };
   // __rdiv__
   std::function<Object& (std::list<Object*> arguments)> __rdiv__ = [this](std::list<Object*> arguments)-> Object& {
-    //TODO protect division by zero
     if(FloatObject* float_left = dynamic_cast<FloatObject*>(arguments.front())){
+      if(this->value == 0) throw std::runtime_error("ZeroDivisionError: division by zero");
       return *(new FloatObject(float_left->value / this->value));
     }else if(IntObject* int_left = dynamic_cast<IntObject*>(arguments.front())){
+      if(this->value == 0) throw std::runtime_error("ZeroDivisionError: division by zero");
       return *(new FloatObject(int_left->value / this->value));
     }else if(BoolObject* bool_left = dynamic_cast<BoolObject*>(arguments.front())){
+      if(this->value == 0) throw std::runtime_error("ZeroDivisionError: division by zero");
       return *(new FloatObject(bool_left->to_int() / this->value));
     }else{
       return *(new NotImplemented());
@@ -157,12 +163,14 @@ Object("float"), value(value) {
   };
   // __rfdv__
   std::function<Object& (std::list<Object*> arguments)> __rfdv__ = [this](std::list<Object*> arguments)-> Object& {
-    //TODO protect division by zero
     if(FloatObject* float_left = dynamic_cast<FloatObject*>(arguments.front())){
+      if(this->value == 0) throw std::runtime_error("ZeroDivisionError: division by zero");
       return *(new FloatObject(static_cast<long>(float_left->value / this->value)));
     }else if(IntObject* int_left = dynamic_cast<IntObject*>(arguments.front())){
+      if(this->value == 0) throw std::runtime_error("ZeroDivisionError: division by zero");
       return *(new FloatObject(static_cast<long>(int_left->value / this->value)));
     }else if(BoolObject* bool_left = dynamic_cast<BoolObject*>(arguments.front())){
+      if(this->value == 0) throw std::runtime_error("ZeroDivisionError: division by zero");
       return *(new FloatObject(static_cast<long>(bool_left->to_int() / this->value)));
     }else{
       return *(new NotImplemented());
