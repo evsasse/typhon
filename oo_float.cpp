@@ -180,6 +180,85 @@ Object("float"), value(value) {
   };
 
   ///////////////////
+  // __lt__
+  std::function<Object& (std::list<Object*> arguments)> __lt__ = [this](std::list<Object*> arguments)-> Object& {
+    if(FloatObject* float_right = dynamic_cast<FloatObject*>(arguments.front())){
+      return *(new BoolObject(this->value < float_right->value));
+    }else if(IntObject* int_right = dynamic_cast<IntObject*>(arguments.front())){
+      return *(new BoolObject(this->value < int_right->value));
+    }else if(BoolObject* bool_right = dynamic_cast<BoolObject*>(arguments.front())){
+      return *(new BoolObject(this->value < bool_right->to_int()));
+    }else{
+      return *(new NotImplemented());
+    }
+  };
+  ///////////////////
+  // __le__
+  std::function<Object& (std::list<Object*> arguments)> __le__ = [this](std::list<Object*> arguments)-> Object& {
+    if(FloatObject* float_right = dynamic_cast<FloatObject*>(arguments.front())){
+      return *(new BoolObject(this->value <= float_right->value));
+    }else if(IntObject* int_right = dynamic_cast<IntObject*>(arguments.front())){
+      return *(new BoolObject(this->value <= int_right->value));
+    }else if(BoolObject* bool_right = dynamic_cast<BoolObject*>(arguments.front())){
+      return *(new BoolObject(this->value <= bool_right->to_int()));
+    }else{
+      return *(new NotImplemented());
+    }
+  };
+  ///////////////////
+  // __eq__
+  std::function<Object& (std::list<Object*> arguments)> __eq__ = [this](std::list<Object*> arguments)-> Object& {
+    if(FloatObject* float_right = dynamic_cast<FloatObject*>(arguments.front())){
+      return *(new BoolObject(this->value == float_right->value));
+    }else if(IntObject* int_right = dynamic_cast<IntObject*>(arguments.front())){
+      return *(new BoolObject(this->value == int_right->value));
+    }else if(BoolObject* bool_right = dynamic_cast<BoolObject*>(arguments.front())){
+      return *(new BoolObject(this->value == bool_right->to_int()));
+    }else{
+      return *(new NotImplemented());
+    }
+  };
+  ///////////////////
+  // __ne__
+  std::function<Object& (std::list<Object*> arguments)> __ne__ = [this](std::list<Object*> arguments)-> Object& {
+    if(FloatObject* float_right = dynamic_cast<FloatObject*>(arguments.front())){
+      return *(new BoolObject(this->value != float_right->value));
+    }else if(IntObject* int_right = dynamic_cast<IntObject*>(arguments.front())){
+      return *(new BoolObject(this->value != int_right->value));
+    }else if(BoolObject* bool_right = dynamic_cast<BoolObject*>(arguments.front())){
+      return *(new BoolObject(this->value != bool_right->to_int()));
+    }else{
+      return *(new NotImplemented());
+    }
+  };
+  ///////////////////
+  // __ge__
+  std::function<Object& (std::list<Object*> arguments)> __ge__ = [this](std::list<Object*> arguments)-> Object& {
+    if(FloatObject* float_right = dynamic_cast<FloatObject*>(arguments.front())){
+      return *(new BoolObject(this->value >= float_right->value));
+    }else if(IntObject* int_right = dynamic_cast<IntObject*>(arguments.front())){
+      return *(new BoolObject(this->value >= int_right->value));
+    }else if(BoolObject* bool_right = dynamic_cast<BoolObject*>(arguments.front())){
+      return *(new BoolObject(this->value >= bool_right->to_int()));
+    }else{
+      return *(new NotImplemented());
+    }
+  };
+  ///////////////////
+  // __gt__
+  std::function<Object& (std::list<Object*> arguments)> __gt__ = [this](std::list<Object*> arguments)-> Object& {
+    if(FloatObject* float_right = dynamic_cast<FloatObject*>(arguments.front())){
+      return *(new BoolObject(this->value > float_right->value));
+    }else if(IntObject* int_right = dynamic_cast<IntObject*>(arguments.front())){
+      return *(new BoolObject(this->value > int_right->value));
+    }else if(BoolObject* bool_right = dynamic_cast<BoolObject*>(arguments.front())){
+      return *(new BoolObject(this->value > bool_right->to_int()));
+    }else{
+      return *(new NotImplemented());
+    }
+  };
+
+  ///////////////////
   // __bool__
   std::function<Object& (std::list<Object*> arguments)> __bool__ = [this](std::list<Object*> arguments)-> Object& {
     if(this->value == 0){
@@ -217,6 +296,13 @@ Object("float"), value(value) {
   //ewName("__rmod__", *(new BuiltInFunction(__rmod__)));
   newName("__rexp__", *(new BuiltInFunction(__rexp__)));
   newName("__rfdv__", *(new BuiltInFunction(__rfdv__)));
+
+  newName("__lt__", *(new BuiltInFunction(__lt__)));
+  newName("__le__", *(new BuiltInFunction(__le__)));
+  newName("__eq__", *(new BuiltInFunction(__eq__)));
+  newName("__ne__", *(new BuiltInFunction(__ne__)));
+  newName("__ge__", *(new BuiltInFunction(__ge__)));
+  newName("__gt__", *(new BuiltInFunction(__gt__)));
 
   newName("__bool__", *(new BuiltInFunction(__bool__)));
   newName("__int__", *(new BuiltInFunction(__int__)));
