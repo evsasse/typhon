@@ -134,7 +134,13 @@ expression : value { $$ = $1; }
            | expression '%' expression { $$ = new BinaryOp(*$1, Op::MOD, *$3); }
            | expression O_EXP expression { $$ = new BinaryOp(*$1, Op::EXP, *$3); }
            | expression O_FDV expression { $$ = new BinaryOp(*$1, Op::FDV, *$3); }
-           | expression O_EQ expression { $$ = new BinaryOp(*$1, Op::EQ, *$3); /*TODO comparison operations should work as "x<y<z"*/ }
+        /* TODO comparison operations should work as "x<y<z" */
+           | expression O_LT expression { $$ = new BinaryOp(*$1, Op::LT, *$3); }
+           | expression O_LE expression { $$ = new BinaryOp(*$1, Op::LE, *$3); }
+           | expression O_EQ expression { $$ = new BinaryOp(*$1, Op::EQ, *$3); }
+           | expression O_NE expression { $$ = new BinaryOp(*$1, Op::NE, *$3); }
+           | expression O_GE expression { $$ = new BinaryOp(*$1, Op::GE, *$3); }
+           | expression O_GT expression { $$ = new BinaryOp(*$1, Op::GT, *$3); }
            ;
 
 expression-list-opt : %empty { $$ = new std::list<Expression*>(); }
