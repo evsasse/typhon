@@ -74,6 +74,7 @@ Object("float"), value(value) {
   // // __mod__
   // std::function<Object& (std::list<Object*> arguments)> __mod__ = [this](std::list<Object*> arguments)-> Object& {
   //   //TODO protect division by zero
+  //   //TODO check on std for mod operation for float
   //   if(IntObject* int_right = dynamic_cast<IntObject*>(arguments.front())){
   //     return *(new IntObject(this->value % int_right->value));
   //   }else if(BoolObject* bool_right = dynamic_cast<BoolObject*>(arguments.front())){
@@ -141,6 +142,7 @@ Object("float"), value(value) {
   // // __rmod__
   // std::function<Object& (std::list<Object*> arguments)> __rmod__ = [this](std::list<Object*> arguments)-> Object& {
   //   //TODO protect division by zero
+  //   //TODO check on std for mod operation for float
   //   if(IntObject* int_left = dynamic_cast<IntObject*>(arguments.front())){
   //     return *(new IntObject(int_left->value % this->value));
   //   }else if(BoolObject* bool_left = dynamic_cast<BoolObject*>(arguments.front())){
