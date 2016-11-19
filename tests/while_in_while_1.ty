@@ -1,0 +1,11 @@
+a = 0
+b = 3
+while b:
+  b = b - 1
+  c = 3
+  while c:
+    c = c - 1
+    a += 1
+a
+b
+c

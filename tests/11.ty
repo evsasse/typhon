@@ -1,0 +1,12 @@
+# tests IntObject builtin operations
+
++1
+-1
+
+666+333
+666-333
+66*33
+77/33 # TODO division return FloatObject
+77%33
+6**3
+77//33

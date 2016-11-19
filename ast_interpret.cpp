@@ -8,6 +8,8 @@ Object* Expression::interpret(){
 }
 
 Object* Assignment::interpret(){
+  //TODO attribution of non built in types should be by reference, not copy
+
   Object& expr = right.exec();
   context->newName(target.name, expr);
   std::cout << "<assignment> " << std::flush;
@@ -42,8 +44,7 @@ Object* IfStatement::interpret(){
 
   if(size() > 0){
     // the body is actually interpreted only on endBlock
-    //TODO change check for a BoolObject
-    if(cond.useName("__bool__").call().getIdentifier() == IntObject(1).getIdentifier()){
+    if(cond.useName("__bool__").call().getIdentifier() == BoolObject(1).getIdentifier()){
       for(Statement *stt : *this){
         Object* ret = stt->interpret();
         if(ret) return ret;
@@ -74,8 +75,7 @@ Object* ElifStatement::interpret(){
 
   if(size() > 0){
     // the body is actually interpreted only on endBlock
-    //TODO change check for a BoolObject
-    if(cond.useName("__bool__").call().getIdentifier() == IntObject(1).getIdentifier()){
+    if(cond.useName("__bool__").call().getIdentifier() == BoolObject(1).getIdentifier()){
       for(Statement *stt : *this){
         Object* ret = stt->interpret();
         if(ret) return ret;
@@ -90,14 +90,12 @@ Object* ElifStatement::interpret(){
 
 Object* WhileStatement::interpret(){
   Object& cond = expr.exec();
-  //TODO change print, as a function on the Expression
-  //may end up being called one more time than expected
+  //TODO be sure expr.exec is not being called more than expected
   std::cout << "<while " << cond.getIdentifier() << ">" << std::flush;
 
   if(size() > 0){
     // the body is actually interpreted only on endBlock
-    //TODO change check for a BoolObject
-    while(cond.useName("__bool__").call().getIdentifier() == IntObject(1).getIdentifier()){
+    while(cond.useName("__bool__").call().getIdentifier() == BoolObject(1).getIdentifier()){
       for(Statement *stt : *this){
         //TODO break; on continue;
         //TODO break;break on break;
@@ -105,7 +103,11 @@ Object* WhileStatement::interpret(){
         if(ret) return ret;
       }
       cond = expr.exec();
-      std::cout << "{" << cond.getIdentifier() << "}";
+      // if(IntObject* io = dynamic_cast<IntObject*>(&cond)){
+      //   std::cout << "{" << io->value << "}";
+      //   std::cout << "{" << io->getIdentifier() << "}";
+      // }
+      // std::cout << "{" << cond.getIdentifier() << " "<< cond.useName("__bool__").call().getIdentifier() << "}";
     }
 
     if(elseStt){
@@ -134,13 +136,86 @@ Object& Name::exec(){
 Object& BinaryOp::exec(){
   Object& left = this->left.exec();
   Object& right = this->right.exec();
+  Object* ret = nullptr;
   auto argument = std::list<Object*>(1,&right);
-  return left.useName("__add__").call(argument);
+  try {
+    switch(op){
+      case ADD: ret = & left.useName("__add__"); break;
+      case SUB: ret = & left.useName("__sub__"); break;
+      case MUL: ret = & left.useName("__mul__"); break;
+      case DIV: ret = & left.useName("__div__"); break;
+      case MOD: ret = & left.useName("__mod__"); break;
+      case EXP: ret = & left.useName("__exp__"); break;
+      case FDV: ret = & left.useName("__fdv__"); break;
+
+      case LT: ret = & left.useName("__lt__"); break; // l<r;
+      case LE: ret = & left.useName("__le__"); break; // l<=r;
+      case EQ: ret = & left.useName("__eq__"); break; // l==r;
+      case NE: ret = & left.useName("__ne__"); break; // l!=r;
+      case GE: ret = & left.useName("__ge__"); break; // l>=r;
+      case GT: ret = & left.useName("__gt__"); break; // l>r;
+
+      default: throw std::runtime_error("OperationError: "+opSymbol(op)+" is unexpected here"); break;
+    }
+  }catch(NameError& e){
+    ret = nullptr;
+  }
+  if(ret)
+    ret = & ret->call(argument);
+
+  // If theres is no usual ("__add__") function on left implemented,
+  // or if it returns NotImplemented
+  // We call the reverse version ("__radd__") on right
+
+  // If there is no usual ("__eq__", "__ge__") comparison on left implemented,
+  // or if it returns NotImplemented
+  // We call an equivalent function on right (a==b; b==a;; x>=y; y<=x)
+  NotImplemented *ni = dynamic_cast<NotImplemented*>(ret);
+  if(!ret || ni){
+    argument = std::list<Object*>(1,&left);
+    try {
+      switch(op){
+        case ADD: ret = & right.useName("__radd__"); break;
+        case SUB: ret = & right.useName("__rsub__"); break;
+        case MUL: ret = & right.useName("__rmul__"); break;
+        case DIV: ret = & right.useName("__rdiv__"); break;
+        case MOD: ret = & right.useName("__rmod__"); break;
+        case EXP: ret = & right.useName("__rexp__"); break;
+        case FDV: ret = & right.useName("__rfdv__"); break;
+
+        case LT: ret = & right.useName("__gt__"); break; // l<r; r>l;
+        case LE: ret = & right.useName("__ge__"); break; // l<=r; r>=l;
+        case EQ: ret = & right.useName("__eq__"); break; // l==r; r==l;
+        case NE: ret = & right.useName("__ne__"); break; // l!=r; r!=l;
+        case GE: ret = & right.useName("__le__"); break; // l>=r; r<=l;
+        case GT: ret = & right.useName("__lt__"); break; // l>r; r<l;
+
+        default: throw std::runtime_error("OperationError: "+opSymbol(op)+" is unexpected here"); break;
+      }
+    }catch(NameError& e){
+      ret = nullptr;
+    }
+    if(ret)
+      ret = & ret->call(argument);
+  }
+
+  //If it also couldnt evaluate using the reverse function
+  //Throw a TypeError unsupported operand type
+  ni = dynamic_cast<NotImplemented*>(ret);
+  if(!ret || ni){
+    throw std::runtime_error("TypeError: unsupported operand type(s) for "+opSymbol(op)+": '"+left.getIdentifier()+"' and '"+right.getIdentifier()+"'");
+  }
+
+  return *ret;
+  //return left.useName("__add__").call(argument);
 }
 
 Object& UnaryOp::exec(){
   Object& right = this->right.exec();
-  return right.useName("__neg__").call();
+  switch(op){
+    case ADD: return right.useName("__pos__").call(); break;
+    case SUB: return right.useName("__neg__").call(); break;
+  }
 }
 
 Object& LitInt::exec(){
@@ -148,9 +223,9 @@ Object& LitInt::exec(){
 }
 
 Object& LitFloat::exec(){
-  return *(new Object());
+  return *(new FloatObject(value));
 }
 
 Object& LitBool::exec(){
-  return *(new Object());
+  return *(new BoolObject(value));
 }

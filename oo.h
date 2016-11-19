@@ -5,6 +5,12 @@
 #include <list>
 #include <functional>
 
+class NameError : public std::runtime_error {
+public:
+  NameError(std::string name) :
+  std::runtime_error("NameError: name '"+name+"' is not defined") {};
+};
+
 class Object;
 
 class Namespace {
@@ -18,8 +24,7 @@ private:
 class Object : public Namespace {
 public:
   bool builtInFunction;
-  Object(std::string identifier = "None") :
-  identifier(identifier), builtInFunction(0) {};
+  Object(std::string identifier);
   virtual std::string getIdentifier();
   virtual Object& call(std::list<Object*> arguments = std::list<Object*>());
 protected:
@@ -51,11 +56,37 @@ public:
 //   Object& init(int);
 // };
 
+class NoneObject : public Object {
+public:
+  NoneObject();
+};
+
+class NotImplemented : public Object {
+public:
+  NotImplemented() :
+  Object("NotImplemented") {};
+};
+
+class FloatObject : public Object {
+public:
+  double value;
+  FloatObject(double value);
+  std::string getIdentifier();
+};
+
 class IntObject : public Object {
 public:
-  int value;
-  IntObject(int value);
+  long value;
+  IntObject(long value);
   std::string getIdentifier();
+};
+
+class BoolObject : public Object {
+public:
+  bool value;
+  BoolObject(bool value);
+  std::string getIdentifier();
+  int to_int();
 };
 
 class Name;
