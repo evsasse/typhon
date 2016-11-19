@@ -91,6 +91,16 @@ Object("bool"), value(value) {
   };
 
   ///////////////////
+  // __eq__
+  std::function<Object& (std::list<Object*> arguments)> __eq__ = [this](std::list<Object*> arguments)-> Object& {
+    if(BoolObject* bool_right = dynamic_cast<BoolObject*>(arguments.front())){
+      return *(new BoolObject(this->value == bool_right->value));
+    }else{
+      return *(new NotImplemented());
+    }
+  };
+
+  ///////////////////
   // __bool__
   std::function<Object& (std::list<Object*> arguments)> __bool__ = [this](std::list<Object*> arguments)-> Object& {
     *(new BoolObject(this->value));
@@ -107,6 +117,8 @@ Object("bool"), value(value) {
   newName("__mod__", *(new BuiltInFunction(__mod__)));
   newName("__exp__", *(new BuiltInFunction(__exp__)));
   newName("__fdv__", *(new BuiltInFunction(__fdv__)));
+
+  newName("__eq__", *(new BuiltInFunction(__eq__)));
 
   newName("__bool__", *(new BuiltInFunction(__bool__)));
   //newName("__int__", *(new BuiltInFunction(__int__)));

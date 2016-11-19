@@ -47,11 +47,19 @@ name [a-zA-Z_][a-zA-Z0-9_]*
 "while " { return T_WHILE; }
 
 [,;:\(\)\=] { return yytext[0]; }
+
 [\+\-\*\/\%] { return yytext[0]; }
 "**" { return O_EXP; }
 "//" { return O_FDV; }
 
 "+=" { return A_SUM; }
+
+"<" { return O_LT; }
+"<=" { return O_LE; }
+"==" { return O_EQ; }
+"!=" { return O_NE; }
+">=" { return O_GE; }
+">" { return O_GT; }
 
 {integer} { yylval.val_int = std::atoi(yytext); return L_INT; }
 {float} { yylval.val_float = std::atof(yytext); return L_FLOAT; }

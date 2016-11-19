@@ -24,8 +24,7 @@ private:
 class Object : public Namespace {
 public:
   bool builtInFunction;
-  Object(std::string identifier = "None") :
-  identifier(identifier), builtInFunction(0) {};
+  Object(std::string identifier);
   virtual std::string getIdentifier();
   virtual Object& call(std::list<Object*> arguments = std::list<Object*>());
 protected:

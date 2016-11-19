@@ -8,6 +8,8 @@ Object* Expression::interpret(){
 }
 
 Object* Assignment::interpret(){
+  //TODO attribution of non built in types should be by reference, not copy
+
   Object& expr = right.exec();
   context->newName(target.name, expr);
   std::cout << "<assignment> " << std::flush;
@@ -145,6 +147,14 @@ Object& BinaryOp::exec(){
       case MOD: ret = & left.useName("__mod__"); break;
       case EXP: ret = & left.useName("__exp__"); break;
       case FDV: ret = & left.useName("__fdv__"); break;
+
+      case LT: ret = & left.useName("__lt__"); break; // l<r;
+      case LE: ret = & left.useName("__le__"); break; // l<=r;
+      case EQ: ret = & left.useName("__eq__"); break; // l==r;
+      case NE: ret = & left.useName("__ne__"); break; // l!=r;
+      case GE: ret = & left.useName("__ge__"); break; // l>=r;
+      case GT: ret = & left.useName("__gt__"); break; // l>r;
+
       default: throw std::runtime_error("OperationError: "+opSymbol(op)+" is unexpected here"); break;
     }
   }catch(NameError& e){
@@ -153,8 +163,13 @@ Object& BinaryOp::exec(){
   if(ret)
     ret = & ret->call(argument);
 
-  // If theres is no usual ("__add__") function on left implemented, or if it returns NotImplemented
+  // If theres is no usual ("__add__") function on left implemented,
+  // or if it returns NotImplemented
   // We call the reverse version ("__radd__") on right
+
+  // If there is no usual ("__eq__", "__ge__") comparison on left implemented,
+  // or if it returns NotImplemented
+  // We call an equivalent function on right (a==b; b==a;; x>=y; y<=x)
   NotImplemented *ni = dynamic_cast<NotImplemented*>(ret);
   if(!ret || ni){
     argument = std::list<Object*>(1,&left);
@@ -167,6 +182,14 @@ Object& BinaryOp::exec(){
         case MOD: ret = & right.useName("__rmod__"); break;
         case EXP: ret = & right.useName("__rexp__"); break;
         case FDV: ret = & right.useName("__rfdv__"); break;
+
+        case LT: ret = & right.useName("__gt__"); break; // l<r; r>l;
+        case LE: ret = & right.useName("__ge__"); break; // l<=r; r>=l;
+        case EQ: ret = & right.useName("__eq__"); break; // l==r; r==l;
+        case NE: ret = & right.useName("__ne__"); break; // l!=r; r!=l;
+        case GE: ret = & right.useName("__le__"); break; // l>=r; r<=l;
+        case GT: ret = & right.useName("__lt__"); break; // l>r; r<l;
+
         default: throw std::runtime_error("OperationError: "+opSymbol(op)+" is unexpected here"); break;
       }
     }catch(NameError& e){

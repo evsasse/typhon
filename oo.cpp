@@ -15,6 +15,11 @@ Object& Namespace::useName(std::string name){
     throw NameError(name);
 }
 
+Object::Object(std::string identifier = "None") :
+identifier(identifier), builtInFunction(0) {
+  //TODO default comparison operations by address number
+};
+
 std::string Object::getIdentifier(){
   return "<object '"+identifier+"'>";
 }

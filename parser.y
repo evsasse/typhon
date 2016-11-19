@@ -37,6 +37,7 @@
   std::list<Parameter*> *params;
 }
 
+%left O_LT O_LE O_EQ O_NE O_GE O_GT
 %left '+' '-'
 %left '%' '*' '/' O_FDV
 %left O_UNARY
@@ -133,6 +134,7 @@ expression : value { $$ = $1; }
            | expression '%' expression { $$ = new BinaryOp(*$1, Op::MOD, *$3); }
            | expression O_EXP expression { $$ = new BinaryOp(*$1, Op::EXP, *$3); }
            | expression O_FDV expression { $$ = new BinaryOp(*$1, Op::FDV, *$3); }
+           | expression O_EQ expression { $$ = new BinaryOp(*$1, Op::EQ, *$3); /*TODO comparison operations should work as "x<y<z"*/ }
            ;
 
 expression-list-opt : %empty { $$ = new std::list<Expression*>(); }
