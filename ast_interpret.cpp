@@ -38,10 +38,6 @@ Object* FunctionRet::interpret(){
 }
 
 Object* IfStatement::interpret(){
-  std::cout << "[if " << std::flush;
-  expr.print();
-  std::cout << "]" << std::flush;
-
   if(size() > 0){
     // the body is actually interpreted only on endBlock
     Object& cond = expr.exec();
@@ -60,7 +56,7 @@ Object* IfStatement::interpret(){
 }
 
 Object* ElseStatement::interpret(){
-  std::cout << "<else>";
+  std::cout << "[else]";
 
   if(size() > 0){
     for(Statement *stt : *this){
@@ -71,10 +67,6 @@ Object* ElseStatement::interpret(){
 }
 
 Object* ElifStatement::interpret(){
-  std::cout << "[elif " << std::flush;
-  expr.print();
-  std::cout << "]" << std::flush;
-
   if(size() > 0){
     // the body is actually interpreted only on endBlock
     Object& cond = expr.exec();
@@ -93,12 +85,11 @@ Object* ElifStatement::interpret(){
 }
 
 Object* WhileStatement::interpret(){
-  Object& cond = expr.exec();
-  //TODO be sure expr.exec is not being called more than expected
-  std::cout << "<while " << cond.getIdentifier() << ">" << std::flush;
-
   if(size() > 0){
     // the body is actually interpreted only on endBlock
+    Object& cond = expr.exec();
+    print();
+    std::cout << "<while " << cond.getIdentifier() << ">" << std::flush;
     while(cond.useName("__bool__").call().getIdentifier() == BoolObject(1).getIdentifier()){
       for(Statement *stt : *this){
         //TODO break; on continue;
@@ -107,6 +98,8 @@ Object* WhileStatement::interpret(){
         if(ret) return ret;
       }
       cond = expr.exec();
+      print();
+      std::cout << "<while " << cond.getIdentifier() << ">" << std::flush;
       // if(IntObject* io = dynamic_cast<IntObject*>(&cond)){
       //   std::cout << "{" << io->value << "}";
       //   std::cout << "{" << io->getIdentifier() << "}";

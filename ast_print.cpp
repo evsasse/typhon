@@ -55,8 +55,9 @@ void CallOp::print(){
 }
 
 void IfStatement::print(){
-  std::cout << "if ";
+  std::cout << "[if " << std::flush;
   expr.print();
+  std::cout << "]" << std::flush;
 }
 
 void ElseStatement::print(){
@@ -64,13 +65,15 @@ void ElseStatement::print(){
 }
 
 void ElifStatement::print(){
-  std::cout << "elif ";
+  std::cout << "[elif " << std::flush;
   expr.print();
+  std::cout << "]" << std::flush;
 }
 
 void WhileStatement::print(){
-  std::cout << "while ";
+  std::cout << "[while " << std::flush;
   expr.print();
+  std::cout << "]" << std::flush;
 }
 
 void BinaryOp::print(){
