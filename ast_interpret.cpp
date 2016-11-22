@@ -38,12 +38,14 @@ Object* FunctionRet::interpret(){
 }
 
 Object* IfStatement::interpret(){
-  Object& cond = expr.exec();
-
-  std::cout << "<if " << cond.getIdentifier() << ">" << std::flush;
+  std::cout << "[if " << std::flush;
+  expr.print();
+  std::cout << "]" << std::flush;
 
   if(size() > 0){
     // the body is actually interpreted only on endBlock
+    Object& cond = expr.exec();
+    std::cout << "<if "<< cond.getIdentifier() << ">" << std::flush;
     if(cond.useName("__bool__").call().getIdentifier() == BoolObject(1).getIdentifier()){
       for(Statement *stt : *this){
         Object* ret = stt->interpret();
@@ -69,12 +71,14 @@ Object* ElseStatement::interpret(){
 }
 
 Object* ElifStatement::interpret(){
-  Object& cond = expr.exec();
-
-  std::cout << "<elif " << cond.getIdentifier() << ">" << std::flush;
+  std::cout << "[elif " << std::flush;
+  expr.print();
+  std::cout << "]" << std::flush;
 
   if(size() > 0){
     // the body is actually interpreted only on endBlock
+    Object& cond = expr.exec();
+    std::cout << "<elif "<< cond.getIdentifier() << ">" << std::flush;
     if(cond.useName("__bool__").call().getIdentifier() == BoolObject(1).getIdentifier()){
       for(Statement *stt : *this){
         Object* ret = stt->interpret();

@@ -148,7 +148,7 @@ Object("bool"), value(value) {
   ///////////////////
   // __bool__
   std::function<Object& (std::list<Object*> arguments)> __bool__ = [this](std::list<Object*> arguments)-> Object& {
-    *(new BoolObject(this->value));
+    return *(new BoolObject(this->value));
   };
 
   //Some functions use the IntObject behavior, and consider True as 1 and False as 0
