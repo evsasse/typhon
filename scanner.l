@@ -46,7 +46,7 @@ name [a-zA-Z_][a-zA-Z0-9_]*
 "else" { return T_ELSE; }
 "while " { return T_WHILE; }
 
-[,;:\(\)\=] { return yytext[0]; }
+[,;:\(\)\=\[\]] { return yytext[0]; }
 
 [\+\-\*\/\%] { return yytext[0]; }
 "**" { return O_EXP; }
