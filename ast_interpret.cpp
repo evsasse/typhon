@@ -38,12 +38,10 @@ Object* FunctionRet::interpret(){
 }
 
 Object* IfStatement::interpret(){
-  Object& cond = expr.exec();
-
-  std::cout << "<if " << cond.getIdentifier() << ">" << std::flush;
-
   if(size() > 0){
     // the body is actually interpreted only on endBlock
+    Object& cond = expr.exec();
+    std::cout << "<if "<< cond.getIdentifier() << ">" << std::flush;
     if(cond.useName("__bool__").call().getIdentifier() == BoolObject(1).getIdentifier()){
       for(Statement *stt : *this){
         Object* ret = stt->interpret();
@@ -58,7 +56,7 @@ Object* IfStatement::interpret(){
 }
 
 Object* ElseStatement::interpret(){
-  std::cout << "<else>";
+  std::cout << "[else]";
 
   if(size() > 0){
     for(Statement *stt : *this){
@@ -69,12 +67,10 @@ Object* ElseStatement::interpret(){
 }
 
 Object* ElifStatement::interpret(){
-  Object& cond = expr.exec();
-
-  std::cout << "<elif " << cond.getIdentifier() << ">" << std::flush;
-
   if(size() > 0){
     // the body is actually interpreted only on endBlock
+    Object& cond = expr.exec();
+    std::cout << "<elif "<< cond.getIdentifier() << ">" << std::flush;
     if(cond.useName("__bool__").call().getIdentifier() == BoolObject(1).getIdentifier()){
       for(Statement *stt : *this){
         Object* ret = stt->interpret();
@@ -89,12 +85,11 @@ Object* ElifStatement::interpret(){
 }
 
 Object* WhileStatement::interpret(){
-  Object& cond = expr.exec();
-  //TODO be sure expr.exec is not being called more than expected
-  std::cout << "<while " << cond.getIdentifier() << ">" << std::flush;
-
   if(size() > 0){
     // the body is actually interpreted only on endBlock
+    Object& cond = expr.exec();
+    print();
+    std::cout << "<while " << cond.getIdentifier() << ">" << std::flush;
     while(cond.useName("__bool__").call().getIdentifier() == BoolObject(1).getIdentifier()){
       for(Statement *stt : *this){
         //TODO break; on continue;
@@ -103,6 +98,8 @@ Object* WhileStatement::interpret(){
         if(ret) return ret;
       }
       cond = expr.exec();
+      print();
+      std::cout << "<while " << cond.getIdentifier() << ">" << std::flush;
       // if(IntObject* io = dynamic_cast<IntObject*>(&cond)){
       //   std::cout << "{" << io->value << "}";
       //   std::cout << "{" << io->getIdentifier() << "}";
