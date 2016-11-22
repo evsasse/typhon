@@ -215,6 +215,10 @@ Object& UnaryOp::exec(){
   }
 }
 
+Object& LitArray::exec(){
+  return *(new BoolObject(1));
+}
+
 Object& LitInt::exec(){
   return *(new IntObject(value));
 }

@@ -27,6 +27,7 @@
   FunctionRet *funcr;
   Value *value;
   Name *name;
+  LitArray *arr;
   Parameter *param;
   IfStatement *ifstt;
   ElseStatement *elsestt;
@@ -60,7 +61,8 @@
 %type <stt> statement simple-statement
 %type <value> value
 %type <name> name
-%type <expr> expression array
+%type <arr> array
+%type <expr> expression
 %type <exprs> expression-list expression-list-opt
 %type <param> parameter
 %type <params> parameter-list parameter-list-opt
@@ -119,7 +121,7 @@ value : L_INT { $$ = new LitInt($1); }
 name : T_NAME { $$ = new Name($1); }
      ;
 
-array : '[' expression-list-opt ']' { $$ = $2->back(); }
+array : '[' expression-list-opt ']' { $$ = new LitArray(*$2); }
 
 expression : value { $$ = $1; }
            | name { $$ = $1; }

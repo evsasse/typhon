@@ -213,8 +213,17 @@ private:
 class Value : public Expression {
 };
 
-//TODO: ? change into one number with arbitrary precision, using gmp lib
+class LitArray: public Expression {
+public:
+  void print();
+  Object& exec();
+  LitArray(std::list<Expression*> exprs):
+  exprs(exprs) {};
+private:
+  std::list<Expression*> exprs;
+};
 
+//TODO: ? change into one number with arbitrary precision, using gmp lib
 class LitInt: public Value {
 public:
   void print();
