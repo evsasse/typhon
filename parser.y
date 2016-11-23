@@ -27,7 +27,7 @@
   FunctionRet *funcr;
   Value *value;
   Name *name;
-  LitArray *arr;
+  LitList *arr;
   Parameter *param;
   IfStatement *ifstt;
   ElseStatement *elsestt;
@@ -121,7 +121,7 @@ value : L_INT { $$ = new LitInt($1); }
 name : T_NAME { $$ = new Name($1); }
      ;
 
-array : '[' expression-list-opt ']' { $$ = new LitArray(*$2); }
+array : '[' expression-list-opt ']' { $$ = new LitList(*$2); }
 
 expression : value { $$ = $1; }
            | name { $$ = $1; }

@@ -215,8 +215,14 @@ Object& UnaryOp::exec(){
   }
 }
 
-Object& LitArray::exec(){
-  return *(new BoolObject(1));
+Object& LitList::exec(){
+  auto list = new std::list<Object*>();
+
+  for(auto expr : exprs){
+    list->push_back(&(expr->exec()));
+  }
+
+  return *(new ListObject(*list));
 }
 
 Object& LitInt::exec(){

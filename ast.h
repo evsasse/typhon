@@ -213,11 +213,11 @@ private:
 class Value : public Expression {
 };
 
-class LitArray: public Expression {
+class LitList: public Expression {
 public:
   void print();
   Object& exec();
-  LitArray(std::list<Expression*> exprs):
+  LitList(std::list<Expression*> exprs):
   exprs(exprs) {};
 private:
   std::list<Expression*> exprs;
