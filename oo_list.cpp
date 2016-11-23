@@ -26,6 +26,18 @@ Object("list"), values(values){
       return *(new NotImplemented());
     }
   };
+  // __mul__
+  std::function<Object& (std::list<Object*> arguments)> __mul__ = [this](std::list<Object*> arguments)-> Object& {
+    if(IntObject* int_right = dynamic_cast<IntObject*>(arguments.front())){
+      auto list = new std::list<Object*>();
+      for(int i=0; i< int_right->value; i++)
+        list->insert(list->end(),this->values.begin(),this->values.end());
+      return *(new ListObject(*list));
+    }else{
+      return *(new NotImplemented());
+    }
+  };
 
   newName("__add__", *(new BuiltInFunction(__add__)));
+  newName("__mul__", *(new BuiltInFunction(__mul__)));
 }
