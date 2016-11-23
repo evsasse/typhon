@@ -91,7 +91,7 @@ public:
 
 class ListObject : public Object {
 public:
-  std::list<Object*> values;
+  std::list<Object*>& values;
   ListObject(std::list<Object*>& values);
   std::string getIdentifier();
 };
