@@ -43,7 +43,7 @@
 %left '%' '*' '/' O_FDV
 %left O_UNARY
 %left O_EXP
-%left '('
+%left '(' '['
 
 %token A_SUM
 
@@ -127,6 +127,7 @@ expression : value { $$ = $1; }
            | name { $$ = $1; }
            | array { $$ = $1; }
            | expression '(' expression-list-opt ')' { $$ = new CallOp(*$1, *$3); }
+           | expression '[' expression ']' { $$ = new BinaryOp(*$1, Op::KEY, *$3); }
            | '(' expression ')' { $$ = $2; }
            | '+' expression %prec O_UNARY { $$ = new UnaryOp(Op::ADD, *$2); }
            | '-' expression %prec O_UNARY { $$ = new UnaryOp(Op::SUB, *$2); }

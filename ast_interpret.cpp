@@ -152,9 +152,13 @@ Object& BinaryOp::exec(){
       case GE: ret = & left.useName("__ge__"); break; // l>=r;
       case GT: ret = & left.useName("__gt__"); break; // l>r;
 
+      case KEY: ret = & left.useName("__getitem__"); break;
+
       default: throw std::runtime_error("OperationError: "+opSymbol(op)+" is unexpected here"); break;
     }
   }catch(NameError& e){
+    if(op == KEY)
+      throw std::runtime_error("TypeError: "+left.getIdentifier()+" object has no attribute '__getitem__'");
     ret = nullptr;
   }
   if(ret)

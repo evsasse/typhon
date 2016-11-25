@@ -8,7 +8,8 @@
    Modulus, Exponent, Floor Division */
 enum Op { ADD, SUB, MUL, DIV,
           MOD, EXP, FDV,
-          LT, LE, EQ, NE, GE, GT };
+          LT, LE, EQ, NE, GE, GT,
+          KEY };
 
 std::string opSymbol(Op op);
 

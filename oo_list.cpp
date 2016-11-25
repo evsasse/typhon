@@ -38,6 +38,22 @@ Object("list"), values(values){
     }
   };
 
+  ///////////////////
+  // __getitem__
+  std::function<Object& (std::list<Object*> arguments)> __getitem__ = [this](std::list<Object*> arguments)-> Object& {
+    if(IntObject* int_right = dynamic_cast<IntObject*>(arguments.front())){
+      auto it = this->values.begin();
+      std::advance(it,int_right->value);
+      //TODO check if position is valid
+      //TODO treat negative position
+      return *(*it);
+    }else{
+      throw std::runtime_error("TypeError: list indices must be integers, not "+arguments.front()->getIdentifier());
+    }
+  };
+
   newName("__add__", *(new BuiltInFunction(__add__)));
   newName("__mul__", *(new BuiltInFunction(__mul__)));
+
+  newName("__getitem__", *(new BuiltInFunction(__getitem__)));
 }

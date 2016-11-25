@@ -19,6 +19,8 @@ std::string opSymbol(Op op){
     case GE: return ">="; break;
     case GT: return ">"; break;
 
+    case KEY: return "[]"; break;
+
     default: return "?"; break;
   }
 }
