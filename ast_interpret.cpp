@@ -152,9 +152,13 @@ Object& BinaryOp::exec(){
       case GE: ret = & left.useName("__ge__"); break; // l>=r;
       case GT: ret = & left.useName("__gt__"); break; // l>r;
 
+      case KEY: ret = & left.useName("__getitem__"); break;
+
       default: throw std::runtime_error("OperationError: "+opSymbol(op)+" is unexpected here"); break;
     }
   }catch(NameError& e){
+    if(op == KEY)
+      throw std::runtime_error("TypeError: "+left.getIdentifier()+" object has no attribute '__getitem__'");
     ret = nullptr;
   }
   if(ret)
@@ -213,6 +217,16 @@ Object& UnaryOp::exec(){
     case ADD: return right.useName("__pos__").call(); break;
     case SUB: return right.useName("__neg__").call(); break;
   }
+}
+
+Object& LitList::exec(){
+  auto list = new std::list<Object*>();
+
+  for(auto expr : exprs){
+    list->push_back(&(expr->exec()));
+  }
+
+  return *(new ListObject(*list));
 }
 
 Object& LitInt::exec(){

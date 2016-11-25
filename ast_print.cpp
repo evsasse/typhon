@@ -93,6 +93,10 @@ void UnaryOp::print(){
   std::cout << ")" << std::flush;
 }
 
+void LitList::print(){
+  std::cout << "array" << std::flush;
+}
+
 void LitInt::print(){
   Statement::print();
   std::cout << value << std::flush;

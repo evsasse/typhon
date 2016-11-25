@@ -89,6 +89,13 @@ public:
   int to_int();
 };
 
+class ListObject : public Object {
+public:
+  std::list<Object*>& values;
+  ListObject(std::list<Object*>& values);
+  std::string getIdentifier();
+};
+
 class Name;
 class Block;
 class Parameter;

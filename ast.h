@@ -8,7 +8,8 @@
    Modulus, Exponent, Floor Division */
 enum Op { ADD, SUB, MUL, DIV,
           MOD, EXP, FDV,
-          LT, LE, EQ, NE, GE, GT };
+          LT, LE, EQ, NE, GE, GT,
+          KEY };
 
 std::string opSymbol(Op op);
 
@@ -213,8 +214,17 @@ private:
 class Value : public Expression {
 };
 
-//TODO: ? change into one number with arbitrary precision, using gmp lib
+class LitList: public Expression {
+public:
+  void print();
+  Object& exec();
+  LitList(std::list<Expression*> exprs):
+  exprs(exprs) {};
+private:
+  std::list<Expression*> exprs;
+};
 
+//TODO: ? change into one number with arbitrary precision, using gmp lib
 class LitInt: public Value {
 public:
   void print();

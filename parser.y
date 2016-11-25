@@ -27,6 +27,7 @@
   FunctionRet *funcr;
   Value *value;
   Name *name;
+  LitList *arr;
   Parameter *param;
   IfStatement *ifstt;
   ElseStatement *elsestt;
@@ -42,7 +43,7 @@
 %left '%' '*' '/' O_FDV
 %left O_UNARY
 %left O_EXP
-%left '('
+%left '(' '['
 
 %token A_SUM
 
@@ -60,6 +61,7 @@
 %type <stt> statement simple-statement
 %type <value> value
 %type <name> name
+%type <arr> array
 %type <expr> expression
 %type <exprs> expression-list expression-list-opt
 %type <param> parameter
@@ -119,9 +121,13 @@ value : L_INT { $$ = new LitInt($1); }
 name : T_NAME { $$ = new Name($1); }
      ;
 
+array : '[' expression-list-opt ']' { $$ = new LitList(*$2); }
+
 expression : value { $$ = $1; }
            | name { $$ = $1; }
+           | array { $$ = $1; }
            | expression '(' expression-list-opt ')' { $$ = new CallOp(*$1, *$3); }
+           | expression '[' expression ']' { $$ = new BinaryOp(*$1, Op::KEY, *$3); }
            | '(' expression ')' { $$ = $2; }
            | '+' expression %prec O_UNARY { $$ = new UnaryOp(Op::ADD, *$2); }
            | '-' expression %prec O_UNARY { $$ = new UnaryOp(Op::SUB, *$2); }
