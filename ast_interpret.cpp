@@ -115,6 +115,45 @@ Object* WhileStatement::interpret(){
   return nullptr;
 }
 
+Object* ForStatement::interpret() {
+  if(size() > 0){
+    // the body is actually interpreted only on endBlock
+    Object& iterable = expr.exec();
+    try{
+      iterable.useName("__getitem__");
+    }catch(NameError& e){
+      throw std::runtime_error("TypeError: '"+iterable.getIdentifier()+"' object is not iterable");
+    }
+
+    auto cur_index = new IntObject(0);
+    auto param = std::list<Object*>(1,cur_index);
+    Object& cond = iterable.useName("__getitem__").call(param);
+
+    print();
+
+    while(!(dynamic_cast<IndexError*>(&cond))){
+      std::cout << "<for " << cond.getIdentifier() << ">" << std::flush;
+
+      newName(name, cond);
+
+      std::cout << useName(name).getIdentifier() << std::flush;
+      std::cout << cond.getIdentifier() << std::flush;
+      std::cout << cond.useName("__add__").call(std::list<Object*>(1,&cond)).getIdentifier() << std::flush;
+      //std::cout << (new BinaryOp(useName(name), Op:ADD, useName(name))).exec().getIdentifier() << std::flush;
+
+      cur_index = new IntObject(cur_index->value + 1);
+      param = std::list<Object*>(1,cur_index);
+      cond = iterable.useName("__getitem__").call(param);
+    }
+
+    // if(elseStt){
+    //   elseStt->interpret();
+    // }
+  }
+
+  return nullptr;
+}
+
 Object& CallOp::exec(){
   //return context->useName(name.name).call(*(new Object()));
   std::list<Object*> _arguments;

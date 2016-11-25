@@ -168,6 +168,13 @@ Block* WhileStatement::endBlock(Statement *stt){
   }
 }
 
+Block* ForStatement::endBlock(Statement *stt){
+  ElifStatement *elifs = dynamic_cast<ElifStatement*>(stt);
+  if(Statement::getIndent() != stt->getIndent() || !elifs){
+    IfStatement::endBlock(stt);
+  }
+}
+
 int Program::lastIndent(){
   Block* cur = cur_block;
   while(cur && cur->getIndent() == -1)

@@ -67,6 +67,12 @@ public:
   Object("NotImplemented") {};
 };
 
+class IndexError : public Object {
+public:
+  IndexError() :
+  Object("IndexError") {};
+};
+
 class FloatObject : public Object {
 public:
   double value;
