@@ -48,7 +48,8 @@ Object* IfStatement::interpret(){
         if(ret) return ret;
       }
     }else if(elseStt){
-      elseStt->interpret();
+      Object* ret = elseStt->interpret();
+      if(ret) return ret;
     }
   }
 
@@ -77,7 +78,8 @@ Object* ElifStatement::interpret(){
         if(ret) return ret;
       }
     }else if(elseStt){
-      elseStt->interpret();
+      Object* ret = elseStt->interpret();
+      if(ret) return ret;
     }
   }
 
@@ -104,7 +106,8 @@ Object* WhileStatement::interpret(){
 
     //TODO elseStt && !break
     if(elseStt){
-      elseStt->interpret();
+      Object* ret = elseStt->interpret();
+      if(ret) return ret;
     }
   }
 
@@ -134,9 +137,7 @@ Object* ForStatement::interpret() {
     while(!(dynamic_cast<IndexError*>(item))){
       std::cout << "<for " << item->getIdentifier() << ">" << std::flush;
       //puts the value of the item on the namespace using the name given
-      newName(name, *item);
-
-      std::cout << name << useName(name).getIdentifier();
+      this->context->newName(name, *item);
 
       //executes each statement
       for(Statement *stt : *this){
@@ -156,7 +157,8 @@ Object* ForStatement::interpret() {
 
     //TODO elseStt && !break
     if(elseStt){
-      elseStt->interpret();
+      Object* ret = elseStt->interpret();
+      if(ret) return ret;
     }
   }
 
