@@ -203,7 +203,6 @@ public:
   BinaryOp(Expression& left, Op op, Expression& right) :
   left(left), op(op), right(right) {};
   void setContext(Namespace *context);
-private:
   Expression& left;
   Expression& right;
   Op op;
@@ -216,7 +215,6 @@ public:
   UnaryOp(Op op, Expression& right) :
   op(op), right(right) {};
   void setContext(Namespace *context);
-private:
   Expression& right;
   Op op;
 };

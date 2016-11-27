@@ -8,15 +8,40 @@ Object* Expression::interpret(){
 }
 
 Object* Assignment::interpret(){
-  //TODO attribution of non built in types should be by reference, not copy
+  //TODO attribution of non built in types should be by reference, not copy ??
 
   if(Name* name = dynamic_cast<Name*>(&target)){
     Object& expr = right.exec();
     context->newName(name->name, expr);
     std::cout << "<assignment> " << std::flush;
     std::cout << name->name << " = " << context->useName(name->name).getIdentifier() << std::flush;
+  }else
+  if(dynamic_cast<LitBool*>(&target)
+  || dynamic_cast<LitInt*>(&target)
+  || dynamic_cast<LitFloat*>(&target)
+  || dynamic_cast<LitList*>(&target)){
+    throw std::runtime_error("SyntaxError: can't assign to literal");
+  }else
+  if(BinaryOp* bo = dynamic_cast<BinaryOp*>(&target)){
+    if(bo->op == Op::KEY){
+      auto left = bo->left.exec();
+      try{
+        left.useName("__setitem__");
+      }catch(NameError& e){
+        throw std::runtime_error("TypeError: '"+left.getIdentifier()+"' object does not support item assignment");
+      }
+      auto params = std::list<Object*>();
+      params.push_back(&(bo->right.exec()));
+      params.push_back(&(right.exec()));
+      left.useName("__setitem__").call(params);
+    }else{
+      throw std::runtime_error("SyntaxError: can't assign to operator");
+    }
+  }else
+  if(dynamic_cast<UnaryOp*>(&target)){
+    throw std::runtime_error("SyntaxError: can't assign to operator");
   }else{
-    std::cout << "NOT IMPLEMENTED";
+    throw std::runtime_error("SyntaxError: This kind of assignment was unexpected");
   }
 
   return nullptr;
@@ -215,7 +240,7 @@ Object& BinaryOp::exec(){
     }
   }catch(NameError& e){
     if(op == KEY)
-      throw std::runtime_error("TypeError: "+left.getIdentifier()+" object has no attribute '__getitem__'");
+      throw std::runtime_error("TypeError: "+left.getIdentifier()+" object is not subscriptable");
     ret = nullptr;
   }
   if(ret)

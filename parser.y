@@ -64,7 +64,7 @@
 %type <value> value
 %type <name> name
 %type <arr> array
-%type <expr> expression
+%type <expr> expression assignment-target
 %type <exprs> expression-list expression-list-opt
 %type <param> parameter
 %type <params> parameter-list parameter-list-opt
@@ -161,23 +161,25 @@ expression-list : expression-list ',' expression { $1->push_back($3); $$ = $1; }
                 | expression { $$ = new std::list<Expression*>(); $$->push_back($1); }
                 ;
 
-assignment : name '=' expression
+assignment : assignment-target '=' expression
              { $$ = new Assignment(*$1, *$3); }
-           | name A_SUM expression
+           | assignment-target A_SUM expression
              { $$ = new Assignment(*$1, *(new BinaryOp(*$1, Op::ADD, *$3))); }
-           | name A_SUB expression
+           | assignment-target A_SUB expression
              { $$ = new Assignment(*$1, *(new BinaryOp(*$1, Op::SUB, *$3))); }
-           | name A_MUL expression
+           | assignment-target A_MUL expression
              { $$ = new Assignment(*$1, *(new BinaryOp(*$1, Op::MUL, *$3))); }
-           | name A_DIV expression
+           | assignment-target A_DIV expression
              { $$ = new Assignment(*$1, *(new BinaryOp(*$1, Op::DIV, *$3))); }
-           | name A_MOD expression
+           | assignment-target A_MOD expression
              { $$ = new Assignment(*$1, *(new BinaryOp(*$1, Op::MOD, *$3))); }
-           | name A_EXP expression
+           | assignment-target A_EXP expression
              { $$ = new Assignment(*$1, *(new BinaryOp(*$1, Op::EXP, *$3))); }
-           | name A_FDV expression
+           | assignment-target A_FDV expression
              { $$ = new Assignment(*$1, *(new BinaryOp(*$1, Op::FDV, *$3))); }
            ;
+
+assignment-target : expression { $$ = $1; }
 
 function : T_DEF name '(' parameter-list-opt ')' ':' { $$ = new FunctionDef(*$2,*$4); }
          ;
