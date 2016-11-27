@@ -18,9 +18,7 @@ while c:
   while e:
     d += 1
     e += 1
-# c += 1 # should need this line, but somehow it is ending without it.
-# TODO check on this error
-# ?! confusing the inside if condition with the outside ??
+  c += 1 # should need this line, but somehow it is ending without it.
 
 a # 0
 b # function

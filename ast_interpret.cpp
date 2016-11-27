@@ -10,10 +10,15 @@ Object* Expression::interpret(){
 Object* Assignment::interpret(){
   //TODO attribution of non built in types should be by reference, not copy
 
-  Object& expr = right.exec();
-  context->newName(target.name, expr);
-  std::cout << "<assignment> " << std::flush;
-  std::cout << target.name << " = " << context->useName(target.name).getIdentifier() << std::flush;
+  if(Name* name = dynamic_cast<Name*>(&target)){
+    Object& expr = right.exec();
+    context->newName(name->name, expr);
+    std::cout << "<assignment> " << std::flush;
+    std::cout << name->name << " = " << context->useName(name->name).getIdentifier() << std::flush;
+  }else{
+    std::cout << "NOT IMPLEMENTED";
+  }
+
   return nullptr;
 }
 
@@ -65,6 +70,8 @@ Object* ElseStatement::interpret(){
       if(ret) return ret;
     }
   }
+
+  return nullptr;
 }
 
 Object* ElifStatement::interpret(){

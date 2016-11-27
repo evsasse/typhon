@@ -85,11 +85,11 @@ class Assignment : public Statement {
 public:
   void print();
   Object* interpret();
-  Assignment(Name& target, Expression& right) :
+  Assignment(Expression& target, Expression& right) :
   target(target), right(right) {};
   void setContext(Namespace *context);
 private:
-  Name& target; //TODO: make more generic, a.b a.c a.b.d ...
+  Expression& target; //TODO: make more generic, a.b a.c a.b.d ...
   Expression& right;
 };
 
