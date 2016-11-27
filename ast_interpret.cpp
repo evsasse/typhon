@@ -48,7 +48,8 @@ Object* IfStatement::interpret(){
         if(ret) return ret;
       }
     }else if(elseStt){
-      elseStt->interpret();
+      Object* ret = elseStt->interpret();
+      if(ret) return ret;
     }
   }
 
@@ -77,7 +78,8 @@ Object* ElifStatement::interpret(){
         if(ret) return ret;
       }
     }else if(elseStt){
-      elseStt->interpret();
+      Object* ret = elseStt->interpret();
+      if(ret) return ret;
     }
   }
 
@@ -87,28 +89,76 @@ Object* ElifStatement::interpret(){
 Object* WhileStatement::interpret(){
   if(size() > 0){
     // the body is actually interpreted only on endBlock
-    Object& cond = expr.exec();
+    Object* cond = &(expr.exec());
     print();
-    std::cout << "<while " << cond.getIdentifier() << ">" << std::flush;
-    while(cond.useName("__bool__").call().getIdentifier() == BoolObject(1).getIdentifier()){
+    std::cout << "<while " << cond->getIdentifier() << ">" << std::flush;
+    while(cond->useName("__bool__").call().getIdentifier() == BoolObject(1).getIdentifier()){
       for(Statement *stt : *this){
         //TODO break; on continue;
         //TODO break;break on break;
         Object* ret = stt->interpret();
         if(ret) return ret;
       }
-      cond = expr.exec();
+      cond = &(expr.exec());
       print();
-      std::cout << "<while " << cond.getIdentifier() << ">" << std::flush;
-      // if(IntObject* io = dynamic_cast<IntObject*>(&cond)){
-      //   std::cout << "{" << io->value << "}";
-      //   std::cout << "{" << io->getIdentifier() << "}";
-      // }
-      // std::cout << "{" << cond.getIdentifier() << " "<< cond.useName("__bool__").call().getIdentifier() << "}";
+      std::cout << "<while " << cond->getIdentifier() << ">" << std::flush;
     }
 
+    //TODO elseStt && !break
     if(elseStt){
-      elseStt->interpret();
+      Object* ret = elseStt->interpret();
+      if(ret) return ret;
+    }
+  }
+
+  return nullptr;
+}
+
+Object* ForStatement::interpret() {
+  if(size() > 0){
+    // the body is actually interpreted only on endBlock
+
+    //make sure the expression given results in an iterable
+    Object& iterable = expr.exec();
+    try{
+      iterable.useName("__getitem__");
+    }catch(NameError& e){
+      throw std::runtime_error("TypeError: '"+iterable.getIdentifier()+"' object is not iterable");
+    }
+
+    //gets the item at the first position of the iterable
+    //TODO make it generic creating a iterator and calling next()
+    auto cur_index = new IntObject(0);
+    auto param = std::list<Object*>(1,cur_index);
+    Object* item = &(iterable.useName("__getitem__").call(param));
+
+    print();
+    //if trying to get the position results in a index error, it ended iterating
+    while(!(dynamic_cast<IndexError*>(item))){
+      std::cout << "<for " << item->getIdentifier() << ">" << std::flush;
+      //puts the value of the item on the namespace using the name given
+      this->context->newName(name, *item);
+
+      //executes each statement
+      for(Statement *stt : *this){
+        //TODO break; on continue;
+        //TODO break;break on break;
+        Object* ret = stt->interpret();
+        //if an statement returns a value, it means it was a return statement
+        if(ret) return ret;
+      }
+
+      //gets the next item
+      //TODO make it generic calling next()
+      cur_index = new IntObject(cur_index->value + 1);
+      param = std::list<Object*>(1,cur_index);
+      item = &(iterable.useName("__getitem__").call(param));
+    }
+
+    //TODO elseStt && !break
+    if(elseStt){
+      Object* ret = elseStt->interpret();
+      if(ret) return ret;
     }
   }
 

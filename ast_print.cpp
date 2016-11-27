@@ -76,6 +76,10 @@ void WhileStatement::print(){
   std::cout << "]" << std::flush;
 }
 
+void ForStatement::print(){
+  std::cout << "[for]" << std::flush;
+}
+
 void BinaryOp::print(){
   Statement::print();
   std::cout << "(" << std::flush;

@@ -186,6 +186,16 @@ public:
   Block* endBlock(Statement* stt);
 };
 
+class ForStatement : public WhileStatement{
+public:
+  ForStatement(std::string name, Expression& expr) :
+  WhileStatement(expr), name(name) {};
+  void print();
+  Object* interpret();
+  Block* endBlock(Statement* stt);
+  std::string name;
+};
+
 class BinaryOp : public Expression {
 public:
   void print();

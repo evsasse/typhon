@@ -33,6 +33,7 @@
   ElseStatement *elsestt;
   ElifStatement *elifstt;
   WhileStatement *whilestt;
+  ForStatement *forstt;
 
   std::list<Expression*> *exprs;
   std::list<Parameter*> *params;
@@ -55,7 +56,7 @@
 %token T_INDENT T_NEWLINE
 %token T_DEF T_RETURN
 %token T_IF T_ELIF T_ELSE
-%token T_WHILE
+%token T_WHILE T_FOR T_IN
 
 %type <val_int> indent
 %type <stt> statement simple-statement
@@ -73,6 +74,7 @@
 %type <elsestt> else
 %type <elifstt> elif
 %type <whilestt> while
+%type <forstt> for
 
 %%
 
@@ -101,6 +103,7 @@ statement : simple-statement { $$ = $1; }
           | elif { $$ = $1; }
           | else { $$ = $1; }
           | while { $$ = $1; }
+          | for { $$ = $1; }
           ;
 
 simple-statement: /* one that does not contain blocks and new lines */
@@ -187,6 +190,8 @@ else : T_ELSE ':' { $$ = new ElseStatement(); }
      ;
 
 while : T_WHILE expression ':' { $$ = new WhileStatement(*$2); }
+
+for: T_FOR T_NAME T_IN expression ':' { $$ = new ForStatement($2,*$4); }
 
 %%
 

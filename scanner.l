@@ -45,6 +45,8 @@ name [a-zA-Z_][a-zA-Z0-9_]*
 "elif " { return T_ELIF; }
 "else" { return T_ELSE; }
 "while " { return T_WHILE; }
+"for " { return T_FOR; }
+" in " { return T_IN; }
 
 [,;:\(\)\=\[\]] { return yytext[0]; }
 

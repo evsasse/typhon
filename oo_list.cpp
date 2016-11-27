@@ -42,9 +42,11 @@ Object("list"), values(values){
   // __getitem__
   std::function<Object& (std::list<Object*> arguments)> __getitem__ = [this](std::list<Object*> arguments)-> Object& {
     if(IntObject* int_right = dynamic_cast<IntObject*>(arguments.front())){
+      if(int_right->value >= this->values.size()){
+        return *(new IndexError());
+      }
       auto it = this->values.begin();
       std::advance(it,int_right->value);
-      //TODO check if position is valid
       //TODO treat negative position
       return *(*it);
     }else{
@@ -52,8 +54,15 @@ Object("list"), values(values){
     }
   };
 
+  // __bool__
+  std::function<Object& (std::list<Object*> arguments)> __bool__ = [this](std::list<Object*> arguments)-> Object& {
+    return *(new BoolObject(0));
+  };
+
   newName("__add__", *(new BuiltInFunction(__add__)));
   newName("__mul__", *(new BuiltInFunction(__mul__)));
 
   newName("__getitem__", *(new BuiltInFunction(__getitem__)));
+
+  newName("__bool__", *(new BuiltInFunction(__bool__)));
 }
