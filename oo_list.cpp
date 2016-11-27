@@ -42,7 +42,8 @@ Object("list"), values(values){
   // __getitem__
   std::function<Object& (std::list<Object*> arguments)> __getitem__ = [this](std::list<Object*> arguments)-> Object& {
     if(IntObject* int_right = dynamic_cast<IntObject*>(arguments.front())){
-      if(int_right->value > this->values.size()){
+      if(int_right->value >= this->values.size()){
+        std::cout << "ENDED ITERATION" << std::flush;
         return *(new IndexError());
       }
       auto it = this->values.begin();

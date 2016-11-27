@@ -87,26 +87,22 @@ Object* ElifStatement::interpret(){
 Object* WhileStatement::interpret(){
   if(size() > 0){
     // the body is actually interpreted only on endBlock
-    Object& cond = expr.exec();
+    Object* cond = &(expr.exec());
     print();
-    std::cout << "<while " << cond.getIdentifier() << ">" << std::flush;
-    while(cond.useName("__bool__").call().getIdentifier() == BoolObject(1).getIdentifier()){
+    std::cout << "<while " << cond->getIdentifier() << ">" << std::flush;
+    while(cond->useName("__bool__").call().getIdentifier() == BoolObject(1).getIdentifier()){
       for(Statement *stt : *this){
         //TODO break; on continue;
         //TODO break;break on break;
         Object* ret = stt->interpret();
         if(ret) return ret;
       }
-      cond = expr.exec();
+      cond = &(expr.exec());
       print();
-      std::cout << "<while " << cond.getIdentifier() << ">" << std::flush;
-      // if(IntObject* io = dynamic_cast<IntObject*>(&cond)){
-      //   std::cout << "{" << io->value << "}";
-      //   std::cout << "{" << io->getIdentifier() << "}";
-      // }
-      // std::cout << "{" << cond.getIdentifier() << " "<< cond.useName("__bool__").call().getIdentifier() << "}";
+      std::cout << "<while " << cond->getIdentifier() << ">" << std::flush;
     }
 
+    //TODO elseStt && !break
     if(elseStt){
       elseStt->interpret();
     }
@@ -118,6 +114,8 @@ Object* WhileStatement::interpret(){
 Object* ForStatement::interpret() {
   if(size() > 0){
     // the body is actually interpreted only on endBlock
+
+    //make sure the expression given results in an iterable
     Object& iterable = expr.exec();
     try{
       iterable.useName("__getitem__");
@@ -125,30 +123,41 @@ Object* ForStatement::interpret() {
       throw std::runtime_error("TypeError: '"+iterable.getIdentifier()+"' object is not iterable");
     }
 
+    //gets the item at the first position of the iterable
+    //TODO make it generic creating a iterator and calling next()
     auto cur_index = new IntObject(0);
     auto param = std::list<Object*>(1,cur_index);
-    Object& cond = iterable.useName("__getitem__").call(param);
+    Object* item = &(iterable.useName("__getitem__").call(param));
 
     print();
+    //if trying to get the position results in a index error, it ended iterating
+    while(!(dynamic_cast<IndexError*>(item))){
+      std::cout << "<for " << item->getIdentifier() << ">" << std::flush;
+      //puts the value of the item on the namespace using the name given
+      newName(name, *item);
 
-    while(!(dynamic_cast<IndexError*>(&cond))){
-      std::cout << "<for " << cond.getIdentifier() << ">" << std::flush;
+      std::cout << name << useName(name).getIdentifier();
 
-      newName(name, cond);
+      //executes each statement
+      for(Statement *stt : *this){
+        //TODO break; on continue;
+        //TODO break;break on break;
+        Object* ret = stt->interpret();
+        //if an statement returns a value, it means it was a return statement
+        if(ret) return ret;
+      }
 
-      std::cout << useName(name).getIdentifier() << std::flush;
-      std::cout << cond.getIdentifier() << std::flush;
-      std::cout << cond.useName("__add__").call(std::list<Object*>(1,&cond)).getIdentifier() << std::flush;
-      //std::cout << (new BinaryOp(useName(name), Op:ADD, useName(name))).exec().getIdentifier() << std::flush;
-
+      //gets the next item
+      //TODO make it generic calling next()
       cur_index = new IntObject(cur_index->value + 1);
       param = std::list<Object*>(1,cur_index);
-      cond = iterable.useName("__getitem__").call(param);
+      item = &(iterable.useName("__getitem__").call(param));
     }
 
-    // if(elseStt){
-    //   elseStt->interpret();
-    // }
+    //TODO elseStt && !break
+    if(elseStt){
+      elseStt->interpret();
+    }
   }
 
   return nullptr;
