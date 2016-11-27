@@ -55,6 +55,12 @@ name [a-zA-Z_][a-zA-Z0-9_]*
 "//" { return O_FDV; }
 
 "+=" { return A_SUM; }
+"-=" { return A_SUB; }
+"*=" { return A_MUL; }
+"/=" { return A_DIV; }
+"%=" { return A_MOD; }
+"**=" { return A_EXP; }
+"//=" { return A_FDV; }
 
 "<" { return O_LT; }
 "<=" { return O_LE; }

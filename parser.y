@@ -46,7 +46,8 @@
 %left O_EXP
 %left '(' '['
 
-%token A_SUM
+%token A_SUM A_SUB A_MUL A_DIV
+%token A_MOD A_EXP A_FDV
 
 %token <val_int> L_INT
 %token <val_float> L_FLOAT
@@ -164,6 +165,18 @@ assignment : name '=' expression
              { $$ = new Assignment(*$1, *$3); }
            | name A_SUM expression
              { $$ = new Assignment(*$1, *(new BinaryOp(*$1, Op::ADD, *$3))); }
+           | name A_SUB expression
+             { $$ = new Assignment(*$1, *(new BinaryOp(*$1, Op::SUB, *$3))); }
+           | name A_MUL expression
+             { $$ = new Assignment(*$1, *(new BinaryOp(*$1, Op::MUL, *$3))); }
+           | name A_DIV expression
+             { $$ = new Assignment(*$1, *(new BinaryOp(*$1, Op::DIV, *$3))); }
+           | name A_MOD expression
+             { $$ = new Assignment(*$1, *(new BinaryOp(*$1, Op::MOD, *$3))); }
+           | name A_EXP expression
+             { $$ = new Assignment(*$1, *(new BinaryOp(*$1, Op::EXP, *$3))); }
+           | name A_FDV expression
+             { $$ = new Assignment(*$1, *(new BinaryOp(*$1, Op::FDV, *$3))); }
            ;
 
 function : T_DEF name '(' parameter-list-opt ')' ':' { $$ = new FunctionDef(*$2,*$4); }
