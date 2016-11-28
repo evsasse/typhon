@@ -58,6 +58,7 @@
 %token T_DEF T_RETURN
 %token T_IF T_ELIF T_ELSE
 %token T_WHILE T_FOR T_IN
+%token T_PASS
 
 %type <val_int> indent
 %type <stt> statement simple-statement
@@ -95,7 +96,7 @@ indent : indent T_INDENT { $$ = $1 + 1; }
        ;
 
 statements : statement { $1->setIndent(cur_indent); program.push($1); }
-        /* | error { yyerrok; } */
+           | error { auto pass = new SyntaxError(); pass->setIndent(0); program.push(pass); }
            ;
 
 statement : simple-statement { $$ = $1; }
@@ -111,6 +112,7 @@ simple-statement: /* one that does not contain blocks and new lines */
                   expression { $$ = $1; }
                 | assignment { $$ = $1; }
                 | return { $$ = $1; }
+                | T_PASS { $$ = new PassStatement(); }
                 ;
 
 opt-semicolon : ';'
@@ -211,5 +213,5 @@ for: T_FOR T_NAME T_IN expression ':' { $$ = new ForStatement($2,*$4); }
 %%
 
 void yyerror(const char *s){
-  std::cout << s;
+  std::cout << s << std::endl;
 }

@@ -48,6 +48,8 @@ name [a-zA-Z_][a-zA-Z0-9_]*
 "for " { return T_FOR; }
 " in " { return T_IN; }
 
+"pass" { return T_PASS; }
+
 [,;:\(\)\=\[\]] { return yytext[0]; }
 
 [\+\-\*\/\%] { return yytext[0]; }

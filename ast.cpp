@@ -94,8 +94,10 @@ Block* Block::endBlock(Statement* stt){
 }
 
 Block* FunctionDef::endBlock(Statement* stt){
-  Block::print();
-  std::cout << "endBlock " << name.name << std::endl << std::flush;
+  if(DEBUG){
+    Block::print();
+  }
+
   //TODO: add a return None statement at the end of the function
 
   if(MainBlock *mb = dynamic_cast<MainBlock*>(getParent())){
@@ -107,8 +109,9 @@ Block* FunctionDef::endBlock(Statement* stt){
 
 Block* IfStatement::endBlock(Statement* stt){
   //the next statement is received by a parameter to check if it is an elif or else
-
-  Block::print();
+  if(DEBUG){
+    Block::print();
+  }
 
   if(Statement::getIndent() == stt->getIndent()){
     if(ElseStatement *es = dynamic_cast<ElseStatement*>(stt)){
@@ -129,7 +132,9 @@ Block* IfStatement::endBlock(Statement* stt){
 }
 
 Block* ElseStatement::endBlock(Statement* stt){
-  Block::print();
+  if(DEBUG){
+    Block::print();
+  }
 
   if(MainBlock *mb = dynamic_cast<MainBlock*>(getParent())){
     ifStt->interpret();
@@ -139,8 +144,9 @@ Block* ElseStatement::endBlock(Statement* stt){
 }
 
 Block* ElifStatement::endBlock(Statement* stt){
-
-  Block::print();
+  if(DEBUG){
+    Block::print();
+  }
 
   if(Statement::getIndent() == stt->getIndent()){
     if(ElseStatement *es = dynamic_cast<ElseStatement*>(stt)){
@@ -185,6 +191,9 @@ int Program::lastIndent(){
 
 void Program::push(Statement *stt){
   try {
+    if(dynamic_cast<SyntaxError*>(stt))
+      throw std::runtime_error("SyntaxError");
+
     int diff = stt->getIndent() - lastIndent();
     if(expect_indent && diff>0){
       // starts a expected new block
@@ -241,15 +250,18 @@ void Program::push(Statement *stt){
       //cur_block = cur_block->endBlock();
       cur_block = cur_block->getParent();
       //TODO properly destroy wronged statement
-    std::cout << e.what() << std::flush;
+    if(!dynamic_cast<SyntaxError*>(stt)){
+      std::cout << e.what() << std::flush;
+      std::cout << std::endl;
+    }
   }
 
   if(expect_indent)
-    std::cout << std::endl << "..> " << std::flush;
+    std::cout << "..> " << std::flush;
   else if(lastIndent() > 0)
-    std::cout << std::endl << "... " << std::flush;
+    std::cout << "... " << std::flush;
   else
-    std::cout << std::endl << ">>> " << std::flush;
+    std::cout << ">>> " << std::flush;
 }
 
 void Block::push(Statement *stt){
@@ -280,8 +292,10 @@ void MainBlock::push(Statement *stt){
   }
 
   stt->setContext(this);
-  stt->print();
-  std::cout << std::endl << std::flush;
+  if(DEBUG){
+    stt->print();
+    std::cout << std::endl << std::flush;
+  }
   stt->interpret();
 
   push_back(stt);

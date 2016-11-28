@@ -4,6 +4,8 @@
 #include <string>
 #include "oo.h"
 
+extern bool DEBUG;
+
 /* Addition, Subtraction, Multiplication, Division,
    Modulus, Exponent, Floor Division */
 enum Op { ADD, SUB, MUL, DIV,
@@ -194,6 +196,14 @@ public:
   Object* interpret();
   Block* endBlock(Statement* stt);
   std::string name;
+};
+
+class PassStatement : public Statement {
+public:
+  Object* interpret();
+};
+
+class SyntaxError : public PassStatement {
 };
 
 class BinaryOp : public Expression {

@@ -3,7 +3,7 @@
 #include "ast.h"
 
 Object* Expression::interpret(){
-  std::cout << exec().getIdentifier() << std::flush;
+  std::cout << exec().getIdentifier() << std::endl;
   return nullptr;
 }
 
@@ -13,8 +13,10 @@ Object* Assignment::interpret(){
   if(Name* name = dynamic_cast<Name*>(&target)){
     Object& expr = right.exec();
     context->newName(name->name, expr);
-    std::cout << "<assignment> " << std::flush;
-    std::cout << name->name << " = " << context->useName(name->name).getIdentifier() << std::flush;
+    if(DEBUG){
+      std::cout << "<assignment> " << std::flush;
+      std::cout << name->name << " = " << context->useName(name->name).getIdentifier() << std::flush;
+    }
   }else
   if(dynamic_cast<LitBool*>(&target)
   || dynamic_cast<LitInt*>(&target)
@@ -49,9 +51,12 @@ Object* Assignment::interpret(){
 
 Object* FunctionDef::interpret(){
   //context->newName(name.name,*(new Function(name,*this)));
-  std::cout << "<function def '" << std::flush;
-  name.print();
-  std::cout << "'>" << std::flush;
+
+  if(DEBUG){
+    std::cout << "<function def '" << std::flush;
+    name.print();
+    std::cout << "'>" << std::flush;
+  }
 
   //The function is added to the namespace when it has a body
   // the interpret is called at endBlock, and by parent bodys
@@ -63,7 +68,9 @@ Object* FunctionDef::interpret(){
 
 Object* FunctionRet::interpret(){
   Object& ret = expr.exec();
-  std::cout << "<return " << ret.getIdentifier() << ">" << std::flush;
+  if(DEBUG){
+    std::cout << "<return " << ret.getIdentifier() << ">" << std::flush;
+  }
   return &ret;
 }
 
@@ -71,7 +78,10 @@ Object* IfStatement::interpret(){
   if(size() > 0){
     // the body is actually interpreted only on endBlock
     Object& cond = expr.exec();
-    std::cout << "<if "<< cond.getIdentifier() << ">" << std::flush;
+    if(DEBUG){
+      std::cout << "<if "<< cond.getIdentifier() << ">" << std::flush;
+    }
+
     if(cond.useName("__bool__").call().getIdentifier() == BoolObject(1).getIdentifier()){
       for(Statement *stt : *this){
         Object* ret = stt->interpret();
@@ -87,7 +97,9 @@ Object* IfStatement::interpret(){
 }
 
 Object* ElseStatement::interpret(){
-  std::cout << "[else]";
+  if(DEBUG){
+    std::cout << "[else]";
+  }
 
   if(size() > 0){
     for(Statement *stt : *this){
@@ -103,7 +115,10 @@ Object* ElifStatement::interpret(){
   if(size() > 0){
     // the body is actually interpreted only on endBlock
     Object& cond = expr.exec();
-    std::cout << "<elif "<< cond.getIdentifier() << ">" << std::flush;
+    if(DEBUG){
+      std::cout << "<elif "<< cond.getIdentifier() << ">" << std::flush;
+    }
+
     if(cond.useName("__bool__").call().getIdentifier() == BoolObject(1).getIdentifier()){
       for(Statement *stt : *this){
         Object* ret = stt->interpret();
@@ -122,8 +137,11 @@ Object* WhileStatement::interpret(){
   if(size() > 0){
     // the body is actually interpreted only on endBlock
     Object* cond = &(expr.exec());
-    print();
-    std::cout << "<while " << cond->getIdentifier() << ">" << std::flush;
+    if(DEBUG){
+      print();
+      std::cout << "<while " << cond->getIdentifier() << ">" << std::flush;
+    }
+
     while(cond->useName("__bool__").call().getIdentifier() == BoolObject(1).getIdentifier()){
       for(Statement *stt : *this){
         //TODO break; on continue;
@@ -131,9 +149,13 @@ Object* WhileStatement::interpret(){
         Object* ret = stt->interpret();
         if(ret) return ret;
       }
+
       cond = &(expr.exec());
-      print();
-      std::cout << "<while " << cond->getIdentifier() << ">" << std::flush;
+
+      if(DEBUG){
+        print();
+        std::cout << "<while " << cond->getIdentifier() << ">" << std::flush;
+      }
     }
 
     //TODO elseStt && !break
@@ -164,10 +186,14 @@ Object* ForStatement::interpret() {
     auto param = std::list<Object*>(1,cur_index);
     Object* item = &(iterable.useName("__getitem__").call(param));
 
-    print();
+    if(DEBUG){
+      print();  
+    }
     //if trying to get the position results in a index error, it ended iterating
     while(!(dynamic_cast<IndexError*>(item))){
-      std::cout << "<for " << item->getIdentifier() << ">" << std::flush;
+      if(DEBUG){
+        std::cout << "<for " << item->getIdentifier() << ">" << std::flush;
+      }
       //puts the value of the item on the namespace using the name given
       this->context->newName(name, *item);
 
@@ -194,6 +220,10 @@ Object* ForStatement::interpret() {
     }
   }
 
+  return nullptr;
+}
+
+Object* PassStatement::interpret(){
   return nullptr;
 }
 
