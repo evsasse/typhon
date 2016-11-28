@@ -80,7 +80,8 @@
 
 %%
 
-program : block
+program : block { /* includes a 'pass' statement at the end of file to close any unfinished blocks*/
+           auto pass = new PassStatement(); pass->setIndent(0); program.push(pass); }
         ;
 
 block : block T_NEWLINE line
