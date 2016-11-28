@@ -6,6 +6,8 @@
 
 extern bool DEBUG;
 
+extern void import_file(const char *filename);
+
 /* Addition, Subtraction, Multiplication, Division,
    Modulus, Exponent, Floor Division */
 enum Op { ADD, SUB, MUL, DIV,
@@ -204,6 +206,14 @@ public:
 };
 
 class SyntaxError : public PassStatement {
+};
+
+class ImportStatement : public Statement {
+public:
+  ImportStatement(std::string filename) :
+  filename(filename) {};
+  Object* interpret();
+  std::string filename;
 };
 
 class BinaryOp : public Expression {

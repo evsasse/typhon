@@ -1,10 +1,16 @@
 %{
   #include <iostream>
+  #include <stdexcept>
+
 
   #include "ast.h"
   #include "parser.h"
 
   static bool first_run = true;
+
+  #define MAX_INCLUDE_DEPTH 10
+  YY_BUFFER_STATE include_stack[MAX_INCLUDE_DEPTH];
+  int include_stack_ptr = 0;
 %}
 
 %option noyywrap
@@ -16,6 +22,7 @@ name [a-zA-Z_][a-zA-Z0-9_]*
 
 %x INDENT
 %x COMMENT MLCOMMENT
+%x IMPORT
 %%
 
   if(first_run){
@@ -50,6 +57,8 @@ name [a-zA-Z_][a-zA-Z0-9_]*
 
 "pass" { return T_PASS; }
 
+"import " { return T_IMPORT; }
+
 [,;:\(\)\=\[\]] { return yytext[0]; }
 
 [\+\-\*\/\%] { return yytext[0]; }
@@ -76,6 +85,39 @@ name [a-zA-Z_][a-zA-Z0-9_]*
 {bool} { yylval.val_bool = strcmp("True",yytext) == 0; return L_BOOL; }
 {name} { yylval.val_str = strdup(yytext); return T_NAME; }
 
-. { std::cerr << "lex-err['" << yytext << "']" << std::endl; }
+. { std::cerr << "lexical error, '" << yytext << "' was unexpected" << std::endl; }
+
+<<EOF>> {
+  if ( --include_stack_ptr < 0 ){
+    yyterminate();
+  }else{
+    yy_delete_buffer( YY_CURRENT_BUFFER );
+    yy_switch_to_buffer( include_stack[include_stack_ptr] );
+  }
+}
 
 %%
+
+void import_file(const char *filename){
+  /* from flex manual
+     http://dinosaur.compilertools.net/flex/flex_12.html */
+  if ( include_stack_ptr >= MAX_INCLUDE_DEPTH ){
+    fprintf( stderr, "Includes nested too deeply, infinite recursion ?" );
+    exit( 1 );
+  }
+
+  include_stack[include_stack_ptr++] = YY_CURRENT_BUFFER;
+
+  yyin = fopen( filename, "r" );
+
+  if ( ! yyin ){
+    /*--include_stack_ptr;
+    yy_delete_buffer( YY_CURRENT_BUFFER );
+    yy_switch_to_buffer( include_stack[include_stack_ptr] );
+    throw std::runtime_error("ImportError: No module named "+std::string(filename));*/
+  }
+
+  yy_switch_to_buffer( yy_create_buffer( yyin, YY_BUF_SIZE ) );
+
+  BEGIN(INITIAL);
+}

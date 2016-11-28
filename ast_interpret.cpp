@@ -187,7 +187,7 @@ Object* ForStatement::interpret() {
     Object* item = &(iterable.useName("__getitem__").call(param));
 
     if(DEBUG){
-      print();  
+      print();
     }
     //if trying to get the position results in a index error, it ended iterating
     while(!(dynamic_cast<IndexError*>(item))){
@@ -224,6 +224,12 @@ Object* ForStatement::interpret() {
 }
 
 Object* PassStatement::interpret(){
+  return nullptr;
+}
+
+Object* ImportStatement::interpret(){
+  import_file((filename+".ty").c_str());
+
   return nullptr;
 }
 

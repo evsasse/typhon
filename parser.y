@@ -59,6 +59,7 @@
 %token T_IF T_ELIF T_ELSE
 %token T_WHILE T_FOR T_IN
 %token T_PASS
+%token T_IMPORT
 
 %type <val_int> indent
 %type <stt> statement simple-statement
@@ -113,6 +114,7 @@ simple-statement: /* one that does not contain blocks and new lines */
                   expression { $$ = $1; }
                 | assignment { $$ = $1; }
                 | return { $$ = $1; }
+                | T_IMPORT T_NAME { $$ = new ImportStatement($2); }
                 | T_PASS { $$ = new PassStatement(); }
                 ;
 
