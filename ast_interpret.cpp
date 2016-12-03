@@ -277,6 +277,7 @@ Object& BinaryOp::exec(){
       case GT: ret = & left.useName("__gt__"); break; // l>r;
 
       case AND: ret = & left.useName("__and__"); break;
+      case OR: ret = & left.useName("__or__"); break;
 
       case KEY: ret = & left.useName("__getitem__"); break;
 

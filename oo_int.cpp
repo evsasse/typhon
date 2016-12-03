@@ -243,6 +243,12 @@ Object("int"), value(value) {
     if(this->value == 0) return *(new IntObject(this->value));
     return *arguments.front();
   };
+  ///////////////////
+  // __or__
+  std::function<Object& (std::list<Object*> arguments)> __or__ = [this](std::list<Object*> arguments)-> Object& {
+    if(this->value != 0) return *(new IntObject(this->value));
+    return *arguments.front();
+  };
 
   newName("__neg__", *(new BuiltInFunction(__neg__)));
   newName("__pos__", *(new BuiltInFunction(__pos__)));
@@ -274,4 +280,5 @@ Object("int"), value(value) {
   newName("__int__", *(new BuiltInFunction(__int__)));
 
   newName("__and__", *(new BuiltInFunction(__and__)));
+  newName("__or__", *(new BuiltInFunction(__or__)));
 }

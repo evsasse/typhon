@@ -109,6 +109,12 @@ Object("list"), values(values){
     if(this->values.size() == 0) return *(new ListObject(this->values));
     return *arguments.front();
   };
+  ///////////////////
+  // __or__
+  std::function<Object& (std::list<Object*> arguments)> __or__ = [this](std::list<Object*> arguments)-> Object& {
+    if(this->values.size() != 0) return *(new ListObject(this->values));
+    return *arguments.front();
+  };
 
   newName("__add__", *(new BuiltInFunction(__add__)));
   newName("__mul__", *(new BuiltInFunction(__mul__)));
@@ -119,4 +125,5 @@ Object("list"), values(values){
   newName("__bool__", *(new BuiltInFunction(__bool__)));
 
   newName("__and__", *(new BuiltInFunction(__and__)));
+  newName("__or__", *(new BuiltInFunction(__or__)));
 }
