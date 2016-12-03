@@ -276,6 +276,9 @@ Object& BinaryOp::exec(){
       case GE: ret = & left.useName("__ge__"); break; // l>=r;
       case GT: ret = & left.useName("__gt__"); break; // l>r;
 
+      case AND: ret = & left.useName("__and__"); break;
+      case OR: ret = & left.useName("__or__"); break;
+
       case KEY: ret = & left.useName("__getitem__"); break;
 
       default: throw std::runtime_error("OperationError: "+opSymbol(op)+" is unexpected here"); break;
@@ -339,9 +342,14 @@ Object& BinaryOp::exec(){
 
 Object& UnaryOp::exec(){
   Object& right = this->right.exec();
-  switch(op){
-    case ADD: return right.useName("__pos__").call(); break;
-    case SUB: return right.useName("__neg__").call(); break;
+  try{
+    switch(op){
+      case ADD: return right.useName("__pos__").call(); break;
+      case SUB: return right.useName("__neg__").call(); break;
+      case NOT: return right.useName("__not__").call(); break;
+    }
+  }catch(NameError& e){
+    throw std::runtime_error("TypeError: bad operand type for unary "+opSymbol(op)+": '"+right.getIdentifier()+"'");
   }
 }
 

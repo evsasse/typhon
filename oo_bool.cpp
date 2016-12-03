@@ -150,6 +150,24 @@ Object("bool"), value(value) {
   std::function<Object& (std::list<Object*> arguments)> __bool__ = [this](std::list<Object*> arguments)-> Object& {
     return *(new BoolObject(this->value));
   };
+  ///////////////////
+  // __not__
+  std::function<Object& (std::list<Object*> arguments)> __not__ = [this](std::list<Object*> arguments)-> Object& {
+    return *(new BoolObject(!this->value));
+  };
+
+  ///////////////////
+  // __and__
+  std::function<Object& (std::list<Object*> arguments)> __and__ = [this](std::list<Object*> arguments)-> Object& {
+    if(this->value == 0) return *(new BoolObject(this->value));
+    return *arguments.front();
+  };
+  ///////////////////
+  // __or__
+  std::function<Object& (std::list<Object*> arguments)> __or__ = [this](std::list<Object*> arguments)-> Object& {
+    if(this->value == 1) return *(new BoolObject(this->value));
+    return *arguments.front();
+  };
 
   //Some functions use the IntObject behavior, and consider True as 1 and False as 0
   newName("__neg__", *(new BuiltInFunction(__neg__)));
@@ -171,5 +189,8 @@ Object("bool"), value(value) {
   newName("__gt__", *(new BuiltInFunction(__gt__)));
 
   newName("__bool__", *(new BuiltInFunction(__bool__)));
-  //newName("__int__", *(new BuiltInFunction(__int__)));
+  newName("__not__", *(new BuiltInFunction(__not__)));
+
+  newName("__and__", *(new BuiltInFunction(__and__)));
+  newName("__or__", *(new BuiltInFunction(__or__)));
 }
