@@ -86,7 +86,7 @@ Object("list"), values(values){
       }
 
       std::advance(it,index);
-      
+
       this->values.insert(it, new_value);
       this->values.erase(it);
       return *(*it);
@@ -97,7 +97,17 @@ Object("list"), values(values){
 
   // __bool__
   std::function<Object& (std::list<Object*> arguments)> __bool__ = [this](std::list<Object*> arguments)-> Object& {
+    if(this->values.size() > 0){
+      return *(new BoolObject(1));
+    }
     return *(new BoolObject(0));
+  };
+
+  ///////////////////
+  // __and__
+  std::function<Object& (std::list<Object*> arguments)> __and__ = [this](std::list<Object*> arguments)-> Object& {
+    if(this->values.size() == 0) return *(new ListObject(this->values));
+    return *arguments.front();
   };
 
   newName("__add__", *(new BuiltInFunction(__add__)));
@@ -107,4 +117,6 @@ Object("list"), values(values){
   newName("__setitem__", *(new BuiltInFunction(__setitem__)));
 
   newName("__bool__", *(new BuiltInFunction(__bool__)));
+
+  newName("__and__", *(new BuiltInFunction(__and__)));
 }

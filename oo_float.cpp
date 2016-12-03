@@ -278,6 +278,13 @@ Object("float"), value(value) {
     return *(new FloatObject(this->value));
   };
 
+  ///////////////////
+  // __and__
+  std::function<Object& (std::list<Object*> arguments)> __and__ = [this](std::list<Object*> arguments)-> Object& {
+    if(this->value == 0) return *(new FloatObject(this->value));
+    return *arguments.front();
+  };
+
   newName("__neg__", *(new BuiltInFunction(__neg__)));
   newName("__pos__", *(new BuiltInFunction(__pos__)));
 
@@ -307,4 +314,6 @@ Object("float"), value(value) {
   newName("__bool__", *(new BuiltInFunction(__bool__)));
   newName("__int__", *(new BuiltInFunction(__int__)));
   newName("__float__", *(new BuiltInFunction(__float__)));
+
+  newName("__and__", *(new BuiltInFunction(__and__)));
 }

@@ -19,6 +19,10 @@ std::string opSymbol(Op op){
     case GE: return ">="; break;
     case GT: return ">"; break;
 
+    case AND: return " and "; break;
+    case OR: return " or "; break;
+    case NOT: return " not "; break;
+
     case KEY: return "[]"; break;
 
     default: return "?"; break;

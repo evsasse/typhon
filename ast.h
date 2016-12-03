@@ -13,6 +13,7 @@ extern void import_file(const char *filename);
 enum Op { ADD, SUB, MUL, DIV,
           MOD, EXP, FDV,
           LT, LE, EQ, NE, GE, GT,
+          AND, OR, NOT,
           KEY };
 
 std::string opSymbol(Op op);

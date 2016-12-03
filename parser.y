@@ -39,6 +39,7 @@
   std::list<Parameter*> *params;
 }
 
+%left O_AND O_OR O_NOT
 %left O_LT O_LE O_EQ O_NE O_GE O_GT
 %left '+' '-'
 %left '%' '*' '/' O_FDV
@@ -140,8 +141,8 @@ expression : value { $$ = $1; }
            | '(' expression ')' { $$ = $2; }
            | '+' expression %prec O_UNARY { $$ = new UnaryOp(Op::ADD, *$2); }
            | '-' expression %prec O_UNARY { $$ = new UnaryOp(Op::SUB, *$2); }
-        /* | expression '[' expression-list ']' new subscription */
-        /* | expression '(' expression-list ')' new call */
+           | O_NOT expression %prec O_UNARY { $$ = new UnaryOp(Op::NOT, *$2); }
+        /* */
            | expression '+' expression { $$ = new BinaryOp(*$1, Op::ADD, *$3); }
            | expression '-' expression { $$ = new BinaryOp(*$1, Op::SUB, *$3); }
            | expression '*' expression { $$ = new BinaryOp(*$1, Op::MUL, *$3); }
@@ -156,6 +157,9 @@ expression : value { $$ = $1; }
            | expression O_NE expression { $$ = new BinaryOp(*$1, Op::NE, *$3); }
            | expression O_GE expression { $$ = new BinaryOp(*$1, Op::GE, *$3); }
            | expression O_GT expression { $$ = new BinaryOp(*$1, Op::GT, *$3); }
+        /* */
+           | expression O_AND expression { $$ = new BinaryOp(*$1, Op::AND, *$3); }
+           | expression O_OR expression { $$ = new BinaryOp(*$1, Op::OR, *$3); }
            ;
 
 expression-list-opt : %empty { $$ = new std::list<Expression*>(); }

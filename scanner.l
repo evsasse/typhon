@@ -91,6 +91,10 @@ name [a-zA-Z_][a-zA-Z0-9_]*
 ">=" { return O_GE; }
 ">" { return O_GT; }
 
+"and"|"&&" { return O_AND; }
+"or"|"||" { return O_OR; }
+"not"|"!" { return O_NOT; }
+
 {integer} { yylval.val_int = std::atoi(yytext); return L_INT; }
 {float} { yylval.val_float = std::atof(yytext); return L_FLOAT; }
 {bool} { yylval.val_bool = strcmp("True",yytext) == 0; return L_BOOL; }
