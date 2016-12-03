@@ -102,6 +102,13 @@ Object("list"), values(values){
     }
     return *(new BoolObject(0));
   };
+  // __not__
+  std::function<Object& (std::list<Object*> arguments)> __not__ = [this](std::list<Object*> arguments)-> Object& {
+    if(this->values.size() > 0){
+      return *(new BoolObject(0));
+    }
+    return *(new BoolObject(1));
+  };
 
   ///////////////////
   // __and__
@@ -123,6 +130,7 @@ Object("list"), values(values){
   newName("__setitem__", *(new BuiltInFunction(__setitem__)));
 
   newName("__bool__", *(new BuiltInFunction(__bool__)));
+  newName("__not__", *(new BuiltInFunction(__not__)));
 
   newName("__and__", *(new BuiltInFunction(__and__)));
   newName("__or__", *(new BuiltInFunction(__or__)));

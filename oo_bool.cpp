@@ -150,6 +150,11 @@ Object("bool"), value(value) {
   std::function<Object& (std::list<Object*> arguments)> __bool__ = [this](std::list<Object*> arguments)-> Object& {
     return *(new BoolObject(this->value));
   };
+  ///////////////////
+  // __not__
+  std::function<Object& (std::list<Object*> arguments)> __not__ = [this](std::list<Object*> arguments)-> Object& {
+    return *(new BoolObject(!this->value));
+  };
 
   ///////////////////
   // __and__
@@ -184,6 +189,7 @@ Object("bool"), value(value) {
   newName("__gt__", *(new BuiltInFunction(__gt__)));
 
   newName("__bool__", *(new BuiltInFunction(__bool__)));
+  newName("__not__", *(new BuiltInFunction(__not__)));
 
   newName("__and__", *(new BuiltInFunction(__and__)));
   newName("__or__", *(new BuiltInFunction(__or__)));

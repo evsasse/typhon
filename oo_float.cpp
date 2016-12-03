@@ -267,6 +267,15 @@ Object("float"), value(value) {
       return *(new BoolObject(1));
     }
   };
+  ///////////////////
+  // __not__
+  std::function<Object& (std::list<Object*> arguments)> __not__ = [this](std::list<Object*> arguments)-> Object& {
+    if(this->value == 0){
+      return *(new BoolObject(1));
+    }else{
+      return *(new BoolObject(0));
+    }
+  };
 
   // __int__
   std::function<Object& (std::list<Object*> arguments)> __int__ = [this](std::list<Object*> arguments)-> Object& {
@@ -318,6 +327,7 @@ Object("float"), value(value) {
   newName("__gt__", *(new BuiltInFunction(__gt__)));
 
   newName("__bool__", *(new BuiltInFunction(__bool__)));
+  newName("__not__", *(new BuiltInFunction(__not__)));
   newName("__int__", *(new BuiltInFunction(__int__)));
   newName("__float__", *(new BuiltInFunction(__float__)));
 
