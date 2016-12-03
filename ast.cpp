@@ -44,6 +44,7 @@ Namespace* Statement::getContext(){
 
 void Assignment::setContext(Namespace *context){
   this->context = context;
+  target.setContext(context);
   right.setContext(context);
 }
 void BinaryOp::setContext(Namespace *context){

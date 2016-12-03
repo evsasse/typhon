@@ -7,3 +7,5 @@
 - import statement
 
 - StringObject
+
+- Array __setitem__

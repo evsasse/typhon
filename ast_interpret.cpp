@@ -244,7 +244,10 @@ Object& CallOp::exec(){
 
 Object& Name::exec(){
   // segmentation faults here mean that the context is not being properly set
-  // review the setContext function of new statement types
+  // review the setContext function of the last modified statement types
+  if(DEBUG && !context){
+    std::cout << "[UNSET CONTEXT WHEN LOOKING FOR NAME: '" << name << "']";
+  }
   return context->useName(name);
 }
 
