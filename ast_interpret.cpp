@@ -374,3 +374,7 @@ Object& LitFloat::exec(){
 Object& LitBool::exec(){
   return *(new BoolObject(value));
 }
+
+Object& LitString::exec(){
+  return *(new BoolObject(0));
+}

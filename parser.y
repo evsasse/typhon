@@ -1,5 +1,6 @@
 %{
   #include <iostream>
+  #include <cstring>
 
   #include "ast.h"
 
@@ -53,7 +54,8 @@
 %token <val_int> L_INT
 %token <val_float> L_FLOAT
 %token <val_bool> L_BOOL
-%token <val_str> T_NAME
+%token <val_str> T_NAME T_CHAR
+%token T_STRING
 
 %token T_INDENT T_NEWLINE
 %token T_DEF T_RETURN
@@ -63,6 +65,7 @@
 %token T_IMPORT
 
 %type <val_int> indent
+%type <val_str> string
 %type <stt> statement simple-statement
 %type <value> value
 %type <name> name
@@ -123,9 +126,18 @@ opt-semicolon : ';'
               | %empty
               ;
 
+string : string T_CHAR
+         { char *concat = new char[std::strlen($1)+std::strlen($2)+1];
+           std::strcpy(concat,$1);
+           std::strcat(concat,$2);
+           $$ = concat; }
+       | T_STRING { $$ = ""; }
+       ;
+
 value : L_INT { $$ = new LitInt($1); }
       | L_FLOAT { $$ = new LitFloat($1); }
       | L_BOOL { $$ = new LitBool($1); }
+      | string { $$ = new LitString($1); }
       ;
 
 name : T_NAME { $$ = new Name($1); }

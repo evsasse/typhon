@@ -118,3 +118,8 @@ void LitBool::print(){
   else
     std::cout << "False" << std::flush;
 }
+
+void LitString::print(){
+  Statement::print();
+  std::cout << value << std::flush;
+}
