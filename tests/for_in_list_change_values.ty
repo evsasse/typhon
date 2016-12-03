@@ -1,0 +1,6 @@
+a = [1,2,3]
+b = 0
+for x in a:
+  a[b] = x**3 # cube each value
+  b+= 1
+a
