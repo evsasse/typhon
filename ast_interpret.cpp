@@ -33,9 +33,12 @@ Object* Assignment::interpret(){
         throw std::runtime_error("TypeError: '"+left.getIdentifier()+"' object does not support item assignment");
       }
       auto params = std::list<Object*>();
-      params.push_back(&(bo->right.exec()));
-      params.push_back(&(right.exec()));
-      left.useName("__setitem__").call(params);
+      params.push_back(&(bo->right.exec())); // index
+      params.push_back(&(right.exec())); // new value
+      Object &ret = left.useName("__setitem__").call(params);
+      if(dynamic_cast<IndexError*>(&ret)){
+        throw std::runtime_error("IndexError: list assignment index out of range");
+      }
     }else{
       throw std::runtime_error("SyntaxError: can't assign to operator");
     }
@@ -326,6 +329,8 @@ Object& BinaryOp::exec(){
   ni = dynamic_cast<NotImplemented*>(ret);
   if(!ret || ni){
     throw std::runtime_error("TypeError: unsupported operand type(s) for "+opSymbol(op)+": '"+left.getIdentifier()+"' and '"+right.getIdentifier()+"'");
+  }else if(dynamic_cast<IndexError*>(ret)){
+    throw std::runtime_error("IndexError: list index out of range");
   }
 
   return *ret;

@@ -54,6 +54,24 @@ Object("list"), values(values){
     }
   };
 
+  // __setitem__
+  std::function<Object& (std::list<Object*> arguments)> __setitem__ = [this](std::list<Object*> arguments)-> Object& {
+    auto new_value = arguments.back();
+    if(IntObject* int_right = dynamic_cast<IntObject*>(arguments.front())){
+      if(int_right->value >= this->values.size()){
+        return *(new IndexError());
+      }
+      auto it = this->values.begin();
+      std::advance(it,int_right->value);
+      //TODO treat negative position
+      this->values.insert(it, new_value);
+      this->values.erase(it);
+      return *(*it);
+    }else{
+      throw std::runtime_error("TypeError: list indices must be integers, not "+arguments.front()->getIdentifier());
+    }
+  };
+
   // __bool__
   std::function<Object& (std::list<Object*> arguments)> __bool__ = [this](std::list<Object*> arguments)-> Object& {
     return *(new BoolObject(0));
@@ -63,6 +81,7 @@ Object("list"), values(values){
   newName("__mul__", *(new BuiltInFunction(__mul__)));
 
   newName("__getitem__", *(new BuiltInFunction(__getitem__)));
+  newName("__setitem__", *(new BuiltInFunction(__setitem__)));
 
   newName("__bool__", *(new BuiltInFunction(__bool__)));
 }
