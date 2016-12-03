@@ -205,13 +205,16 @@ void Program::push(Statement *stt){
       while(cur_block->getIndent() > stt->getIndent())
         cur_block = cur_block->endBlock(stt);
       if(cur_block->getIndent() != stt->getIndent()){
+        if(DEBUG) { std::cout << "[INDENT="<<stt->getIndent()<<"]"; }
         throw std::runtime_error("IndentationError: unindent does not match any outer indentation level");
       }
     }else if(!expect_indent && diff>0){
       // more indents than expected
+      if(DEBUG) { std::cout << "[INDENT="<<stt->getIndent()<<"]"; }
       throw std::runtime_error("IndentationError: unexpected indent");
     }else if(expect_indent && diff<=0){
       // less indents than expected
+      if(DEBUG) { std::cout << "[INDENT="<<stt->getIndent()<<"]"; }
       throw std::runtime_error("IndentationError: expected an indented block");
     }
     // !expect_indent && diff==0

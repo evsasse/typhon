@@ -11,6 +11,11 @@
   #define MAX_INCLUDE_DEPTH 10
   YY_BUFFER_STATE include_stack[MAX_INCLUDE_DEPTH];
   int include_stack_ptr = 0;
+
+  extern int HYBRID_INDENT_COUNT;
+  enum IndentType { NOT_DEFINED, SPACE, TAB, HYBRID };
+  static IndentType INDENT_TYPE = NOT_DEFINED;
+  static int curHybridIndent = 0;
 %}
 
 %option noyywrap
@@ -20,7 +25,7 @@ float ([0-9]+\.[0-9]*)|([0-9]*\.[0-9]+)
 bool "True"|"False"
 name [a-zA-Z_][a-zA-Z0-9_]*
 
-%x INDENT
+%x INDENT HYBRIDINDENT
 %x COMMENT MLCOMMENT
 %x IMPORT
 %%
@@ -28,10 +33,16 @@ name [a-zA-Z_][a-zA-Z0-9_]*
   if(first_run){
     BEGIN(INDENT);
     first_run = false;
+    if(HYBRID_INDENT_COUNT > 0){
+      INDENT_TYPE = HYBRID;
+    }
   }
 
-<INDENT>[ \t] { return T_INDENT; }
+<INDENT>" " { if(INDENT_TYPE == NOT_DEFINED){ INDENT_TYPE = SPACE; }else if(INDENT_TYPE == TAB){ std::cerr << "lexical error, mixed Space with Tabs" << std::endl; } return T_INDENT; }
+<INDENT>\t { if(INDENT_TYPE == HYBRID){ curHybridIndent = 1; yyless(0); BEGIN(HYBRIDINDENT); }else if(INDENT_TYPE == NOT_DEFINED){ INDENT_TYPE = TAB; }else if(INDENT_TYPE == SPACE){ std::cerr << "lexical error, mixed Tab with Spaces" << std::endl; } return T_INDENT; }
 <INDENT>.|\n { yyless(0); BEGIN(INITIAL); }
+
+<HYBRIDINDENT>\t { if(curHybridIndent < HYBRID_INDENT_COUNT){ curHybridIndent++; yyless(0); return T_INDENT; }else{ BEGIN(INDENT); } }
 
 <COMMENT>. { /* ignores every char until a new line */ }
 <COMMENT>\n { yyless(0); BEGIN(INITIAL); }
