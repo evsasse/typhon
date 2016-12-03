@@ -1,4 +1,4 @@
-- TupleObject
+- ~~TupleObject~~, would need to change a lot of base concepts
 
 - While & For
   - continue
@@ -7,5 +7,3 @@
 - import statement
 
 - StringObject
-
-- Array __setitem__
