@@ -46,7 +46,8 @@
 %left O_EXP
 %left '(' '['
 
-%token A_SUM
+%token A_SUM A_SUB A_MUL A_DIV
+%token A_MOD A_EXP A_FDV
 
 %token <val_int> L_INT
 %token <val_float> L_FLOAT
@@ -57,13 +58,15 @@
 %token T_DEF T_RETURN
 %token T_IF T_ELIF T_ELSE
 %token T_WHILE T_FOR T_IN
+%token T_PASS
+%token T_IMPORT
 
 %type <val_int> indent
 %type <stt> statement simple-statement
 %type <value> value
 %type <name> name
 %type <arr> array
-%type <expr> expression
+%type <expr> expression assignment-target
 %type <exprs> expression-list expression-list-opt
 %type <param> parameter
 %type <params> parameter-list parameter-list-opt
@@ -78,7 +81,8 @@
 
 %%
 
-program : block
+program : block { /* includes a 'pass' statement at the end of file to close any unfinished blocks*/
+           auto pass = new PassStatement(); pass->setIndent(0); program.push(pass); }
         ;
 
 block : block T_NEWLINE line
@@ -94,7 +98,7 @@ indent : indent T_INDENT { $$ = $1 + 1; }
        ;
 
 statements : statement { $1->setIndent(cur_indent); program.push($1); }
-        /* | error { yyerrok; } */
+           | error { auto pass = new SyntaxError(); pass->setIndent(0); program.push(pass); }
            ;
 
 statement : simple-statement { $$ = $1; }
@@ -110,6 +114,8 @@ simple-statement: /* one that does not contain blocks and new lines */
                   expression { $$ = $1; }
                 | assignment { $$ = $1; }
                 | return { $$ = $1; }
+                | T_IMPORT T_NAME { $$ = new ImportStatement($2); }
+                | T_PASS { $$ = new PassStatement(); }
                 ;
 
 opt-semicolon : ';'
@@ -160,11 +166,25 @@ expression-list : expression-list ',' expression { $1->push_back($3); $$ = $1; }
                 | expression { $$ = new std::list<Expression*>(); $$->push_back($1); }
                 ;
 
-assignment : name '=' expression
+assignment : assignment-target '=' expression
              { $$ = new Assignment(*$1, *$3); }
-           | name A_SUM expression
+           | assignment-target A_SUM expression
              { $$ = new Assignment(*$1, *(new BinaryOp(*$1, Op::ADD, *$3))); }
+           | assignment-target A_SUB expression
+             { $$ = new Assignment(*$1, *(new BinaryOp(*$1, Op::SUB, *$3))); }
+           | assignment-target A_MUL expression
+             { $$ = new Assignment(*$1, *(new BinaryOp(*$1, Op::MUL, *$3))); }
+           | assignment-target A_DIV expression
+             { $$ = new Assignment(*$1, *(new BinaryOp(*$1, Op::DIV, *$3))); }
+           | assignment-target A_MOD expression
+             { $$ = new Assignment(*$1, *(new BinaryOp(*$1, Op::MOD, *$3))); }
+           | assignment-target A_EXP expression
+             { $$ = new Assignment(*$1, *(new BinaryOp(*$1, Op::EXP, *$3))); }
+           | assignment-target A_FDV expression
+             { $$ = new Assignment(*$1, *(new BinaryOp(*$1, Op::FDV, *$3))); }
            ;
+
+assignment-target : expression { $$ = $1; }
 
 function : T_DEF name '(' parameter-list-opt ')' ':' { $$ = new FunctionDef(*$2,*$4); }
          ;
@@ -196,5 +216,5 @@ for: T_FOR T_NAME T_IN expression ':' { $$ = new ForStatement($2,*$4); }
 %%
 
 void yyerror(const char *s){
-  std::cout << s;
+  std::cout << s << std::endl;
 }

@@ -1,14 +1,11 @@
-- IntObject
-  - built in functions
-- BoolObject
-- FloatObject
-
-- ArrayObject
 - TupleObject
 
-- For x in y
-
-- While
+- While & For
   - continue
   - break
-  - while inside while
+
+- import statement
+
+- StringObject
+
+- Array __setitem__

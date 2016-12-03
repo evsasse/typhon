@@ -3,25 +3,63 @@
 #include "ast.h"
 
 Object* Expression::interpret(){
-  std::cout << exec().getIdentifier() << std::flush;
+  std::cout << exec().getIdentifier() << std::endl;
   return nullptr;
 }
 
 Object* Assignment::interpret(){
-  //TODO attribution of non built in types should be by reference, not copy
+  //TODO attribution of non built in types should be by reference, not copy ??
 
-  Object& expr = right.exec();
-  context->newName(target.name, expr);
-  std::cout << "<assignment> " << std::flush;
-  std::cout << target.name << " = " << context->useName(target.name).getIdentifier() << std::flush;
+  if(Name* name = dynamic_cast<Name*>(&target)){
+    Object& expr = right.exec();
+    context->newName(name->name, expr);
+    if(DEBUG){
+      std::cout << "<assignment> " << std::flush;
+      std::cout << name->name << " = " << context->useName(name->name).getIdentifier() << std::flush;
+    }
+  }else
+  if(dynamic_cast<LitBool*>(&target)
+  || dynamic_cast<LitInt*>(&target)
+  || dynamic_cast<LitFloat*>(&target)
+  || dynamic_cast<LitList*>(&target)){
+    throw std::runtime_error("SyntaxError: can't assign to literal");
+  }else
+  if(BinaryOp* bo = dynamic_cast<BinaryOp*>(&target)){
+    if(bo->op == Op::KEY){
+      auto left = bo->left.exec();
+      try{
+        left.useName("__setitem__");
+      }catch(NameError& e){
+        throw std::runtime_error("TypeError: '"+left.getIdentifier()+"' object does not support item assignment");
+      }
+      auto params = std::list<Object*>();
+      params.push_back(&(bo->right.exec())); // index
+      params.push_back(&(right.exec())); // new value
+      Object &ret = left.useName("__setitem__").call(params);
+      if(dynamic_cast<IndexError*>(&ret)){
+        throw std::runtime_error("IndexError: list assignment index out of range");
+      }
+    }else{
+      throw std::runtime_error("SyntaxError: can't assign to operator");
+    }
+  }else
+  if(dynamic_cast<UnaryOp*>(&target)){
+    throw std::runtime_error("SyntaxError: can't assign to operator");
+  }else{
+    throw std::runtime_error("SyntaxError: This kind of assignment was unexpected");
+  }
+
   return nullptr;
 }
 
 Object* FunctionDef::interpret(){
   //context->newName(name.name,*(new Function(name,*this)));
-  std::cout << "<function def '" << std::flush;
-  name.print();
-  std::cout << "'>" << std::flush;
+
+  if(DEBUG){
+    std::cout << "<function def '" << std::flush;
+    name.print();
+    std::cout << "'>" << std::flush;
+  }
 
   //The function is added to the namespace when it has a body
   // the interpret is called at endBlock, and by parent bodys
@@ -33,7 +71,9 @@ Object* FunctionDef::interpret(){
 
 Object* FunctionRet::interpret(){
   Object& ret = expr.exec();
-  std::cout << "<return " << ret.getIdentifier() << ">" << std::flush;
+  if(DEBUG){
+    std::cout << "<return " << ret.getIdentifier() << ">" << std::flush;
+  }
   return &ret;
 }
 
@@ -41,7 +81,10 @@ Object* IfStatement::interpret(){
   if(size() > 0){
     // the body is actually interpreted only on endBlock
     Object& cond = expr.exec();
-    std::cout << "<if "<< cond.getIdentifier() << ">" << std::flush;
+    if(DEBUG){
+      std::cout << "<if "<< cond.getIdentifier() << ">" << std::flush;
+    }
+
     if(cond.useName("__bool__").call().getIdentifier() == BoolObject(1).getIdentifier()){
       for(Statement *stt : *this){
         Object* ret = stt->interpret();
@@ -57,7 +100,9 @@ Object* IfStatement::interpret(){
 }
 
 Object* ElseStatement::interpret(){
-  std::cout << "[else]";
+  if(DEBUG){
+    std::cout << "[else]";
+  }
 
   if(size() > 0){
     for(Statement *stt : *this){
@@ -65,13 +110,18 @@ Object* ElseStatement::interpret(){
       if(ret) return ret;
     }
   }
+
+  return nullptr;
 }
 
 Object* ElifStatement::interpret(){
   if(size() > 0){
     // the body is actually interpreted only on endBlock
     Object& cond = expr.exec();
-    std::cout << "<elif "<< cond.getIdentifier() << ">" << std::flush;
+    if(DEBUG){
+      std::cout << "<elif "<< cond.getIdentifier() << ">" << std::flush;
+    }
+
     if(cond.useName("__bool__").call().getIdentifier() == BoolObject(1).getIdentifier()){
       for(Statement *stt : *this){
         Object* ret = stt->interpret();
@@ -90,8 +140,11 @@ Object* WhileStatement::interpret(){
   if(size() > 0){
     // the body is actually interpreted only on endBlock
     Object* cond = &(expr.exec());
-    print();
-    std::cout << "<while " << cond->getIdentifier() << ">" << std::flush;
+    if(DEBUG){
+      print();
+      std::cout << "<while " << cond->getIdentifier() << ">" << std::flush;
+    }
+
     while(cond->useName("__bool__").call().getIdentifier() == BoolObject(1).getIdentifier()){
       for(Statement *stt : *this){
         //TODO break; on continue;
@@ -99,9 +152,13 @@ Object* WhileStatement::interpret(){
         Object* ret = stt->interpret();
         if(ret) return ret;
       }
+
       cond = &(expr.exec());
-      print();
-      std::cout << "<while " << cond->getIdentifier() << ">" << std::flush;
+
+      if(DEBUG){
+        print();
+        std::cout << "<while " << cond->getIdentifier() << ">" << std::flush;
+      }
     }
 
     //TODO elseStt && !break
@@ -132,10 +189,14 @@ Object* ForStatement::interpret() {
     auto param = std::list<Object*>(1,cur_index);
     Object* item = &(iterable.useName("__getitem__").call(param));
 
-    print();
+    if(DEBUG){
+      print();
+    }
     //if trying to get the position results in a index error, it ended iterating
     while(!(dynamic_cast<IndexError*>(item))){
-      std::cout << "<for " << item->getIdentifier() << ">" << std::flush;
+      if(DEBUG){
+        std::cout << "<for " << item->getIdentifier() << ">" << std::flush;
+      }
       //puts the value of the item on the namespace using the name given
       this->context->newName(name, *item);
 
@@ -165,6 +226,16 @@ Object* ForStatement::interpret() {
   return nullptr;
 }
 
+Object* PassStatement::interpret(){
+  return nullptr;
+}
+
+Object* ImportStatement::interpret(){
+  import_file((filename+".ty").c_str());
+
+  return nullptr;
+}
+
 Object& CallOp::exec(){
   //return context->useName(name.name).call(*(new Object()));
   std::list<Object*> _arguments;
@@ -176,7 +247,10 @@ Object& CallOp::exec(){
 
 Object& Name::exec(){
   // segmentation faults here mean that the context is not being properly set
-  // review the setContext function of new statement types
+  // review the setContext function of the last modified statement types
+  if(DEBUG && !context){
+    std::cout << "[UNSET CONTEXT WHEN LOOKING FOR NAME: '" << name << "']";
+  }
   return context->useName(name);
 }
 
@@ -208,7 +282,7 @@ Object& BinaryOp::exec(){
     }
   }catch(NameError& e){
     if(op == KEY)
-      throw std::runtime_error("TypeError: "+left.getIdentifier()+" object has no attribute '__getitem__'");
+      throw std::runtime_error("TypeError: "+left.getIdentifier()+" object is not subscriptable");
     ret = nullptr;
   }
   if(ret)
@@ -255,6 +329,8 @@ Object& BinaryOp::exec(){
   ni = dynamic_cast<NotImplemented*>(ret);
   if(!ret || ni){
     throw std::runtime_error("TypeError: unsupported operand type(s) for "+opSymbol(op)+": '"+left.getIdentifier()+"' and '"+right.getIdentifier()+"'");
+  }else if(dynamic_cast<IndexError*>(ret)){
+    throw std::runtime_error("IndexError: list index out of range");
   }
 
   return *ret;

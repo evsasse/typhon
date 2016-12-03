@@ -4,6 +4,10 @@
 #include <string>
 #include "oo.h"
 
+extern bool DEBUG;
+
+extern void import_file(const char *filename);
+
 /* Addition, Subtraction, Multiplication, Division,
    Modulus, Exponent, Floor Division */
 enum Op { ADD, SUB, MUL, DIV,
@@ -85,11 +89,11 @@ class Assignment : public Statement {
 public:
   void print();
   Object* interpret();
-  Assignment(Name& target, Expression& right) :
+  Assignment(Expression& target, Expression& right) :
   target(target), right(right) {};
   void setContext(Namespace *context);
 private:
-  Name& target; //TODO: make more generic, a.b a.c a.b.d ...
+  Expression& target; //TODO: make more generic, a.b a.c a.b.d ...
   Expression& right;
 };
 
@@ -196,6 +200,22 @@ public:
   std::string name;
 };
 
+class PassStatement : public Statement {
+public:
+  Object* interpret();
+};
+
+class SyntaxError : public PassStatement {
+};
+
+class ImportStatement : public Statement {
+public:
+  ImportStatement(std::string filename) :
+  filename(filename) {};
+  Object* interpret();
+  std::string filename;
+};
+
 class BinaryOp : public Expression {
 public:
   void print();
@@ -203,7 +223,6 @@ public:
   BinaryOp(Expression& left, Op op, Expression& right) :
   left(left), op(op), right(right) {};
   void setContext(Namespace *context);
-private:
   Expression& left;
   Expression& right;
   Op op;
@@ -216,7 +235,6 @@ public:
   UnaryOp(Op op, Expression& right) :
   op(op), right(right) {};
   void setContext(Namespace *context);
-private:
   Expression& right;
   Op op;
 };
