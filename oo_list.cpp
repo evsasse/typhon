@@ -42,11 +42,24 @@ Object("list"), values(values){
   // __getitem__
   std::function<Object& (std::list<Object*> arguments)> __getitem__ = [this](std::list<Object*> arguments)-> Object& {
     if(IntObject* int_right = dynamic_cast<IntObject*>(arguments.front())){
-      if(int_right->value >= this->values.size()){
+      auto index = int_right->value;
+      auto it = this->values.begin();
+      bool negative = 0;
+      if(index < 0){
+        negative = 1;
+        index = -(index+1);
+      }
+
+      if(index >= this->values.size()){
         return *(new IndexError());
       }
-      auto it = this->values.begin();
-      std::advance(it,int_right->value);
+
+      if(negative){
+        index = this->values.size() - index - 1;
+      }
+
+      std::advance(it,index);
+
       //TODO treat negative position
       return *(*it);
     }else{
