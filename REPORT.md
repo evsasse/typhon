@@ -105,6 +105,7 @@
 4. Execução/Interpretação
   - Existem dois lados que precisam ser observados: Expressão literal, Objeto instânciado
   - Cada tipo de statement tem um comportamento diferente, vou explicar o seguinte `a[2] = 1+2-4`. Consideramos que a variável `a` foi definida anteirormente como `a = [0,1,2]`
+  - A indireção de funções como `__add__` ou `__getitem__`, que no caso built-in mas poderiam facilmente apontar para uma função interpretada, abre espaço para que poderia facilmente ser implementada a orientação à objetos definidos pelo usuário.
   
   1. Começamos interpretando o assignment literal, que é definido por um lado esquerdo `a[2]` e direito `1+2-4`
   2. O lado esquerdo é testado para saber se é um nome simples, como no caso `abc = 123`, e se é um literal como `123 = 456`. Neste caso não é, o lado esquerdo é uma operação binária.
