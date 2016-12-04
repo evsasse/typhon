@@ -66,7 +66,9 @@
       bar(bar) # chama bar, passando bar
     foo(foo) # chama a função foo passando ela mesma por parâmetro
     ```
-    
+
+- Os tipos suportados são boolean, integer, float, list, e string
+  - Outros tipos são usados internamente e podem aparecer, como function ou None
 - Qualquer operação pode ser chamada sobre qualquer objeto, nome, ou resultado de outra operação
   - Se aquela operação específica não é definida para o objeto, um erro correspondente é retornado
   - Se o nome não está definido, um erro correspondente é retornado
@@ -109,3 +111,7 @@
   3. É testado se a operação é do tipo `KEY`, que aponta para uma posição dentro de um objeto, e se o objeto indicado por `a` implementa a operação `__setitem__` que é chamada para setar uma valor em uma posição de uma lista.
   4. O lado direito é interpretado, se trata de duas operações binárias, `((1+2)-4)`. Começando pela mais interior, executamos cada literal, o `1` nos retorna um objeto `<int 1>`. Verificamos a existência da operação `__add__` no objeto `<int 1>`, e passamos à ela o objeto `<int 2>`. Essa operação nos retorna um objeto `<int 3>`, onde executamos `__sub__` passando `<int 4>`. Isso no retorna um objeto final `<int -1>`.
   5. Chamamos `__setitem__` passando o valor interpretado `<int 2>` como índice/posição e `<int -1>` como novo valor. O índice é testado para verificar se está dentro do tamanho da lista, e o valor é setado.
+
+## Testes
+
+Os testes não foram realizados de maneira muito formalizada, servem apenas de exemplos de funcionalidades e durante a implementação foram utilizados como forma de debuggar alguns problemas mais complexos que necessitavam digitar grandes trechos de código a cada teste.
