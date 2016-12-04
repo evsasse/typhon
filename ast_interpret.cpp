@@ -376,5 +376,5 @@ Object& LitBool::exec(){
 }
 
 Object& LitString::exec(){
-  return *(new BoolObject(0));
+  return *(new StringObject(value));
 }
