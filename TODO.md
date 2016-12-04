@@ -7,3 +7,5 @@
 - import statement
 
 - StringObject
+  - some more builtin functions
+  

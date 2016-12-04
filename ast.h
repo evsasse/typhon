@@ -283,3 +283,13 @@ public:
 private:
   bool value;
 };
+
+class LitString: public Value {
+public:
+  void print();
+  Object& exec();
+  LitString(std::string value) :
+  value(value) {};
+private:
+  std::string value;
+};

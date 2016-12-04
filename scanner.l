@@ -28,6 +28,7 @@ name [a-zA-Z_][a-zA-Z0-9_]*
 %x INDENT HYBRIDINDENT
 %x COMMENT MLCOMMENT
 %x IMPORT
+%x SIMPLESTRING DOUBLESTRING
 %%
 
   if(first_run){
@@ -50,9 +51,28 @@ name [a-zA-Z_][a-zA-Z0-9_]*
 <MLCOMMENT>.|\n { /* ignores every char until ###+ */ }
 <MLCOMMENT>###+ { BEGIN(INITIAL); }
 
+<SIMPLESTRING>\' { BEGIN(INITIAL); }
+<SIMPLESTRING>\n { yyless(0); BEGIN(INITIAL); }
+<SIMPLESTRING>\\\' { yylval.val_str = strdup("'"); return T_CHAR; }
+<SIMPLESTRING>\\\\ { yylval.val_str = strdup("\\"); return T_CHAR; }
+<SIMPLESTRING>\\n { yylval.val_str = strdup("\n"); return T_CHAR; }
+<SIMPLESTRING>\\\n { }
+<SIMPLESTRING>. { yylval.val_str = strdup(yytext); return T_CHAR; }
+
+<DOUBLESTRING>\" { BEGIN(INITIAL); }
+<DOUBLESTRING>\n { yyless(0); BEGIN(INITIAL); }
+<DOUBLESTRING>\\\" { yylval.val_str = strdup("'"); return T_CHAR; }
+<DOUBLESTRING>\\\\ { yylval.val_str = strdup("\\"); return T_CHAR; }
+<DOUBLESTRING>\\n { yylval.val_str = strdup("\n"); return T_CHAR; }
+<DOUBLESTRING>\\\n { }
+<DOUBLESTRING>. { yylval.val_str = strdup(yytext); return T_CHAR; }
+
 \n { BEGIN(INDENT); return T_NEWLINE; }
 # { BEGIN(COMMENT); }
 ###+ { BEGIN(MLCOMMENT); }
+
+\' { BEGIN(SIMPLESTRING); return T_STRING; }
+\" { BEGIN(DOUBLESTRING); return T_STRING; }
 
 [ \t] { /* ignore spaces and tabs */}
 

@@ -102,6 +102,13 @@ public:
   std::string getIdentifier();
 };
 
+class StringObject : public Object {
+public:
+  std::string value;
+  StringObject(std::string value);
+  std::string getIdentifier();
+};
+
 class Name;
 class Block;
 class Parameter;
